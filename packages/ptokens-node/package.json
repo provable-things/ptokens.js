@@ -8,5 +8,9 @@
     "dev": "rollup -c ../../rollup.config.js -w",
     "test": "jest",
     "lint": "eslint ./src/"
+  },
+  "dependencies": {
+    "jsonrpc-lite": "^2.2.0",
+    "ptokens-utils": "github:provable-things/ptokens-utils.js#1.3.0"
   }
 }

@@ -1,10 +1,19 @@
+import { pTokensNodeProvider } from './ptokens-node-provider'
 export class pTokensNode {
-  symbol: string
+  provider: pTokensNodeProvider
 
-  constructor(symbol: string) {
-    this.symbol = symbol
+  constructor(provider: pTokensNodeProvider) {
+    this.provider = provider
   }
-  getSymbol(): string {
-    return this.symbol
+  getProvider(): pTokensNodeProvider {
+    return this.provider
+  }
+
+  getTransactionStatus(txHash: string, originatingChainId: string): Promise<unknown> {
+    return this.provider.sendRpcRequest(1, 'app_getTransactionStatus', [txHash, originatingChainId])
+  }
+
+  async getAssetInfo(tokenSymbol: string): Promise<unknown> {
+    return this.provider.sendRpcRequest(1, 'app_getAssetInfo', [tokenSymbol])
   }
 }
