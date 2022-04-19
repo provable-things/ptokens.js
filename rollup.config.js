@@ -1,8 +1,8 @@
 import resolve from '@rollup/plugin-node-resolve'
 import typescript from '@rollup/plugin-typescript'
 import babel from '@rollup/plugin-babel'
-import { string } from 'rollup-plugin-string'
-import { terser } from 'rollup-plugin-terser'
+import autoExternal from 'rollup-plugin-auto-external'
+import cleanup from 'rollup-plugin-cleanup'
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -15,31 +15,52 @@ export default {
   output: [
     {
       file: 'dist/bundle.cjs.js',
-      format: 'cjs'
+      format: 'cjs',
     },
     {
       file: 'dist/bundle.esm.js',
-      format: 'esm'
+      format: 'esm',
     },
     {
       name: PACKAGE_NAME,
       file: 'dist/bundle.umd.js',
-      format: 'umd'
-    }
+      format: 'umd',
+    },
   ],
   plugins: [
     resolve(),
     typescript({
-      tsconfig: `${PACKAGE_ROOT_PATH}/tsconfig.json`
+      tsconfig: `${PACKAGE_ROOT_PATH}/tsconfig.json`,
     }),
     babel({
       exclude: 'node_modules/**',
+      babelrc: false,
       babelHelpers: 'runtime',
-      rootMode: 'upward'
+      presets: [
+        [
+          '@babel/env',
+          {
+            modules: false,
+            targets: {
+              node: 'current',
+              browsers: 'last 2 versions',
+            },
+          },
+        ],
+      ],
+      plugins: [
+        '@babel/plugin-proposal-export-default-from',
+        '@babel/plugin-proposal-export-namespace-from',
+        [
+          '@babel/plugin-transform-runtime',
+          {
+            helpers: true,
+            regenerator: true,
+          },
+        ],
+      ],
     }),
-    string({
-      include: '**/*.html'
-    }),
-    production && terser()
-  ]
+    autoExternal(),
+    cleanup(),
+  ],
 }
