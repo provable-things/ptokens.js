@@ -42,3 +42,6 @@ yarn.lock
 
 # Dist directory
 dist
+
+# Types directory
+types

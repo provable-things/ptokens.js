@@ -1,3 +1,2 @@
-*/src/types/global.d.ts
-*/dist/
-jest.config.js
+**/dist/*
+**/types/*

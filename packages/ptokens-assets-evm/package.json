@@ -6,8 +6,7 @@
   "scripts": {
     "build": "rollup -c ../../rollup.config.js",
     "dev": "rollup -c ../../rollup.config.js -w",
-    "test": "jest",
-    "lint": "eslint ./src/ ./test/",
+    "lint": "eslint ./src/",
     "init": "npm i"
   },
   "dependencies": {

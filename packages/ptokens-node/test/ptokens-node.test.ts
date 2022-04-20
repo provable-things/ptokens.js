@@ -1,7 +1,7 @@
 import { pTokensNode, pTokensNodeProvider } from '../src/index'
 
-jest.mock('ptokens-utils')
-import { http } from 'ptokens-utils'
+jest.mock('ptokens-helpers')
+import { http } from 'ptokens-helpers'
 
 describe('pTokensNode', () => {
   beforeEach(() => {
@@ -18,8 +18,9 @@ describe('pTokensNode', () => {
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
       await node.getTransactionStatus('a-tx-hash', 'a-originating-chain-id')
-      expect(http.postRequest.mock.calls[0][0]).toStrictEqual('a-url')
-      expect(http.postRequest.mock.calls[0][1]).toEqual({
+      const postRequestMock = http.postRequest as jest.MockedFunction<typeof http.postRequest>
+      expect(postRequestMock.mock.calls[0][0]).toStrictEqual('a-url')
+      expect(postRequestMock.mock.calls[0][1]).toEqual({
         id: 1,
         jsonrpc: '2.0',
         method: 'app_getTransactionStatus',
@@ -31,8 +32,9 @@ describe('pTokensNode', () => {
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
       await node.getAssetInfo('a-token')
-      expect(http.postRequest.mock.calls[0][0]).toStrictEqual('a-url')
-      expect(http.postRequest.mock.calls[0][1]).toEqual({
+      const postRequestMock = http.postRequest as jest.MockedFunction<typeof http.postRequest>
+      expect(postRequestMock.mock.calls[0][0]).toStrictEqual('a-url')
+      expect(postRequestMock.mock.calls[0][1]).toEqual({
         id: 1,
         jsonrpc: '2.0',
         method: 'app_getAssetInfo',

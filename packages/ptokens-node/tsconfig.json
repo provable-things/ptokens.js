@@ -1,6 +1,8 @@
 {
+  "include": ["src/index.ts"],
   "extends": "../../tsconfig.json",
-  "include": [
-    "./src"
-  ]
- }
+  "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "./types"
+  }
+}

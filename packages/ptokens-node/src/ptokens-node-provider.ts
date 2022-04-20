@@ -1,4 +1,4 @@
-import { http } from 'ptokens-utils'
+import { http } from 'ptokens-helpers'
 import jsonrpc from 'jsonrpc-lite'
 
 export class pTokensNodeProvider {
@@ -12,7 +12,7 @@ export class pTokensNodeProvider {
     return this.url
   }
 
-  sendRpcRequest(_reqId: number, _method: string, _params: Array<any>): Promise<unknown> {
+  sendRpcRequest(_reqId: number, _method: string, _params: Array<any>) {
     const req = jsonrpc.request(_reqId, _method, _params)
     return http.postRequest(this.url, req)
   }

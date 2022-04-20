@@ -1,13 +1,15 @@
 {
   "name": "ptokens-helpers",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
+  "browser": "dist/bundle.umd.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c ../../rollup.config.js",
     "dev": "rollup -c ../../rollup.config.js -w",
     "test": "jest",
-    "lint": "eslint ./src/"
+    "lint": "eslint ./src/ ./test/"
   },
   "dependencies": {
     "node-fetch": "^2.6.7"
@@ -16,5 +18,8 @@
     "@types/jest": "^27.4.1",
     "@types/node-fetch": "^2.6.1",
     "ts-jest": "^27.1.4"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
