@@ -14,6 +14,6 @@ export class pTokensNodeProvider {
 
   sendRpcRequest(_reqId: number, _method: string, _params: Array<any>) {
     const req = jsonrpc.request(_reqId, _method, _params)
-    return http.postRequest(this.url, req)
+    return http.fetchJsonByPost(this.url, req)
   }
 }

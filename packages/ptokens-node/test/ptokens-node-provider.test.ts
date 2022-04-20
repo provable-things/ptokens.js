@@ -12,9 +12,9 @@ describe('pTokensSwapBuilder', () => {
     it('Should call fetch with correct parameters', async () => {
       const provider = new pTokensNodeProvider('http://test-node.p.tokens')
       await provider.sendRpcRequest(1, 'method', ['param', 1])
-      const postRequestMock = http.postRequest as jest.MockedFunction<typeof http.postRequest>
-      expect(postRequestMock.mock.calls[0][0]).toStrictEqual('http://test-node.p.tokens')
-      expect(postRequestMock.mock.calls[0][1]).toEqual({
+      const fetchJsonByPostMock = http.fetchJsonByPost as jest.MockedFunction<typeof http.fetchJsonByPost>
+      expect(fetchJsonByPostMock.mock.calls[0][0]).toStrictEqual('http://test-node.p.tokens')
+      expect(fetchJsonByPostMock.mock.calls[0][1]).toEqual({
         jsonrpc: '2.0',
         id: 1,
         method: 'method',
