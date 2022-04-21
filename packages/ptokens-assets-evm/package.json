@@ -10,6 +10,6 @@
     "init": "npm i"
   },
   "dependencies": {
-    "ptokens-entities": "../ptokens-entities/"
+    "ptokens-entities": "^0.1.0"
   }
 }
