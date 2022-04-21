@@ -6,8 +6,9 @@
   "scripts": {
     "build": "rollup -c ../../rollup.config.js",
     "dev": "rollup -c ../../rollup.config.js -w",
+    "lint": "eslint ./src/ ./test/",
     "test": "jest",
-    "lint": "eslint ./src/ ./test/"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "jsonrpc-lite": "^2.2.0",

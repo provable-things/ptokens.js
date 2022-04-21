@@ -5,8 +5,9 @@
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "dev": "lerna run --parallel dev",
+    "lint": "lerna run lint",
     "test": "lerna run test",
-    "lint": "lerna run lint"
+    "type-check": "lerna run type-check"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

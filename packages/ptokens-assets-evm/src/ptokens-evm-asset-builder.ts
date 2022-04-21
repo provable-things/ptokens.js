@@ -1,3 +1,7 @@
-import { pTokensAssetBuilder } from 'ptokens-entities'
+import { pTokensAsset, pTokensAssetBuilder } from 'ptokens-entities'
 
-export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {}
+export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
+  build(): pTokensAsset {
+    throw new Error('Method not implemented.')
+  }
+}
