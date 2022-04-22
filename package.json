@@ -7,7 +7,8 @@
     "dev": "lerna run --parallel dev",
     "lint": "lerna run lint",
     "test": "lerna run test",
-    "type-check": "lerna run type-check"
+    "type-check": "lerna run type-check",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
@@ -28,8 +29,10 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
     "jest": "^27.5.1",
     "lerna": "^4.0.0",
+    "lint-staged": "^12.4.0",
     "rollup": "^2.70.1",
     "rollup-plugin-auto-external": "^2.0.0",
     "rollup-plugin-cleanup": "^3.2.1",
@@ -45,5 +48,8 @@
     "@babel/runtime": "^7.17.9",
     "tslib": "^2.1.0",
     "typescript": "^4.1.3"
+  },
+  "lint-staged": {
+    "*.[tj]s": "eslint --cache"
   }
 }
