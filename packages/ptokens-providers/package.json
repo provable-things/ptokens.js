@@ -3,10 +3,18 @@
   "version": "0.0.1",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c ../../rollup.config.js",
     "dev": "rollup -c ../../rollup.config.js -w",
     "lint": "eslint ./src/",
+    "test": "jest",
     "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "axios": "^0.26.1"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0"
   }
 }
