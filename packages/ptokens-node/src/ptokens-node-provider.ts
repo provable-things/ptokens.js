@@ -12,8 +12,8 @@ export class pTokensNodeProvider {
     return this.url
   }
 
-  sendRpcRequest(_reqId: number, _method: string, _params: Array<any>) {
+  async sendRpcRequest<T>(_reqId: number, _method: string, _params: Array<any>): Promise<T> {
     const req = jsonrpc.request(_reqId, _method, _params)
-    return http.fetchJsonByPost(this.url, req)
+    return http.fetchJsonByPost<T>(this.url, req)
   }
 }

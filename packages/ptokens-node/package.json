@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c ../../rollup.config.js",
     "dev": "rollup -c ../../rollup.config.js -w",
