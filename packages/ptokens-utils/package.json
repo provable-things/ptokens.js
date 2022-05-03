@@ -19,6 +19,7 @@
     "bignumber.js": "^9.0.0",
     "bitcoin-address-validation": "^1.0.2",
     "bitcoinjs-lib": "^5.2.0",
+    "cross-fetch": "^3.1.5",
     "eosjs": "^20.0.3",
     "eventemitter3": "^4.0.0",
     "light-async-polling": "^1.0.2",

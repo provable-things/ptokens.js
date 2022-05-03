@@ -4,6 +4,7 @@ import babel from '@rollup/plugin-babel'
 import autoExternal from 'rollup-plugin-auto-external'
 import cleanup from 'rollup-plugin-cleanup'
 import dts from 'rollup-plugin-dts'
+import json from '@rollup/plugin-json'
 
 const PACKAGE_ROOT_PATH = process.cwd()
 const PACKAGE_NAME = PACKAGE_ROOT_PATH.split('/').at(-1)
@@ -33,6 +34,7 @@ export default [
     plugins: [
       // Allows node_modules resolution
       resolve({ extensions }),
+      json(),
       // Compile TypeScript/JavaScript files
       babel({
         extensions,

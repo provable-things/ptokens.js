@@ -2,7 +2,7 @@ import * as btc from './utxo/btc'
 import * as doge from './utxo/doge'
 import * as ltc from './utxo/ltc'
 // import * as converters from './converters'
-// import * as eth from './eth'
+import * as evm from './evm'
 // import * as eos from './eos'
 import * as rvn from './utxo/rvn'
 // import * as helpers from './helpers/index'
@@ -25,7 +25,7 @@ export default {
   doge,
   // converters,
   // constants,
-  // eth,
+  evm,
   // eos,
   // telos: eos,
   // helpers,

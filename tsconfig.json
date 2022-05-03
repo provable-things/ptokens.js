@@ -3,5 +3,6 @@
         "target": "es2018",
         "esModuleInterop": true,
         "moduleResolution": "node",
+        "resolveJsonModule": true,
     }
 }
