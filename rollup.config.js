@@ -65,6 +65,7 @@ export default [
     },
     plugins: [
       resolve(),
+      json(),
       typescript({ tsconfig: './tsconfig.json' }),
       autoExternal(),
     ]

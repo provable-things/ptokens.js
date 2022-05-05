@@ -8,7 +8,7 @@ import * as rvn from './utxo/rvn'
 // import * as helpers from './helpers/index'
 // import * as constants from './constants'
 // import { redeemFromEosio } from './redeem-from/redeem-from-eosio'
-// import { redeemFromEvmCompatible } from './redeem-from/redeem-from-evm-compatible'
+import { redeemFromEvmCompatible } from './redeem-from/redeem-from-evm-compatible'
 // import pERC20VaultContractAbi from './abi/pERC20VaultContractAbi.json'
 // import pTokenOnEosAbi from './abi/pTokenOnEOSContractAbi.json'
 // import pTokenOnEthAbi from './abi/pTokenOnETHContractAbi.json'
@@ -31,8 +31,8 @@ export default {
   // helpers,
   ltc,
   rvn,
-  // redeemFrom: {
-  //   redeemFromEvmCompatible,
-  //   redeemFromEosio,
-  // },
+  redeemFrom: {
+    redeemFromEvmCompatible,
+    // redeemFromEosio,
+  },
 }

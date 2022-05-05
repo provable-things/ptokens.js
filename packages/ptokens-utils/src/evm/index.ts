@@ -3,6 +3,7 @@ import polling from 'light-async-polling'
 import Web3 from 'web3'
 import { AbiItem } from 'web3-utils'
 import { TransactionReceipt } from 'web3-core'
+import { PromiEvent } from 'web3-core'
 
 const HEX_PREFIX = '0x'
 export const zeroEther = '0x00'
@@ -69,6 +70,8 @@ export type MakeContractSendOptions = {
   value: number
   gas: number
   gasPrice: number
+  transactionHashCallback?: (hash: string) => void
+  receiptCallback?: (receipt: TransactionReceipt) => void
 }
 
 export async function makeContractSend(
@@ -81,12 +84,15 @@ export async function makeContractSend(
   const account = await getAccount(_web3)
   const contract = getContract(_web3, abi, contractAddress, account)
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  return contract.methods[_method](..._params).send({
+  const ret = contract.methods[_method](..._params).send({
     from: account,
     value,
     gasPrice,
     gas,
-  }) as Promise<TransactionReceipt>
+  }) as PromiEvent<TransactionReceipt>
+  if (_options.receiptCallback) void ret.on('receipt', _options.receiptCallback)
+  if (_options.transactionHashCallback) void ret.on('transactionHash', _options.transactionHashCallback)
+  return ret
 }
 
 export type SendSignedMethodTxOptions = {
@@ -96,6 +102,8 @@ export type SendSignedMethodTxOptions = {
   gas?: number
   gasPrice?: number
   privateKey: string
+  transactionHashCallback?: (hash: string) => void
+  receiptCallback?: (receipt: TransactionReceipt) => void
 }
 
 export async function sendSignedMethodTx(
@@ -119,7 +127,10 @@ export async function sendSignedMethodTx(
     },
     privateKey
   )
-  return _web3.eth.sendSignedTransaction(rawTransaction)
+  const ret = _web3.eth.sendSignedTransaction(rawTransaction)
+  if (_options.receiptCallback) void ret.once('receipt', _options.receiptCallback)
+  if (_options.transactionHashCallback) void ret.once('transactionHash', _options.transactionHashCallback)
+  return ret
 }
 
 export async function waitForTransactionConfirmation(_web3: Web3, _tx: string, _pollingTime = 5000) {

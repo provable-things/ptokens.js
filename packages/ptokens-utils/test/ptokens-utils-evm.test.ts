@@ -1,8 +1,10 @@
 import utils from '../src'
 import Web3 from 'web3'
+import { HttpProvider } from 'web3-core'
 import { AbiItem } from 'web3-utils'
 import abi from './utils/exampleContractABI.json'
 import BigNumber from 'bignumber.js'
+import { TransactionReceipt } from 'web3-core'
 
 const TEST_CONTRACT_ADDRESS = '0x15FA11dFB23eae46Fda69fB6A148f41677B4a090'
 const TEST_ETH_PRIVATE_KEY = '422c874bed50b69add046296530dc580f8e2e253879d98d66023b7897ab15742'
@@ -107,6 +109,41 @@ describe('ethereum utilities', () => {
       contractAddress: TEST_CONTRACT_ADDRESS,
     })
     expect(parseInt(number)).toBe(expectedNumber)
+    const prov: HttpProvider = web3.currentProvider as HttpProvider
+    prov.disconnect()
+  })
+
+  test('Should make an ETH contract send correctly with callbacks', async () => {
+    const web3 = new Web3(TEST_ETH_PROVIDER)
+    const account = web3.eth.accounts.privateKeyToAccount(utils.evm.addHexPrefix(TEST_ETH_PRIVATE_KEY))
+    web3.eth.defaultAccount = account.address
+    const expectedNumber = Math.floor(Math.random() * 100)
+    let hash: string
+    let receipt: TransactionReceipt
+
+    await utils.evm.sendSignedMethodTx(
+      web3,
+      'setNumber',
+      {
+        abi: abi as unknown as AbiItem,
+        contractAddress: TEST_CONTRACT_ADDRESS,
+        gasPrice: 5e9,
+        privateKey: utils.evm.addHexPrefix(TEST_ETH_PRIVATE_KEY),
+        transactionHashCallback: (_hash) => {
+          hash = _hash
+        },
+        receiptCallback: (_receipt) => {
+          receipt = _receipt
+        },
+      },
+      [expectedNumber]
+    )
+    const number: string = await utils.evm.makeContractCall(web3, 'number', {
+      abi: abi as unknown as AbiItem,
+      contractAddress: TEST_CONTRACT_ADDRESS,
+    })
+    expect(parseInt(number)).toBe(expectedNumber)
+    expect(receipt.transactionHash).toStrictEqual(hash)
   })
 
   test('Should make an ETH contract send correctly specifying the gas', async () => {
