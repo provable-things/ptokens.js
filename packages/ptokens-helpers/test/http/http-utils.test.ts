@@ -9,7 +9,8 @@ describe('Http general tests', () => {
     beforeAll(() => {
       server = createServer((_req, _res) => {
         _res.statusCode = 200
-        _res.end('data')
+        if (_req.url.includes('golong')) setTimeout(() => _res.end('data'), 500)
+        else _res.end('data')
       })
       server.listen(3000, '127.0.0.1')
     })
@@ -20,7 +21,7 @@ describe('Http general tests', () => {
 
     it('Should reject when timeout expires', async () => {
       try {
-        await httpUtilsModule.getRequest('http://hello.com', {}, 100)
+        await httpUtilsModule.getRequest('http://localhost:3000/golong', {}, 100)
         fail()
       } catch (err) {
         expect(err.message).toStrictEqual(errors.ERROR_TIMEOUT)
@@ -35,7 +36,7 @@ describe('Http general tests', () => {
 
     it('Should reject when timeout expires', async () => {
       try {
-        await httpUtilsModule.postRequest('http://hello.com', {}, {}, 100)
+        await httpUtilsModule.postRequest('http://localhost:3000/golong', {}, {}, 100)
         fail()
       } catch (err) {
         expect(err.message).toStrictEqual(errors.ERROR_TIMEOUT)
