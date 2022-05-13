@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
-import EventEmitter from 'eventemitter3'
+import PromiEvent from 'promievent'
 
 export type Transaction = {
   status?: { confirmed: boolean }
@@ -50,13 +50,7 @@ export abstract class UtxoApi {
 
   abstract waitForTransactionConfirmation(_tx: string, _pollingTime: number): Promise<Transaction>
 
-  abstract monitorUtxoByAddress(
-    _address: string,
-    _eventEmitter: EventEmitter,
-    _pollingTime: number,
-    _broadcastEventName: string,
-    _confirmationEventName: string
-  ): Promise<string>
+  abstract monitorUtxoByAddress(_address: string, _pollingTime: number, _confirmations?: number): PromiEvent<string>
 
   abstract isValidAddress(_address: string): boolean
 

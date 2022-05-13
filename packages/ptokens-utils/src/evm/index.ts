@@ -146,5 +146,5 @@ export async function waitForTransactionConfirmation(_web3: Web3, _tx: string, _
       return false
     }
   }, _pollingTime)
-  return receipt
+  return receipt.transactionHash
 }

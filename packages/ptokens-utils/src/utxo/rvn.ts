@@ -1,10 +1,10 @@
-import EventEmitter from 'eventemitter3'
 import polling from 'light-async-polling'
+import PromiEvent from 'promievent'
 import { CallTypes, Transaction, Utxo, UtxoApi } from './api'
 
 const RVN_PTOKENS_NODE_MAINNET_API = 'https://corsproxy.ptokens.io/v1/?apiurl=https://api.ravencoin.org/api'
 
-export class Rvn extends UtxoApi {
+export default class Rvn extends UtxoApi {
   constructor() {
     super(RVN_PTOKENS_NODE_MAINNET_API)
   }
@@ -31,43 +31,35 @@ export class Rvn extends UtxoApi {
     return transaction
   }
 
-  async monitorUtxoByAddress(
-    _address: string,
-    _eventEmitter: EventEmitter,
-    _pollingTime: number,
-    _broadcastEventName: string,
-    _confirmationEventName: string,
-    _confirmations = 1
-  ): Promise<string> {
+  monitorUtxoByAddress(_address: string, _pollingTime: number, _confirmations = 1): PromiEvent<string> {
     let isBroadcasted = false
-    let utxo: string = null
     let utxos: Utxo[] = []
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    await polling(async () => {
-      utxos = await this._makeApiCall<Utxo[]>(CallTypes.CALL_GET, `/addrs/${_address}/utxo`)
-
-      if (utxos.length > 0) {
-        if (utxos[0].confirmations > 0) {
-          if (!isBroadcasted) {
-            _eventEmitter.emit(_broadcastEventName, utxos[0])
+    const promi = new PromiEvent<string>((resolve) =>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+      polling(async () => {
+        utxos = await this._makeApiCall<Utxo[]>(CallTypes.CALL_GET, `/addrs/${_address}/utxo`)
+        if (utxos.length > 0) {
+          if (utxos[0].confirmations > 0) {
+            if (!isBroadcasted) {
+              promi.emit('broadcasted', utxos[0])
+              isBroadcasted = true
+            }
+            if (utxos[0].confirmations >= _confirmations) {
+              promi.emit('confirmed', utxos[0])
+              return true
+            }
+            return false
+          } else if (!isBroadcasted) {
             isBroadcasted = true
+            promi.emit('broadcasted', utxos[0])
+            return false
           }
-          if (utxos[0].confirmations >= _confirmations) {
-            _eventEmitter.emit(_confirmationEventName, utxos[0])
-            utxo = utxos[0].txid
-            return true
-          }
-          return false
-        } else if (!isBroadcasted) {
-          isBroadcasted = true
-          _eventEmitter.emit(_broadcastEventName, utxos[0])
+        } else {
           return false
         }
-      } else {
-        return false
-      }
-    }, _pollingTime)
-    return utxo
+      }, _pollingTime).then(resolve)
+    )
+    return promi
   }
 
   isValidAddress(_address: string): boolean {

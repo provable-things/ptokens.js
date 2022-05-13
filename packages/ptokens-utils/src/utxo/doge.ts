@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import polling from 'light-async-polling'
+import PromiEvent from 'promievent'
 import { CallTypes, Transaction, Utxo, UtxoApi } from './api'
 
 const DOGE_CHAIN_API = 'https://dogechain.info/api/v1'
@@ -10,7 +11,7 @@ type DogeChainUnspentResult = {
   error: any
 }
 
-export class Doge extends UtxoApi {
+export default class Doge extends UtxoApi {
   constructor() {
     super(DOGE_CHAIN_API)
   }
@@ -39,41 +40,34 @@ export class Doge extends UtxoApi {
     return transactionToReturn
   }
 
-  async monitorUtxoByAddress(
-    _address: string,
-    _eventEmitter: EventEmitter,
-    _pollingTime: number,
-    _broadcastEventName: string,
-    _confirmationEventName: string,
-    _confirmations = 1
-  ): Promise<string> {
+  monitorUtxoByAddress(_address: string, _pollingTime: number, _confirmations = 1): PromiEvent<string> {
     let isBroadcasted = false
-    let utxo: string = null
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    await polling(async () => {
-      const utxos = await this.getUtxoByAddress(_address)
-      if (utxos.length > 0) {
-        if (utxos[0].confirmations > 0) {
-          if (!isBroadcasted) {
-            _eventEmitter.emit(_broadcastEventName, utxos[0])
+    const promi = new PromiEvent<string>((resolve) =>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+      polling(async () => {
+        const utxos = await this.getUtxoByAddress(_address)
+        if (utxos.length > 0) {
+          if (utxos[0].confirmations > 0) {
+            if (!isBroadcasted) {
+              promi.emit('broadcasted', utxos[0])
+              isBroadcasted = true
+            }
+            if (utxos[0].confirmations >= _confirmations) {
+              promi.emit('confirmed', utxos[0])
+              return true
+            }
+            return false
+          } else if (!isBroadcasted) {
             isBroadcasted = true
+            promi.emit('broadcasted', utxos[0])
+            return false
           }
-          if (utxos[0].confirmations >= _confirmations) {
-            _eventEmitter.emit(_confirmationEventName, utxos[0])
-            utxo = utxos[0].tx_hash
-            return true
-          }
-          return false
-        } else if (!isBroadcasted) {
-          isBroadcasted = true
-          _eventEmitter.emit(_broadcastEventName, utxos[0])
+        } else {
           return false
         }
-      } else {
-        return false
-      }
-    }, _pollingTime)
-    return utxo.startsWith('0x') ? utxo : '0x' + utxo
+      }, _pollingTime).then(resolve)
+    )
+    return promi
   }
 
   isValidAddress(_address: string) {

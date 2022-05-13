@@ -1,4 +1,4 @@
-import utils from '../src'
+import * as utils from '../src'
 import Web3 from 'web3'
 import { HttpProvider } from 'web3-core'
 import { AbiItem } from 'web3-utils'
@@ -200,7 +200,6 @@ describe('ethereum utilities', () => {
   test('Should wait for an ETH transaction confirmation', async () => {
     const web3 = new Web3(TEST_ETH_PROVIDER)
     const receipt = await utils.evm.waitForTransactionConfirmation(web3, ETH_TESTING_TX, 3000)
-    expect(receipt.blockNumber).toStrictEqual(16324912)
-    expect(receipt.blockHash).toStrictEqual('0xa3bd30bb42d083521bfe0b201de55ffdf7f0652cc67b55135816b22393ad0c08')
+    expect(receipt).toStrictEqual(ETH_TESTING_TX)
   })
 })

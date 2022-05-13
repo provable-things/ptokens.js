@@ -1,5 +1,5 @@
-import utils from '../src'
-import EventEmitter from 'eventemitter3'
+import * as utils from '../src'
+import Doge from '../src/utxo/doge'
 
 jest.setTimeout(30000)
 
@@ -8,47 +8,42 @@ const DOGE_TESTING_ADDRESS = 'DKs2WBbiaAEe9RGzQTmtJj1o9bqsKTUTtC'
 
 describe('doge utils', () => {
   test('Should be a VALID DOGE mainnet address', () => {
-    const dogeApi = new utils.doge.Doge()
+    const dogeApi = new utils.utxo.doge()
     const result = dogeApi.isValidAddress(DOGE_TESTING_ADDRESS)
     expect(result).toBe(true)
   })
 
   test('Should be an INVALID DOGE address', () => {
-    const dogeApi = new utils.doge.Doge()
+    const dogeApi = new utils.utxo.doge()
     const result = dogeApi.isValidAddress('invalid')
     expect(result).toBe(false)
   })
 
   test('Should monitor a DOGE utxo given an address', async () => {
-    const dogeApi = new utils.doge.Doge()
-    const eventEmitter = new EventEmitter()
+    const dogeApi = new utils.utxo.doge()
     let isDogeTxBroadcasted = 0
     let isDogeTxConfirmed = 0
-    const start = async () => {
-      eventEmitter.once('nativeBroadcast', () => {
+    await dogeApi
+      .monitorUtxoByAddress(DOGE_TESTING_ADDRESS, 500)
+      .once('broadcasted', () => {
         isDogeTxBroadcasted++
       })
-      eventEmitter.once('nativeConfirmed', () => {
+      .once('confirmed', () => {
         isDogeTxConfirmed++
       })
-
-      await dogeApi.monitorUtxoByAddress(DOGE_TESTING_ADDRESS, eventEmitter, 500, 'nativeBroadcast', 'nativeConfirmed')
-    }
-
-    await start()
 
     expect(isDogeTxBroadcasted).toEqual(1)
     expect(isDogeTxConfirmed).toEqual(1)
   })
 
   test('Should monitor a DOGE transaction confirmation', async () => {
-    const dogeApi = new utils.doge.Doge()
+    const dogeApi = new utils.utxo.doge()
     const receipt = await dogeApi.waitForTransactionConfirmation(UTXO, 500)
     expect(receipt.confirmations).toBeGreaterThanOrEqual(645759)
   })
 
   test('Should get all DOGE utxo given an address', async () => {
-    const dogeApi = new utils.doge.Doge()
+    const dogeApi = new utils.utxo.doge() as Doge
     const utxos = await dogeApi.getUtxoByAddress(DOGE_TESTING_ADDRESS)
     expect(Array.isArray(utxos)).toBe(true)
   })

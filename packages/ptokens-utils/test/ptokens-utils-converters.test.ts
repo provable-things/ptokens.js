@@ -1,4 +1,4 @@
-import utils from '../src/'
+import * as utils from '../src/'
 
 test('Should encode correctly in a Little Endian buffer the number 10', () => {
   const numberToEncode = 10

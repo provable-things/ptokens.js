@@ -1,4 +1,4 @@
-import utils from '../src'
+import * as utils from '../src'
 import Web3 from 'web3'
 import { TransactionReceipt, PromiEvent as Web3PromiEventType } from 'web3-core'
 import Web3PromiEvent from 'web3-core-promievent'

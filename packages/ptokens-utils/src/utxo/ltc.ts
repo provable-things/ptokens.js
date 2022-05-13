@@ -1,12 +1,13 @@
 import EventEmitter from 'eventemitter3'
 import polling from 'light-async-polling'
+import PromiEvent from 'promievent'
 import { Mainnet } from '../helpers/names'
 import { Transaction, Utxo, UtxoApi, CallTypes } from './api'
 
 const LTC_PTOKENS_NODE_TESTNET_API = 'https://ltc-testnet-node-1.ptokens.io/insight-lite-api'
 const LTC_PTOKENS_NODE_MAINNET_API = 'https://ltc-node-1.ptokens.io/insight-lite-api'
 
-export class Ltc extends UtxoApi {
+export default class Ltc extends UtxoApi {
   constructor(_network: string = Mainnet) {
     const endpoint = _network === Mainnet ? LTC_PTOKENS_NODE_MAINNET_API : LTC_PTOKENS_NODE_TESTNET_API
     super(endpoint)
@@ -34,45 +35,37 @@ export class Ltc extends UtxoApi {
     return transaction
   }
 
-  async monitorUtxoByAddress(
-    _address: string,
-    _eventEmitter: EventEmitter,
-    _pollingTime: number,
-    _broadcastEventName: string,
-    _confirmationEventName: string,
-    _confirmations = 1
-  ): Promise<string> {
+  monitorUtxoByAddress(_address: string, _pollingTime: number, _confirmations = 1): PromiEvent<string> {
     let isBroadcasted = false
-    let utxo: string = null
     let utxos: Utxo[] = []
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    await polling(async () => {
-      // NOTE: an user could make 2 payments to the same depositAddress -> utxos.length could become > 0 but with a wrong utxo
+    const promi = new PromiEvent<string>((resolve) =>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+      polling(async () => {
+        // NOTE: an user could make 2 payments to the same depositAddress -> utxos.length could become > 0 but with a wrong utxo
+        utxos = await this._makeApiCall<Utxo[]>(CallTypes.CALL_GET, `/addrs/${_address}/utxo`)
+        if (utxos.length > 0) {
+          if (utxos[0].confirmations > 0) {
+            if (!isBroadcasted) {
+              promi.emit('broadcasted', utxos[0])
+              isBroadcasted = true
+            }
 
-      utxos = await this._makeApiCall<Utxo[]>(CallTypes.CALL_GET, `/addrs/${_address}/utxo`)
-      if (utxos.length > 0) {
-        if (utxos[0].confirmations > 0) {
-          if (!isBroadcasted) {
-            _eventEmitter.emit(_broadcastEventName, utxos[0])
+            if (utxos[0].confirmations >= _confirmations) {
+              promi.emit('confirmed', utxos[0])
+              return true
+            }
+            return false
+          } else if (!isBroadcasted) {
             isBroadcasted = true
+            promi.emit('broadcasted', utxos[0])
+            return false
           }
-
-          if (utxos[0].confirmations >= _confirmations) {
-            _eventEmitter.emit(_confirmationEventName, utxos[0])
-            utxo = utxos[0].txid
-            return true
-          }
-          return false
-        } else if (!isBroadcasted) {
-          isBroadcasted = true
-          _eventEmitter.emit(_broadcastEventName, utxos[0])
+        } else {
           return false
         }
-      } else {
-        return false
-      }
-    }, _pollingTime)
-    return utxo
+      }, _pollingTime).then(resolve)
+    )
+    return promi
   }
 
   isValidAddress(_address: string): boolean {
