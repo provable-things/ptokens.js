@@ -2,7 +2,6 @@ import * as bitcoin from 'bitcoinjs-lib'
 import { Network } from 'bitcoinjs-lib'
 import { pTokensNode } from 'ptokens-node'
 import * as utils from 'ptokens-utils'
-import Web3 from 'web3'
 import PromiEvent from 'promievent'
 
 const HOST_NODE_POLLING_TIME_INTERVAL = 3000
@@ -16,19 +15,6 @@ const confirmations: A = {
   ltc: 4,
   doge: 1,
   rvn: 25,
-}
-
-type IssueResult = {
-  amount: number
-  nativeTx: string
-  hostTx: string
-  to: string
-}
-
-// NOTE: will be removed in versions >= 1.0.0
-const hostBlockchainEvents = {
-  ethereum: 'onEthTxConfirmed',
-  eosio: 'onEosTxConfirmed',
 }
 
 const litecoinNetwork: Network = {
@@ -126,43 +112,33 @@ const NETWORKS = {
 export type DepositAddressConfig = {
   nativeBlockchain: string
   nativeNetwork: string
-  hostBlockchain: string
-  hostNetwork: string
-  hostApi: Web3
   node: pTokensNode
 }
 
 export class DepositAddress {
-  hostBlockchain: string
-  hostNetwork: string
   nativeBlockchain: string
   nativeNetwork: string
   node: pTokensNode
-  hostApi: Web3
   nonce: number
   enclavePublicKey: string
   address: string
   hostAddress: string
 
   constructor(_config: DepositAddressConfig) {
-    this.hostBlockchain = _config.hostBlockchain
-    this.hostNetwork = _config.hostNetwork
     this.nativeBlockchain = _config.nativeBlockchain
     this.nativeNetwork = _config.nativeNetwork
     this.node = _config.node
-    this.hostApi = _config.hostApi
   }
 
   async generate(_hostAddress: string, _originatingChainId: string, _destinationChainId: string) {
     try {
-      const res = await this.node.getNativeDepositAddress(_hostAddress, _originatingChainId, _destinationChainId)
+      const res = await this.node.getNativeDepositAddress(_originatingChainId, _hostAddress, _destinationChainId)
       this.nonce = res.nonce
       this.enclavePublicKey = res.enclavePublicKey
       this.address = res.nativeDepositAddress
       this.hostAddress = _hostAddress
       return this.address
     } catch (_err) {
-      console.info(_err)
       throw new Error('Error during deposit address generation')
     }
   }
@@ -171,8 +147,7 @@ export class DepositAddress {
     return this.address
   }
 
-  verify() {
-    return true
+  verify(hostBlockchain: string) {
     const {
       constants: {
         blockchains: { Eosio, Telos },
@@ -184,7 +159,7 @@ export class DepositAddress {
 
     // NOTE: eos account name are utf-8 encoded
     const hostAddressBuf =
-      this.hostBlockchain === Eosio || this.hostBlockchain === Telos
+      hostBlockchain === Eosio || hostBlockchain === Telos
         ? Buffer.from(this.hostAddress, 'utf-8')
         : Buffer.from(utils.evm.removeHexPrefix(this.hostAddress), 'hex')
 
@@ -202,31 +177,23 @@ export class DepositAddress {
       },
       network,
     })
-    console.info(this.address)
-    console.info(p2sh.address)
     return p2sh.address === this.address
   }
 
-  waitForDeposit(originatingChainId: string): PromiEvent<string> {
-    if (!this.hostApi) {
-      throw new Error('Provider not specified. Impossible to monitor the tx')
+  waitForDeposit(): PromiEvent<string> {
+    if (!this.address) {
+      throw new Error('Please generate a deposit address')
     }
-    if (!this.address) throw new Error('Please generate a deposit address')
     const shortNativeBlockchain = utils.helpers.getBlockchainShortType(this.nativeBlockchain)
-    const shortHostBlockchain = utils.helpers.getBlockchainShortType(this.hostBlockchain)
     const promi = new PromiEvent<string>(
       (resolve) =>
         (async () => {
           const utxo = new utils.utxo[shortNativeBlockchain]()
           const nativeTxId = await utxo
             .monitorUtxoByAddress(this.address, POLLING_TIME, confirmations[shortNativeBlockchain])
-            .on('broadcasted', (_) => promi.emit('nativeTxBroadcasted'))
-            .on('confirmed', (_txId) => promi.emit('nativeTxConfirmed', _txId))
-          const broadcastedHostTxReport = await this.node.getTransactionStatus(nativeTxId, originatingChainId)
-          const hostTxId: string = broadcastedHostTxReport.outputs[0]
-          const hostTxReceipt = await utils.evm.waitForTransactionConfirmation(this.hostApi, hostTxId)
-          promi.emit('hostTxConfirmed', hostTxReceipt)
-          resolve(hostTxId)
+            .on('broadcasted', () => promi.emit('txBroadcasted'))
+            .on('confirmed', (_txId) => promi.emit('txConfirmed', _txId))
+          resolve(nativeTxId)
         })() as unknown
     )
     return promi

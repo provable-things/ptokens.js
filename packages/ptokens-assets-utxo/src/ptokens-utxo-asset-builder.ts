@@ -1,7 +1,14 @@
-import { pTokensAsset, pTokensAssetBuilder } from 'ptokens-entities'
+import { pTokensAssetBuilder } from 'ptokens-entities'
+import { pTokensUtxoAsset } from './ptokens-utxo-asset'
 
 export class pTokensUtxoAssetBuilder extends pTokensAssetBuilder {
-  build(): pTokensAsset {
-    throw new Error('Method not implemented.')
+  constructor() {
+    super()
+  }
+
+  build(): pTokensUtxoAsset {
+    if (!this.chainId) throw new Error('Missing chain ID')
+    const config = { symbol: this.symbol, chainId: this.chainId, blockchain: this.blockchain, network: this.network }
+    return new pTokensUtxoAsset(config)
   }
 }

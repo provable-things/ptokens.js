@@ -1,8 +1,20 @@
 import { pTokensNodeProvider } from './ptokens-node-provider'
 
+export enum Status {
+  ERROR,
+  BROADCASTED,
+  CONFIRMED,
+}
+
+export type InnerTransactionStatus = {
+  tx_hash: string
+  status: Status
+  chain_id: string
+}
+
 export type TransactionStatus = {
-  inputs: any[]
-  outputs: any[]
+  inputs: InnerTransactionStatus[]
+  outputs: InnerTransactionStatus[]
 }
 
 export type SupportingChainInfo = {
@@ -32,8 +44,11 @@ export class pTokensNode {
     return this.provider.sendRpcRequest(1, 'app_getTransactionStatus', [txHash, originatingChainId])
   }
 
-  async getAssetInfo(tokenSymbol: string): Promise<SupportingChainInfo[]> {
-    return this.provider.sendRpcRequest(1, 'app_getAssetInfo', [tokenSymbol])
+  async getAssetInfo(tokenSymbol: string): Promise<SupportingChainInfo[]>
+  async getAssetInfo(tokenSymbol: string, chainId: string): Promise<SupportingChainInfo>
+  async getAssetInfo(tokenSymbol: string, chainId?: string): Promise<SupportingChainInfo | SupportingChainInfo[]> {
+    const info: SupportingChainInfo[] = await this.provider.sendRpcRequest(1, 'app_getAssetInfo', [tokenSymbol])
+    return chainId ? info.filter((p) => p.chainId == chainId).at(0) : info
   }
 
   async getNativeDepositAddress(

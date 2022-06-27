@@ -9,5 +9,9 @@
     "dev": "rollup -c ../../rollup.config.js -w",
     "lint": "eslint ./src/",
     "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "promievent": "^0.1.5",
+    "ptokens-node": "^0.1.0"
   }
 }

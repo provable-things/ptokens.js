@@ -1,4 +1,3 @@
-import EventEmitter from 'eventemitter3'
 import polling from 'light-async-polling'
 import PromiEvent from 'promievent'
 import { Mainnet } from '../helpers/names'

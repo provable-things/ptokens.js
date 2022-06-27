@@ -1,11 +1,16 @@
 import { pTokensSwap } from './ptokens-swap'
 import { pTokensAsset } from 'ptokens-entities'
-
+import { pTokensNode } from 'ptokens-node'
 export class pTokensSwapBuilder {
   sourceAsset: pTokensAsset
-  destinationAssets: Array<pTokensAsset>
+  destinationAssets: Array<pTokensAsset> = []
   amount: number
   metadata: BinaryData
+  node: pTokensNode
+
+  constructor(node: pTokensNode) {
+    this.node = node
+  }
 
   setSourceAsset(asset: pTokensAsset) {
     this.sourceAsset = asset
@@ -28,6 +33,12 @@ export class pTokensSwapBuilder {
   }
 
   build(): pTokensSwap {
-    return null
+    if (!this.amount) throw new Error('Missing amount')
+    if (!this.sourceAsset) throw new Error('Missing source asset')
+    if (this.destinationAssets.length === 0) throw new Error('Missing destination assets')
+    if (this.destinationAssets.some((el) => el.destinationAddress === undefined))
+      throw new Error('Missing destination address')
+    const ret = new pTokensSwap(this.node, this.sourceAsset, this.destinationAssets, this.amount, this.metadata)
+    return ret
   }
 }

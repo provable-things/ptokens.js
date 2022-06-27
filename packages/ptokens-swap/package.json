@@ -7,9 +7,19 @@
     "build": "rollup -c ../../rollup.config.js",
     "dev": "rollup -c ../../rollup.config.js -w",
     "lint": "eslint ./src/",
+    "test": "jest",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "ptokens-entities": "^0.1.0"
+    "ptokens-entities": "^0.1.0",
+    "promievent": "^0.1.5",
+    "ptokens-node": "^0.1.0",
+    "light-async-polling": "^1.0.2"
+  },
+  "devDependencies": {
+    "ptokens-assets-utxo": "^0.1.0",
+    "ptokens-assets-evm": "^0.1.0",
+    "ptokens-deposit-address": "^0.1.0",
+    "web3": "^1.7.3"
   }
 }
