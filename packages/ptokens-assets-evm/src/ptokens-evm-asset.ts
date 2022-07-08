@@ -24,15 +24,4 @@ export class pTokensEvmAsset extends pTokensAsset {
     })
     return promi
   }
-  interimToDestination(hostTxHash: string): PromiEvent<string> {
-    const promi = new PromiEvent<string>(
-      (resolve) =>
-        (async () => {
-          const hostTxReceipt = await utils.evm.waitForTransactionConfirmation(this.provider, hostTxHash)
-          promi.emit('hostTxConfirmed', hostTxReceipt)
-          resolve(hostTxHash)
-        })() as unknown
-    )
-    return promi
-  }
 }

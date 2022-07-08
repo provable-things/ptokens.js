@@ -3,25 +3,39 @@ import { pTokensNode, Status, InnerTransactionStatus } from 'ptokens-node'
 import PromiEvent from 'promievent'
 import polling from 'light-async-polling'
 
-export class pTokensSwap {
-  private node: pTokensNode
-  private sourceAsset: pTokensAsset
-  private destinationAssets: Array<pTokensAsset>
-  private amount: number
-  private metadata: BinaryData
+export type DestinationInfo = {
+  asset: pTokensAsset
+  destinationAddress: string
+  userData?: BinaryData
+}
 
-  constructor(
-    node: pTokensNode,
-    sourceAsset: pTokensAsset,
-    destinationAssets: Array<pTokensAsset>,
-    amount: number,
-    metadata: BinaryData
-  ) {
-    this.node = node
-    this.sourceAsset = sourceAsset
-    this.destinationAssets = destinationAssets
-    this.amount = amount
-    this.metadata = metadata
+export class pTokensSwap {
+  private _node: pTokensNode
+  private _sourceAsset: pTokensAsset
+  private _destinationAssets: Array<DestinationInfo>
+  private _amount: number
+
+  constructor(node: pTokensNode, sourceAsset: pTokensAsset, destinationAssets: Array<DestinationInfo>, amount: number) {
+    this._node = node
+    this._sourceAsset = sourceAsset
+    this._destinationAssets = destinationAssets
+    this._amount = amount
+  }
+
+  public get sourceAsset(): pTokensAsset {
+    return this._sourceAsset
+  }
+
+  public get destinationAssets(): Array<pTokensAsset> {
+    return this._destinationAssets.map((_el) => _el.asset)
+  }
+
+  public get amount(): number {
+    return this._amount
+  }
+
+  public get node(): pTokensNode {
+    return this._node
   }
 
   private monitorOutputTransactions(txHash: string, origChainId: string): PromiEvent<InnerTransactionStatus[]> {
@@ -61,14 +75,16 @@ export class pTokensSwap {
           if (sourceInfo.isNative) {
             ab = this.sourceAsset.nativeToInterim(
               this.node,
-              this.destinationAssets[0].destinationAddress,
-              this.destinationAssets[0].chainId
+              this._destinationAssets[0].destinationAddress,
+              this._destinationAssets[0].asset.chainId,
+              this._destinationAssets[0].userData
             )
           } else {
             ab = this.sourceAsset.hostToInterim(
               this.node,
-              this.destinationAssets[0].destinationAddress,
-              this.destinationAssets[0].chainId
+              this._destinationAssets[0].destinationAddress,
+              this._destinationAssets[0].asset.chainId,
+              this._destinationAssets[0].userData
             )
           }
           const txHash = await ab

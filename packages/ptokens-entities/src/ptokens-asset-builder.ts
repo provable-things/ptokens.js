@@ -7,7 +7,6 @@ export abstract class pTokensAssetBuilder {
   protected network: string
   protected blockchain: string
   protected chainId: string
-  protected destinationAddress: string
 
   setName(name: string) {
     this.name = name
@@ -36,11 +35,6 @@ export abstract class pTokensAssetBuilder {
 
   setChainId(chainId: string) {
     this.chainId = chainId
-    return this
-  }
-
-  setDestinationAddress(destinationAddress: string) {
-    this.destinationAddress = destinationAddress
     return this
   }
 

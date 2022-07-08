@@ -25,11 +25,4 @@ export class pTokensUtxoAsset extends pTokensAsset {
   hostToInterim(): PromiEvent<string> {
     throw new Error('No ptokens in a UTXO blockchain')
   }
-
-  interimToDestination(): PromiEvent<string> {
-    const promi = new PromiEvent<string>((resolve) => {
-      resolve('')
-    })
-    return promi
-  }
 }

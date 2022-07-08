@@ -9,6 +9,7 @@ export type pTokenAssetConfig = {
   weight?: number
   destinationAddress?: string
 }
+
 export abstract class pTokensAsset {
   private _symbol: string
   private _chainId: string
@@ -54,11 +55,17 @@ export abstract class pTokensAsset {
 
   abstract nativeToInterim(
     node: pTokensNode,
+    amount: number,
     destinationAddress: string,
-    destinationChainId: string
+    destinationChainId: string,
+    userData?: BinaryData
   ): PromiEvent<string>
 
-  abstract hostToInterim(node: pTokensNode, destinationAddress: string, destinationChainId: string): PromiEvent<string>
-
-  abstract interimToDestination(txHash: string): PromiEvent<string>
+  abstract hostToInterim(
+    node: pTokensNode,
+    amount: number,
+    destinationAddress: string,
+    destinationChainId: string,
+    userData?: BinaryData
+  ): PromiEvent<string>
 }
