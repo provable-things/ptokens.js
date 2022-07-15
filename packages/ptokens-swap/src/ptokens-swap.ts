@@ -75,6 +75,7 @@ export class pTokensSwap {
           if (sourceInfo.isNative) {
             ab = this.sourceAsset.nativeToInterim(
               this.node,
+              this.amount,
               this._destinationAssets[0].destinationAddress,
               this._destinationAssets[0].asset.chainId,
               this._destinationAssets[0].userData
@@ -82,6 +83,7 @@ export class pTokensSwap {
           } else {
             ab = this.sourceAsset.hostToInterim(
               this.node,
+              this.amount,
               this._destinationAssets[0].destinationAddress,
               this._destinationAssets[0].asset.chainId,
               this._destinationAssets[0].userData

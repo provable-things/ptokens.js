@@ -1,8 +1,6 @@
 import { pTokensNode, pTokensNodeProvider, Status } from 'ptokens-node'
-import { DepositAddress } from 'ptokens-deposit-address'
 import { pTokensSwap, pTokensSwapBuilder } from '../src/index'
 import { pTokenAssetMock } from './mocks/ptoken-asset'
-import PromiEvent from 'promievent'
 
 jest.mock('ptokens-node')
 // jest.mock('ptokens-deposit-address')
@@ -20,6 +18,7 @@ describe('pTokensSwap', () => {
         chainId: 'originating-chain-id',
         isNative: true,
         tokenAddress: '',
+        isSystemToken: false,
       })
     })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
@@ -108,6 +107,7 @@ describe('pTokensSwap', () => {
         chainId: 'originating-chain-id',
         isNative: true,
         tokenAddress: '',
+        isSystemToken: false,
       })
     })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
@@ -195,6 +195,7 @@ describe('pTokensSwap', () => {
         chainId: 'originating-chain-id',
         isNative: false,
         tokenAddress: '',
+        isSystemToken: false,
       })
     })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
@@ -273,6 +274,7 @@ describe('pTokensSwap', () => {
         chainId: 'originating-chain-id',
         isNative: true,
         tokenAddress: '',
+        isSystemToken: false,
       })
     })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')

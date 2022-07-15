@@ -12,9 +12,12 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "bignumber.js": "^9.0.2",
+    "promievent": "^0.1.5",
+    "web3": "^1.7.3",
+    "light-async-polling": "^1.0.2",
     "ptokens-entities": "^0.1.0",
     "ptokens-utils": "^0.1.0",
-    "web3": "^1.7.3",
-    "promievent": "^0.1.5"
+    "ptokens-node": "^0.1.0"
   }
 }

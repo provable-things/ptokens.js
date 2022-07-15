@@ -1,21 +1,20 @@
 import { pTokensAssetBuilder } from 'ptokens-entities'
 import { pTokensEvmAsset } from './ptokens-evm-asset'
-import Web3 from 'web3'
+import { pTokensEvmProvider } from './ptokens-evm-provider'
 
 export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
-  private provider: Web3
+  private provider: pTokensEvmProvider
 
   constructor() {
     super()
   }
 
-  setProvider(provider: Web3) {
+  setProvider(provider: pTokensEvmProvider) {
     this.provider = provider
   }
 
   build(): pTokensEvmAsset {
     if (!this.chainId) throw new Error('Missing chain ID')
-    if (!this.provider) throw new Error('Missing provider')
     const config = {
       symbol: this.symbol,
       chainId: this.chainId,

@@ -20,6 +20,7 @@ export type TransactionStatus = {
 export type SupportingChainInfo = {
   chainId: string
   isNative: boolean
+  isSystemToken: boolean
   tokenAddress: string
   vaultAddress?: string
 }
