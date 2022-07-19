@@ -2,6 +2,7 @@ import Web3 from 'web3'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensEvmAsset, pTokensEvmProvider } from '../src'
 import PromiEvent from 'promievent'
+import { Blockchain, Network } from 'ptokens-entities'
 
 const vaultAbi = require('../src/abi/pERC20VaultContractAbi.json')
 const tokenAbi = require('../src/abi/pTokenOnETHContractAbi.json')
@@ -14,13 +15,13 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
     })
     expect(asset.symbol).toStrictEqual('SYM')
     expect(asset.chainId).toStrictEqual('chain-id')
-    expect(asset.blockchain).toStrictEqual('blockchain')
-    expect(asset.network).toStrictEqual('network')
+    expect(asset.blockchain).toStrictEqual(Blockchain.Ethereum)
+    expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.weight).toEqual(1)
   })
 
@@ -29,8 +30,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
     })
     try {
       await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
@@ -66,8 +67,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
       provider: provider,
     })
     try {
@@ -106,8 +107,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
       provider: provider,
     })
     let txHash = ''
@@ -157,8 +158,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
       provider: provider,
     })
     let txHash = ''
@@ -208,8 +209,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
       provider: provider,
     })
     let txHash = ''
@@ -259,8 +260,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
       provider: provider,
     })
     let txHash = ''
@@ -310,8 +311,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
       provider: provider,
     })
     try {
@@ -329,8 +330,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
     })
     try {
       await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
@@ -366,8 +367,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
       provider: provider,
     })
     try {
@@ -405,8 +406,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
       provider: provider,
     })
     let txHash = ''
@@ -455,8 +456,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       symbol: 'SYM',
       chainId: 'chain-id',
-      blockchain: 'blockchain',
-      network: 'network',
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
       provider: provider,
     })
     let txHash = ''

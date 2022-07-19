@@ -9,8 +9,9 @@ export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
     super()
   }
 
-  setProvider(provider: pTokensEvmProvider) {
+  setProvider(provider: pTokensEvmProvider): this {
     this.provider = provider
+    return this
   }
 
   build(): pTokensEvmAsset {

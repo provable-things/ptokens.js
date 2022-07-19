@@ -1,11 +1,12 @@
 import { pTokensNode } from 'ptokens-node'
 import PromiEvent from 'promievent'
+import { Blockchain, Network } from './constants'
 
 export type pTokenAssetConfig = {
   symbol: string
   chainId: string
-  blockchain: string
-  network: string
+  blockchain: Blockchain
+  network: Network
   weight?: number
   destinationAddress?: string
 }
@@ -14,13 +15,11 @@ export abstract class pTokensAsset {
   private _symbol: string
   private _chainId: string
   private _destinationAddress: string
-  private _blockchain: string
-  private _network: string
+  private _blockchain: Blockchain
+  private _network: Network
   private _weight: number
-  protected _hasExecuted: boolean
 
   constructor(config: pTokenAssetConfig) {
-    this._hasExecuted = false
     this._symbol = config.symbol
     this._chainId = config.chainId
     this._blockchain = config.blockchain
@@ -41,11 +40,11 @@ export abstract class pTokensAsset {
     return this._destinationAddress
   }
 
-  public get blockchain(): string {
+  public get blockchain(): Blockchain {
     return this._blockchain
   }
 
-  public get network(): string {
+  public get network(): Network {
     return this._network
   }
 

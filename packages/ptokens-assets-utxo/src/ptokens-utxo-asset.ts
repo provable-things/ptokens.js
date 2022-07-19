@@ -3,7 +3,12 @@ import { pTokensNode } from 'ptokens-node'
 import { DepositAddress } from 'ptokens-deposit-address'
 import PromiEvent from 'promievent'
 export class pTokensUtxoAsset extends pTokensAsset {
-  nativeToInterim(node: pTokensNode, destinationAddress: string, destinationChainId: string): PromiEvent<string> {
+  nativeToInterim(
+    node: pTokensNode,
+    amount: number,
+    destinationAddress: string,
+    destinationChainId: string
+  ): PromiEvent<string> {
     if (node === undefined) throw new Error('Undefined node')
     if (destinationChainId === undefined) throw new Error('Undefined chain ID')
     const config = { nativeBlockchain: this.blockchain, nativeNetwork: this.network, node: node }

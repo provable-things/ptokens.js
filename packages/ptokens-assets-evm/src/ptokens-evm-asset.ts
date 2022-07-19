@@ -2,9 +2,10 @@ import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
 import PromiEvent from 'promievent'
 import { pTokensNode } from 'ptokens-node'
 import { pTokensEvmProvider } from './ptokens-evm-provider'
+import { AbiItem } from 'web3-utils'
 
-const pERC20VaultContractAbi = require('./abi/pERC20VaultContractAbi.json')
-const pTokenOnEVMContractAbi = require('./abi/pTokenOnETHContractAbi.json')
+import pERC20VaultContractAbi from './abi/pERC20VaultContractAbi.json'
+import pTokenOnEVMContractAbi from './abi/pTokenOnETHContractAbi.json'
 
 const SYSTEM_TOKEN_PEG_IN_METHOD = 'pegInEth'
 const ERC20_TOKEN_PEG_IN_METHOD = 'pegIn'
@@ -36,7 +37,7 @@ export class pTokensEvmAsset extends pTokensAsset {
             .makeContractSend(
               {
                 method: assetInfo.isSystemToken ? SYSTEM_TOKEN_PEG_IN_METHOD : ERC20_TOKEN_PEG_IN_METHOD,
-                abi: pERC20VaultContractAbi,
+                abi: pERC20VaultContractAbi as unknown as AbiItem,
                 contractAddress: assetInfo.vaultAddress,
                 value: assetInfo.isSystemToken ? amount : 0,
               },
@@ -75,7 +76,7 @@ export class pTokensEvmAsset extends pTokensAsset {
             .makeContractSend(
               {
                 method: ERC20_TOKEN_PEG_OUT_METHOD,
-                abi: pTokenOnEVMContractAbi,
+                abi: pTokenOnEVMContractAbi as unknown as AbiItem,
                 contractAddress: assetInfo.tokenAddress,
                 value: 0,
               },

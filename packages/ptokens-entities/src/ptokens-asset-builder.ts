@@ -1,12 +1,13 @@
 import { pTokensAsset } from './ptokens-asset'
+import { ChainId, Blockchain, Network, chainIdToBlockchain } from './constants'
 
 export abstract class pTokensAssetBuilder {
   protected name: string
   protected symbol: string
   protected weight: number
-  protected network: string
-  protected blockchain: string
-  protected chainId: string
+  protected network: Network
+  protected blockchain: Blockchain
+  protected chainId: ChainId
 
   setName(name: string) {
     this.name = name
@@ -23,18 +24,11 @@ export abstract class pTokensAssetBuilder {
     return this
   }
 
-  setNetwork(network: string) {
-    this.network = network
-    return this
-  }
-
-  setBlockchain(blockchain: string) {
-    this.blockchain = blockchain
-    return this
-  }
-
-  setChainId(chainId: string) {
+  setBlockchain(chainId: ChainId) {
     this.chainId = chainId
+    const { blockchain, network } = chainIdToBlockchain.get(chainId)
+    this.blockchain = blockchain
+    this.network = network
     return this
   }
 

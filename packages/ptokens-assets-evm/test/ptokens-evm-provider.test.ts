@@ -63,7 +63,6 @@ describe('EVM provider', () => {
     const provider = new pTokensEvmProvider(web3)
     const addAccountSpy = jest.spyOn(web3.eth.accounts.wallet, 'add')
     provider.setPrivateKey('422c874bed50b69add046296530dc580f8e2e253879d98d66023b7897ab15742')
-    console.info('aaaa', addAccountSpy.mock.calls[0][0])
     expect(addAccountSpy).toHaveBeenCalledTimes(1)
     expect(web3.eth.defaultAccount).toEqual('0xdf3B180694aB22C577f7114D822D28b92cadFd75')
   })
@@ -417,7 +416,6 @@ describe('EVM provider', () => {
     jest.spyOn(utils, 'getContract').mockImplementation(() => contract)
     const sendMock = jest.fn().mockImplementation(() => {
       const promi = new PromiEvent((resolve, reject) => {
-        console.info('errr')
         return reject(new Error('method send error'))
       })
       return promi
