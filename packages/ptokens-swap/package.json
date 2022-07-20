@@ -20,7 +20,6 @@
   "devDependencies": {
     "ptokens-assets-utxo": "^0.1.0",
     "ptokens-assets-evm": "^0.1.0",
-    "ptokens-deposit-address": "^0.1.0",
     "web3": "^1.7.3"
   }
 }

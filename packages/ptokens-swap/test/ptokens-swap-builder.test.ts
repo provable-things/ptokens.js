@@ -1,6 +1,7 @@
 import { pTokensSwapBuilder } from '../src/index'
-import { pTokensNode, pTokensNodeProvider, Status } from 'ptokens-node'
+import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensEvmAsset } from 'ptokens-assets-evm'
+import { Blockchain, ChainId, Network } from 'ptokens-entities'
 
 jest.mock('ptokens-node')
 
@@ -10,15 +11,15 @@ describe('pTokensSwapBuilder', () => {
     const builder = new pTokensSwapBuilder(node)
     const originatingToken = new pTokensEvmAsset({
       symbol: 'A',
-      chainId: 'originating-chain-id',
-      blockchain: 'originating-blockchain',
-      network: 'originating-network',
+      chainId: ChainId.BitcoinMainnet,
+      blockchain: Blockchain.Bitcoin,
+      network: Network.Mainnet,
     })
     const destinationToken = new pTokensEvmAsset({
       symbol: 'B',
-      chainId: 'destination-chain-id',
-      blockchain: 'destination-blockchain',
-      network: 'destination-network',
+      chainId: ChainId.EthereumMainnet,
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
     })
     builder.setSourceAsset(originatingToken)
     builder.addDestinationAsset(destinationToken, 'destination-address', Buffer.from('user-data'))
@@ -35,9 +36,9 @@ describe('pTokensSwapBuilder', () => {
     const builder = new pTokensSwapBuilder(node)
     const destinationToken = new pTokensEvmAsset({
       symbol: 'B',
-      chainId: 'destination-chain-id',
-      blockchain: 'destination-blockchain',
-      network: 'destination-network',
+      chainId: ChainId.EthereumMainnet,
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
     })
     builder.addDestinationAsset(destinationToken, 'destination-address')
     builder.setAmount(1)

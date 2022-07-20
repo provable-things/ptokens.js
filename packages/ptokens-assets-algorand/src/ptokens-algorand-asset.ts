@@ -1,3 +1,10 @@
 import { pTokensAsset } from 'ptokens-entities'
-
-export class pTokensAlgorandAsset extends pTokensAsset {}
+import PromiEvent from 'promievent'
+export class pTokensAlgorandAsset extends pTokensAsset {
+  nativeToInterim(): PromiEvent<string> {
+    throw new Error('Method not implemented.')
+  }
+  hostToInterim(): PromiEvent<string> {
+    throw new Error('Method not implemented.')
+  }
+}

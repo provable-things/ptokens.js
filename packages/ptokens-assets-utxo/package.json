@@ -12,10 +12,11 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "ptokens-entities": "^0.1.0",
     "ptokens-utils": "^0.1.0",
-    "ptokens-deposit-address": "^0.1.0",
     "ptokens-node": "^0.1.0",
-    "promievent": "^0.1.5"
+    "promievent": "^0.1.5",
+    "light-async-polling": "^1.0.2"
   }
 }

@@ -1,3 +1,4 @@
+import { Blockchain, ChainId, Network } from 'ptokens-entities'
 import { pTokensNode, pTokensNodeProvider, Status } from 'ptokens-node'
 import { pTokensSwap, pTokensSwapBuilder } from '../src/index'
 import { pTokenAssetMock } from './mocks/ptoken-asset'
@@ -37,18 +38,17 @@ describe('pTokensSwap', () => {
         outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.CONFIRMED }],
       })
 
-    const builder = new pTokensSwapBuilder(node)
     const sourceAsset = new pTokenAssetMock({
       symbol: 'SOURCE',
-      chainId: 'originating-chain-id',
-      blockchain: 'source-blockchain',
-      network: 'source-network',
+      chainId: ChainId.BitcoinMainnet,
+      blockchain: Blockchain.Bitcoin,
+      network: Network.Mainnet,
     })
     const destinationAsset = new pTokenAssetMock({
       symbol: 'DESTINATION',
-      chainId: 'destination-chain-id',
-      blockchain: 'destination-blockchain',
-      network: 'destination-network',
+      chainId: ChainId.EthereumMainnet,
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
     })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
@@ -81,12 +81,13 @@ describe('pTokensSwap', () => {
         outputTxProcessedObj = obj
         outputTxProcessed = true
       })
-    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE', 'originating-chain-id')
+    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE', ChainId.BitcoinMainnet)
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
       node,
+      10,
       'destination-address',
-      'destination-chain-id',
+      ChainId.EthereumMainnet,
       undefined
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
@@ -129,20 +130,20 @@ describe('pTokensSwap', () => {
     const builder = new pTokensSwapBuilder(node)
     const sourceAsset = new pTokenAssetMock({
       symbol: 'SOURCE',
-      chainId: 'originating-chain-id',
-      blockchain: 'source-blockchain',
-      network: 'source-network',
+      chainId: ChainId.BitcoinMainnet,
+      blockchain: Blockchain.Bitcoin,
+      network: Network.Mainnet,
     })
     const destinationAsset = new pTokenAssetMock({
       symbol: 'DESTINATION',
-      chainId: 'destination-chain-id',
-      blockchain: 'destination-blockchain',
-      network: 'destiination-network',
+      chainId: ChainId.EthereumMainnet,
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
     })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
     builder
-      .setAmount(1)
+      .setAmount(123.456)
       .setSourceAsset(sourceAsset)
       .addDestinationAsset(destinationAsset, 'destination-address', Buffer.from('user-data'))
     const swap = builder.build()
@@ -169,12 +170,13 @@ describe('pTokensSwap', () => {
         outputTxProcessedObj = obj
         outputTxProcessed = true
       })
-    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE', 'originating-chain-id')
+    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE', ChainId.BitcoinMainnet)
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
       node,
+      123.456,
       'destination-address',
-      'destination-chain-id',
+      ChainId.EthereumMainnet,
       Buffer.from('user-data')
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
@@ -217,19 +219,19 @@ describe('pTokensSwap', () => {
     const builder = new pTokensSwapBuilder(node)
     const sourceAsset = new pTokenAssetMock({
       symbol: 'SOURCE',
-      chainId: 'originating-chain-id',
-      blockchain: 'source-blockchain',
-      network: 'source-network',
+      chainId: ChainId.BitcoinMainnet,
+      blockchain: Blockchain.Bitcoin,
+      network: Network.Mainnet,
     })
     const destinationAsset = new pTokenAssetMock({
       symbol: 'DESTINATION',
-      chainId: 'destination-chain-id',
-      blockchain: 'destination-blockchain',
-      network: 'destiination-network',
+      chainId: ChainId.EthereumMainnet,
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
     })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
-    builder.setAmount(1).setSourceAsset(sourceAsset).addDestinationAsset(destinationAsset, 'destination-address')
+    builder.setAmount(123.456).setSourceAsset(sourceAsset).addDestinationAsset(destinationAsset, 'destination-address')
     const swap = builder.build()
     const promi = swap.execute()
     let inputTxDetected = false,
@@ -254,8 +256,15 @@ describe('pTokensSwap', () => {
         outputTxProcessedObj = obj
         outputTxProcessed = true
       })
-    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE', 'originating-chain-id')
-    expect(hostToInterimSpy).toHaveBeenNthCalledWith(1, node, 'destination-address', 'destination-chain-id', undefined)
+    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE', ChainId.BitcoinMainnet)
+    expect(hostToInterimSpy).toHaveBeenNthCalledWith(
+      1,
+      node,
+      123.456,
+      'destination-address',
+      ChainId.EthereumMainnet,
+      undefined
+    )
     expect(nativeToInterimSpy).toHaveBeenCalledTimes(0)
     expect(inputTxDetected).toBeTruthy()
     expect(inputTxDetectedObj).toBe('originating-tx-hash')
@@ -296,20 +305,20 @@ describe('pTokensSwap', () => {
     const builder = new pTokensSwapBuilder(node)
     const sourceAsset = new pTokenAssetMock({
       symbol: 'SOURCE',
-      chainId: 'originating-chain-id',
-      blockchain: 'source-blockchain',
-      network: 'source-network',
+      chainId: ChainId.BitcoinMainnet,
+      blockchain: Blockchain.Bitcoin,
+      network: Network.Mainnet,
     })
     const destinationAsset = new pTokenAssetMock({
       symbol: 'DESTINATION',
-      chainId: 'destination-chain-id',
-      blockchain: 'destination-blockchain',
-      network: 'destiination-network',
+      chainId: ChainId.EthereumMainnet,
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
     })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
     builder
-      .setAmount(1)
+      .setAmount(123.456)
       .setSourceAsset(sourceAsset)
       .addDestinationAsset(destinationAsset, 'destination-address', Buffer.from('user-data'))
     const swap = builder.build()
@@ -336,12 +345,13 @@ describe('pTokensSwap', () => {
         outputTxProcessedObj = obj
         outputTxProcessed = true
       })
-    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE', 'originating-chain-id')
+    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE', ChainId.BitcoinMainnet)
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
       node,
+      123.456,
       'destination-address',
-      'destination-chain-id',
+      ChainId.EthereumMainnet,
       Buffer.from('user-data')
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)

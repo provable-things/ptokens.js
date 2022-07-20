@@ -1,9 +1,0 @@
-{
-  "include": ["src/index.ts"],
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "resolveJsonModule": true,
-    "declaration": true,
-    "declarationDir": "./types"
-  }
-}

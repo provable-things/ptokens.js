@@ -1,17 +1,9 @@
 import { pTokensAsset } from 'ptokens-entities'
-import { pTokensNode } from 'ptokens-node'
 import PromiEvent from 'promievent'
-import { Binary } from '@babel/types'
 
 export class pTokenAssetMock extends pTokensAsset {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  nativeToInterim(
-    _node: pTokensNode,
-    _amount: number,
-    _destinationAddress: string,
-    _destinationChainId: string,
-    _userData?: BinaryData
-  ): PromiEvent<string> {
+  nativeToInterim(): PromiEvent<string> {
     const promi = new PromiEvent<string>((resolve) =>
       setImmediate(() => {
         promi.emit('txBroadcasted', 'originating-tx-hash')
@@ -22,13 +14,7 @@ export class pTokenAssetMock extends pTokensAsset {
     return promi
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  hostToInterim(
-    _node: pTokensNode,
-    _amount: number,
-    _destinationAddress: string,
-    _destinationChainId: string,
-    _userData?: BinaryData
-  ): PromiEvent<string> {
+  hostToInterim(): PromiEvent<string> {
     const promi = new PromiEvent<string>((resolve) =>
       setImmediate(() => {
         promi.emit('txBroadcasted', 'originating-tx-hash')

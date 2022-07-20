@@ -1,4 +1,44 @@
-import { parseParams, getNetworkType } from '../src/helpers'
+import { parseParams, getNetworkType, addHexPrefix, removeHexPrefix, isHexPrefixed } from '../src/helpers'
+
+test('Should return the same 0x prefixed string', () => {
+  const string0xPrefixed = '0xhello'
+  const expectedString0xPrefixed = '0xhello'
+  const result = addHexPrefix(string0xPrefixed)
+  expect(result).toStrictEqual(expectedString0xPrefixed)
+})
+
+test('Should return the 0x prefixed string', () => {
+  const stringNot0xPrefixed = 'hello'
+  const expectedString0xPrefixed = '0xhello'
+  const result = addHexPrefix(stringNot0xPrefixed)
+  expect(result).toStrictEqual(expectedString0xPrefixed)
+})
+
+test('Should remove the 0x prefix', () => {
+  const string0xPrefixed = '0xhello'
+  const expectedStringnnNot0xPrefixed = 'hello'
+  const result = removeHexPrefix(string0xPrefixed)
+  expect(result).toStrictEqual(expectedStringnnNot0xPrefixed)
+})
+
+test('Should return the same string if 0x prefix is missing', () => {
+  const string0xPrefixed = 'hello'
+  const expectedStringnnNot0xPrefixed = 'hello'
+  const result = removeHexPrefix(string0xPrefixed)
+  expect(result).toStrictEqual(expectedStringnnNot0xPrefixed)
+})
+
+test('Should return true since 0xhello is 0x prefixed', () => {
+  const string0xPrefixed = '0xhello'
+  const result = isHexPrefixed(string0xPrefixed)
+  expect(result).toBe(true)
+})
+
+test('Should return false since hello is not 0x prefixed', () => {
+  const string0xNotPrefixed = 'hello0x'
+  const result = isHexPrefixed(string0xNotPrefixed)
+  expect(result).toBe(false)
+})
 
 test('Should generate an error because it is not possible to initialize with both blockchain and hostBlockchain', () => {
   const expectedErrorMessage = 'Bad initialization'

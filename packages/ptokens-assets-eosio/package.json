@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "ptokens-entities": "^0.1.0"
+    "ptokens-entities": "^0.1.0",
+    "promievent": "^0.1.5"
   }
 }
