@@ -1,5 +1,4 @@
-import * as errors from '../../src/errors'
-import * as httpUtilsModule from '../../src/http'
+import { http, errors } from '../src/'
 import { createServer, Server } from 'http'
 
 describe('Http general tests', () => {
@@ -21,7 +20,7 @@ describe('Http general tests', () => {
 
     it('Should reject when timeout expires', async () => {
       try {
-        await httpUtilsModule.getRequest('http://localhost:3000/golong', {}, 100)
+        await http.getRequest('http://localhost:3000/golong', {}, 100)
         fail()
       } catch (err) {
         expect(err.message).toStrictEqual(errors.ERROR_TIMEOUT)
@@ -29,14 +28,14 @@ describe('Http general tests', () => {
     })
 
     it('Should not reject fetching the correct data', async () => {
-      const result = await httpUtilsModule.getRequest('http://localhost:3000', {}, 400)
+      const result = await http.getRequest('http://localhost:3000', {}, 400)
       const data = await result.text()
       expect(data).toStrictEqual('data')
     })
 
     it('Should reject when timeout expires', async () => {
       try {
-        await httpUtilsModule.postRequest('http://localhost:3000/golong', {}, {}, 100)
+        await http.postRequest('http://localhost:3000/golong', {}, {}, 100)
         fail()
       } catch (err) {
         expect(err.message).toStrictEqual(errors.ERROR_TIMEOUT)
@@ -44,7 +43,7 @@ describe('Http general tests', () => {
     })
 
     it('Should not reject fetching the correct data', async () => {
-      const result = await httpUtilsModule.postRequest('http://localhost:3000', {}, {}, 400)
+      const result = await http.postRequest('http://localhost:3000', {}, {}, 400)
       const data = await result.text()
       expect(data).toStrictEqual('data')
     })
@@ -68,14 +67,14 @@ describe('Http general tests', () => {
     })
 
     it('Should not reject performing a GET request', async () => {
-      const result = await httpUtilsModule.fetchJsonByGet('http://localhost:3000')
+      const result = await http.fetchJsonByGet('http://localhost:3000')
       const expected = { Hello: 'World' }
       expect(result).toStrictEqual(expected)
     })
 
     it('Should reject performing a GET request', async () => {
       try {
-        await httpUtilsModule.fetchJsonByGet('http://localhost:3000/incorrect')
+        await http.fetchJsonByGet('http://localhost:3000/incorrect')
         fail()
       } catch (err) {
         expect(err.message).toStrictEqual('Failed to extract the json from the response:{"size":0,"timeout":0}')
@@ -111,14 +110,14 @@ describe('Http general tests', () => {
 
     it('Should not reject returning the correct response', async () => {
       const body = { hello: 'world' }
-      const result = await httpUtilsModule.fetchJsonByPost('http://localhost:3000', body)
+      const result = await http.fetchJsonByPost('http://localhost:3000', body)
       expect(result).toStrictEqual(body)
     })
 
     it('Should reject with incorrect output', async () => {
       const body = { hello: 'incorrect' }
       try {
-        await httpUtilsModule.fetchJsonByPost('http://localhost:3000', body)
+        await http.fetchJsonByPost('http://localhost:3000', body)
         fail()
       } catch (err) {
         expect(err.message).toStrictEqual('Failed to extract the json from the response:{"size":0,"timeout":0}')

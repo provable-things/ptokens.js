@@ -17,7 +17,7 @@
     "web3": "^1.7.3",
     "light-async-polling": "^1.0.2",
     "ptokens-entities": "^0.1.0",
-    "ptokens-utils": "^0.1.0",
+    "ptokens-helpers": "^0.1.0",
     "ptokens-node": "^0.1.0"
   }
 }

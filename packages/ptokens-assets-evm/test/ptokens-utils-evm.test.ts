@@ -2,7 +2,7 @@ import * as utils from '../src/lib'
 import Web3 from 'web3'
 import { AbiItem } from 'web3-utils'
 import BigNumber from 'bignumber.js'
-import { helpers } from '../../ptokens-utils'
+import { stringUtils } from 'ptokens-helpers'
 
 const abi = require('./utils/exampleContractABI.json')
 
@@ -30,7 +30,7 @@ describe('ethereum utilities', () => {
   test('Should return the current Ethereum account with non injected Web3 instance', async () => {
     const web3 = new Web3(TEST_ETH_PROVIDER)
     const expectedEthereumAccount = '0xdf3B180694aB22C577f7114D822D28b92cadFd75'
-    const account = web3.eth.accounts.privateKeyToAccount(helpers.addHexPrefix(TEST_ETH_PRIVATE_KEY))
+    const account = web3.eth.accounts.privateKeyToAccount(stringUtils.addHexPrefix(TEST_ETH_PRIVATE_KEY))
     web3.eth.defaultAccount = account.address
     const ethereumAccount = await utils.getAccount(web3)
     expect(ethereumAccount).toStrictEqual(expectedEthereumAccount)
@@ -56,7 +56,7 @@ describe('ethereum utilities', () => {
 
   test('Should return a valid Web3.eth.Contract instance with default account', () => {
     const web3 = new Web3(TEST_ETH_PROVIDER)
-    const account = web3.eth.accounts.privateKeyToAccount(helpers.addHexPrefix(TEST_ETH_PRIVATE_KEY))
+    const account = web3.eth.accounts.privateKeyToAccount(stringUtils.addHexPrefix(TEST_ETH_PRIVATE_KEY))
     const contract = utils.getContract(web3, abi as unknown as AbiItem, TEST_CONTRACT_ADDRESS, account.address)
     const expectedContract = new web3.eth.Contract(abi as unknown as AbiItem, TEST_CONTRACT_ADDRESS)
     expectedContract.defaultAccount = account.address
@@ -71,13 +71,13 @@ describe('ethereum utilities', () => {
 
   test('Should return true since 0xhello is 0x prefixed', () => {
     const string0xPrefixed = '0xhello'
-    const result = helpers.isHexPrefixed(string0xPrefixed)
+    const result = stringUtils.isHexPrefixed(string0xPrefixed)
     expect(result).toBe(true)
   })
 
   test('Should return false since hello is not 0x prefixed', () => {
     const string0xNotPrefixed = 'hello0x'
-    const result = helpers.isHexPrefixed(string0xNotPrefixed)
+    const result = stringUtils.isHexPrefixed(string0xNotPrefixed)
     expect(result).toBe(false)
   })
 })
