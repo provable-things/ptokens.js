@@ -42,6 +42,15 @@ describe('Http general tests', () => {
       }
     })
 
+    it('Should throw when URL is empty', async () => {
+      try {
+        await http.postRequest('', {}, {}, 100)
+        fail()
+      } catch (err) {
+        expect(err.message).toStrictEqual('Only absolute URLs are supported')
+      }
+    })
+
     it('Should not reject fetching the correct data', async () => {
       const result = await http.postRequest('http://localhost:3000', {}, {}, 400)
       const data = await result.text()
@@ -121,6 +130,16 @@ describe('Http general tests', () => {
         fail()
       } catch (err) {
         expect(err.message).toStrictEqual('Failed to extract the json from the response:{"size":0,"timeout":0}')
+      }
+    })
+
+    it('Should reject with incorrect URL', async () => {
+      const body = { hello: 'world' }
+      try {
+        await http.fetchJsonByPost('', body)
+        fail()
+      } catch (err) {
+        expect(err.message).toStrictEqual('Only absolute URLs are supported')
       }
     })
   })

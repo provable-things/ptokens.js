@@ -37,6 +37,7 @@ describe('pTokens deposit address', () => {
       .mockRejectedValue(new Error('Address generation error'))
     try {
       await depositAddress.generate('destination-address', 'orig-chain-id', 'dest-chain-id')
+      fail()
     } catch (err) {
       expect(err.message).toEqual('Error during deposit address generation')
       expect(getNativeDepositAddressSpy).toBeCalledWith('orig-chain-id', 'destination-address', 'dest-chain-id')

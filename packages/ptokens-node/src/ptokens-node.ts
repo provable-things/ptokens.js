@@ -42,7 +42,7 @@ export class pTokensNode {
   }
 
   async getTransactionStatus(txHash: string, originatingChainId: string): Promise<TransactionStatus> {
-    return this.provider.sendRpcRequest(1, 'app_getTransactionStatus', [txHash, originatingChainId])
+    return await this.provider.sendRpcRequest(1, 'app_getTransactionStatus', [txHash, originatingChainId])
   }
 
   async getAssetInfo(tokenSymbol: string): Promise<SupportingChainInfo[]>
@@ -57,7 +57,7 @@ export class pTokensNode {
     address: string,
     destinationChainId: string
   ): Promise<NativeDepositAddress> {
-    return this.provider.sendRpcRequest(1, 'app_getNativeDepositAddress', [
+    return await this.provider.sendRpcRequest(1, 'app_getNativeDepositAddress', [
       originatingChainId,
       address,
       destinationChainId,

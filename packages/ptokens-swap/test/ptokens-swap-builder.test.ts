@@ -25,6 +25,9 @@ describe('pTokensSwapBuilder', () => {
     builder.addDestinationAsset(destinationToken, 'destination-address', Buffer.from('user-data'))
     builder.setAmount(1)
     const swap = builder.build()
+    expect(builder.destinationAssets).toEqual([destinationToken])
+    expect(builder.amount).toEqual(1)
+    expect(builder.node).toStrictEqual(node)
     expect(swap.amount).toBe(1)
     expect(swap.node).toStrictEqual(node)
     expect(swap.sourceAsset).toStrictEqual(originatingToken)
@@ -47,6 +50,50 @@ describe('pTokensSwapBuilder', () => {
       fail()
     } catch (err) {
       expect(err.message).toBe('Missing source asset')
+    }
+  })
+
+  it('Should not build a swap if amount is missing', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
+    const builder = new pTokensSwapBuilder(node)
+    const originatingToken = new pTokensEvmAsset({
+      symbol: 'A',
+      chainId: ChainId.BitcoinMainnet,
+      blockchain: Blockchain.Bitcoin,
+      network: Network.Mainnet,
+    })
+    const destinationToken = new pTokensEvmAsset({
+      symbol: 'B',
+      chainId: ChainId.EthereumMainnet,
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
+    })
+    builder.setSourceAsset(originatingToken)
+    builder.addDestinationAsset(destinationToken, 'destination-address')
+    try {
+      builder.build()
+      fail()
+    } catch (err) {
+      expect(err.message).toBe('Missing amount')
+    }
+  })
+
+  it('Should not build a swap if there are no destination assets', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
+    const builder = new pTokensSwapBuilder(node)
+    const originatingToken = new pTokensEvmAsset({
+      symbol: 'A',
+      chainId: ChainId.BitcoinMainnet,
+      blockchain: Blockchain.Bitcoin,
+      network: Network.Mainnet,
+    })
+    builder.setSourceAsset(originatingToken)
+    builder.setAmount(1)
+    try {
+      builder.build()
+      fail()
+    } catch (err) {
+      expect(err.message).toBe('Missing destination assets')
     }
   })
 })

@@ -68,43 +68,46 @@ export class pTokensSwap {
 
   execute() {
     const promi = new PromiEvent<InnerTransactionStatus[]>(
-      (resolve) =>
+      (resolve, reject) =>
         (async () => {
-          const sourceInfo = await this.node.getAssetInfo(this.sourceAsset.symbol, this.sourceAsset.chainId)
-          let ab: PromiEvent<string>
-          if (sourceInfo.isNative) {
-            ab = this.sourceAsset.nativeToInterim(
-              this.node,
-              this.amount,
-              this._destinationAssets[0].destinationAddress,
-              this._destinationAssets[0].asset.chainId,
-              this._destinationAssets[0].userData
-            )
-          } else {
-            ab = this.sourceAsset.hostToInterim(
-              this.node,
-              this.amount,
-              this._destinationAssets[0].destinationAddress,
-              this._destinationAssets[0].asset.chainId,
-              this._destinationAssets[0].userData
-            )
+          try {
+            const sourceInfo = await this.node.getAssetInfo(this.sourceAsset.symbol, this.sourceAsset.chainId)
+            let ab: PromiEvent<string>
+            if (sourceInfo.isNative) {
+              ab = this.sourceAsset.nativeToInterim(
+                this.node,
+                this.amount,
+                this._destinationAssets[0].destinationAddress,
+                this._destinationAssets[0].asset.chainId,
+                this._destinationAssets[0].userData
+              )
+            } else {
+              ab = this.sourceAsset.hostToInterim(
+                this.node,
+                this.amount,
+                this._destinationAssets[0].destinationAddress,
+                this._destinationAssets[0].asset.chainId,
+                this._destinationAssets[0].userData
+              )
+            }
+            const txHash = await ab
+              .on('txBroadcasted', (txHash) => {
+                promi.emit('inputTxDetected', txHash)
+              })
+              .on('txConfirmed', (txHash) => {
+                promi.emit('inputTxProcessed', txHash)
+              })
+            const outputs = await this.monitorOutputTransactions(txHash, this.sourceAsset.chainId)
+              .on('outputTxBroadcasted', (outputs) => {
+                promi.emit('outputTxDetected', outputs)
+              })
+              .on('outputTxConfirmed', (outputs) => {
+                promi.emit('outputTxProcessed', outputs)
+              })
+            return resolve(outputs)
+          } catch (err) {
+            return reject(err)
           }
-          const txHash = await ab
-            .on('txBroadcasted', (txHash) => {
-              promi.emit('inputTxDetected', txHash)
-            })
-            .on('txConfirmed', (txHash) => {
-              promi.emit('inputTxProcessed', txHash)
-            })
-          const outputs = await this.monitorOutputTransactions(txHash, this.sourceAsset.chainId)
-            .on('outputTxBroadcasted', (outputs) => {
-              promi.emit('outputTxDetected', outputs)
-            })
-            .on('outputTxConfirmed', (outputs) => {
-              promi.emit('outputTxProcessed', outputs)
-            })
-
-          resolve(outputs)
         })() as unknown
     )
     return promi

@@ -18,6 +18,7 @@ export async function postRequest(_url: string, _body, _headers: HeadersInit | u
     if (error.name === 'AbortError') {
       throw new Error('Timed out!')
     }
+    throw error
   } finally {
     clearTimeout(timeout)
   }

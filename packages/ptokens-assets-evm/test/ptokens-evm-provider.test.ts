@@ -115,6 +115,40 @@ describe('EVM provider', () => {
     expect(callMock).toHaveBeenNthCalledWith(1)
   })
 
+  test('Should call a contract method with no arguments', async () => {
+    const web3 = new Web3()
+    const provider = new pTokensEvmProvider(web3)
+    const getAccountSpy = jest.spyOn(utils, 'getAccount').mockImplementation(() => {
+      return Promise.resolve('evm-account')
+    })
+    const contract = new web3.eth.Contract(abi as unknown as AbiItem)
+    const getContractSpy = jest.spyOn(utils, 'getContract').mockImplementation(() => contract)
+    const callMock = jest.fn().mockImplementation(() => {
+      const promi = new PromiEvent((resolve) =>
+        setImmediate(() => {
+          promi.emit('transactionHash', 'tx-hash')
+          promi.emit('receipt', { transactionHash: 'tx-hash' })
+          return resolve(123456)
+        })
+      )
+      return promi
+    })
+    const numberMock = jest.fn().mockImplementation(() => ({
+      call: callMock,
+    }))
+    contract.methods['number'] = numberMock
+    const res = await provider.makeContractCall({
+      method: 'number',
+      abi,
+      contractAddress: 'contract-address',
+    })
+    expect(res).toEqual(123456)
+    expect(getAccountSpy).toHaveBeenNthCalledWith(1, web3)
+    expect(getContractSpy).toHaveBeenNthCalledWith(1, web3, abi, 'contract-address', 'evm-account')
+    expect(numberMock).toHaveBeenNthCalledWith(1)
+    expect(callMock).toHaveBeenNthCalledWith(1)
+  })
+
   test('Should send a contract method', async () => {
     const web3 = new Web3()
     const provider = new pTokensEvmProvider(web3)
@@ -161,6 +195,52 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, web3)
     expect(getContractSpy).toHaveBeenNthCalledWith(1, web3, abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
+    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1 })
+  })
+
+  test('Should send a contract method with no arguments', async () => {
+    const web3 = new Web3()
+    const provider = new pTokensEvmProvider(web3)
+    const getAccountSpy = jest.spyOn(utils, 'getAccount').mockImplementation(() => {
+      return Promise.resolve('evm-account')
+    })
+    const contract = new web3.eth.Contract(abi as unknown as AbiItem)
+    const getContractSpy = jest.spyOn(utils, 'getContract').mockImplementation(() => contract)
+    const sendMock = jest.fn().mockImplementation(() => {
+      const promi = new PromiEvent((resolve) =>
+        setImmediate(() => {
+          promi.emit('transactionHash', 'tx-hash')
+          promi.emit('receipt', { transactionHash: 'tx-hash' })
+          return resolve({ transactionHash: 'tx-hash' })
+        })
+      )
+      return promi
+    })
+    const numberMock = jest.fn().mockImplementation(() => ({
+      send: sendMock,
+    }))
+    contract.methods['number'] = numberMock
+    let txBroadcastedHash = ''
+    let txConfirmedHash = ''
+    const txHash = await provider
+      .makeContractSend({
+        method: 'number',
+        abi,
+        contractAddress: 'contract-address',
+        value: 1,
+      })
+      .once('txBroadcasted', (_hash) => {
+        txBroadcastedHash = _hash
+      })
+      .once('txConfirmed', (_hash) => {
+        txConfirmedHash = _hash
+      })
+    expect(txHash).toEqual('tx-hash')
+    expect(txBroadcastedHash).toEqual('tx-hash')
+    expect(txConfirmedHash).toEqual('tx-hash')
+    expect(getAccountSpy).toHaveBeenNthCalledWith(1, web3)
+    expect(getContractSpy).toHaveBeenNthCalledWith(1, web3, abi, 'contract-address', 'evm-account')
+    expect(numberMock).toHaveBeenNthCalledWith(1)
     expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1 })
   })
 

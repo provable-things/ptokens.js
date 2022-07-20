@@ -101,6 +101,54 @@ describe('pTokensSwap', () => {
     expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: 2, tx_hash: 'tx-hash' }])
   })
 
+  it('Should reject if getAssetInfo rejects', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const getAssetInfoSpy = jest
+      .spyOn(pTokensNode.prototype, 'getAssetInfo')
+      .mockRejectedValue(new Error('getAssetInfo error'))
+    const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
+    getTransactionStatusSpy.mockResolvedValue({ inputs: [], outputs: [] })
+    getTransactionStatusSpy
+      .mockResolvedValueOnce({
+        inputs: [],
+        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
+      })
+      .mockResolvedValueOnce({
+        inputs: [],
+        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
+      })
+      .mockResolvedValue({
+        inputs: [],
+        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.CONFIRMED }],
+      })
+
+    const sourceAsset = new pTokenAssetMock({
+      symbol: 'SOURCE',
+      chainId: ChainId.BitcoinMainnet,
+      blockchain: Blockchain.Bitcoin,
+      network: Network.Mainnet,
+    })
+    const destinationAsset = new pTokenAssetMock({
+      symbol: 'DESTINATION',
+      chainId: ChainId.EthereumMainnet,
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
+    })
+    const swap = new pTokensSwap(
+      node,
+      sourceAsset,
+      [{ asset: destinationAsset, destinationAddress: 'destination-address' }],
+      10
+    )
+    try {
+      await swap.execute()
+      fail()
+    } catch (err) {
+      expect(err.message).toEqual('getAssetInfo error')
+      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SOURCE', ChainId.BitcoinMainnet)
+    }
+  })
+
   it('Should swap native asset with user data ', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
