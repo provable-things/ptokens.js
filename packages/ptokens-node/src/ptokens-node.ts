@@ -42,13 +42,13 @@ export class pTokensNode {
   }
 
   async getTransactionStatus(txHash: string, originatingChainId: string): Promise<TransactionStatus> {
-    return await this.provider.sendRpcRequest(1, 'app_getTransactionStatus', [txHash, originatingChainId])
+    return await this.provider.sendRpcRequest(1, 'node_getTransactionStatus', [txHash, originatingChainId])
   }
 
   async getAssetInfo(tokenSymbol: string): Promise<SupportingChainInfo[]>
   async getAssetInfo(tokenSymbol: string, chainId: string): Promise<SupportingChainInfo>
   async getAssetInfo(tokenSymbol: string, chainId?: string): Promise<SupportingChainInfo | SupportingChainInfo[]> {
-    const info: SupportingChainInfo[] = await this.provider.sendRpcRequest(1, 'app_getAssetInfo', [tokenSymbol])
+    const info: SupportingChainInfo[] = await this.provider.sendRpcRequest(1, 'node_getAssetInfo', [tokenSymbol])
     return chainId ? info.filter((p) => p.chainId == chainId).at(0) : info
   }
 
@@ -57,7 +57,7 @@ export class pTokensNode {
     address: string,
     destinationChainId: string
   ): Promise<NativeDepositAddress> {
-    return await this.provider.sendRpcRequest(1, 'app_getNativeDepositAddress', [
+    return await this.provider.sendRpcRequest(1, 'node_getNativeDepositAddress', [
       originatingChainId,
       address,
       destinationChainId,

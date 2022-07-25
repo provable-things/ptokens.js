@@ -23,7 +23,7 @@ describe('pTokensNode', () => {
       expect(fetchJsonByPostSpy).toHaveBeenNthCalledWith(1, 'a-url', {
         id: 1,
         jsonrpc: '2.0',
-        method: 'app_getTransactionStatus',
+        method: 'node_getTransactionStatus',
         params: ['a-tx-hash', 'a-originating-chain-id'],
       })
     }))
@@ -36,7 +36,7 @@ describe('pTokensNode', () => {
       expect(fetchJsonByPostSpy).toHaveBeenNthCalledWith(1, 'a-url', {
         id: 1,
         jsonrpc: '2.0',
-        method: 'app_getAssetInfo',
+        method: 'node_getAssetInfo',
         params: ['a-token'],
       })
     })
@@ -54,7 +54,7 @@ describe('pTokensNode', () => {
         expect(fetchJsonByPostSpy).toHaveBeenNthCalledWith(1, 'a-url', {
           id: 1,
           jsonrpc: '2.0',
-          method: 'app_getAssetInfo',
+          method: 'node_getAssetInfo',
           params: ['a-token'],
         })
       }
@@ -69,7 +69,7 @@ describe('pTokensNode', () => {
       expect(fetchJsonByPostSpy).toHaveBeenNthCalledWith(1, 'a-url', {
         id: 1,
         jsonrpc: '2.0',
-        method: 'app_getNativeDepositAddress',
+        method: 'node_getNativeDepositAddress',
         params: ['originating-chain-id', 'address', 'destination-chain-id'],
       })
     })
