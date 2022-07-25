@@ -15,6 +15,7 @@ export class pTokensUtxoAssetBuilder extends pTokensAssetBuilder {
 
   build(): pTokensUtxoAsset {
     if (!this.chainId) throw new Error('Missing chain ID')
+    if (!this.symbol) throw new Error('Missing symbol')
     const config = {
       symbol: this.symbol,
       chainId: this.chainId,
