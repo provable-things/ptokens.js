@@ -66,7 +66,7 @@ describe('pTokensNode', () => {
         id: 1,
         jsonrpc: '2.0',
         method: 'node_getAssetInfo',
-        params: ['a-token', 'chain-id'],
+        params: ['a-token'],
       })
       expect(ret).toStrictEqual({ chainId: 'chain-id', info: 'info' })
     })
