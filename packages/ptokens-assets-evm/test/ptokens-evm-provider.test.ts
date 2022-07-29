@@ -195,7 +195,7 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, web3)
     expect(getContractSpy).toHaveBeenNthCalledWith(1, web3, abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
-    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1 })
+    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1, gas: 80000 })
   })
 
   test('Should send a contract method with no arguments', async () => {
@@ -241,7 +241,7 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, web3)
     expect(getContractSpy).toHaveBeenNthCalledWith(1, web3, abi, 'contract-address', 'evm-account')
     expect(numberMock).toHaveBeenNthCalledWith(1)
-    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1 })
+    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1, gas: 80000 })
   })
 
   test('Should send a contract method with set gas price and gas limit', async () => {
@@ -342,7 +342,7 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, web3)
     expect(getContractSpy).toHaveBeenNthCalledWith(1, web3, abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
-    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1, gasPrice: 100e9 })
+    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1, gasPrice: 100e9, gas: 80000 })
   })
 
   test('Should send a contract method with set gas price and gas limit', async () => {
@@ -435,7 +435,7 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, web3)
     expect(getContractSpy).toHaveBeenNthCalledWith(1, web3, abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
-    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1 })
+    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1, gas: 80000 })
   })
 
   test('Should reject if getAccount throws', async () => {

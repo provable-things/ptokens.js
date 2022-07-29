@@ -1,4 +1,5 @@
 import { pTokensNode, pTokensNodeProvider } from '../src/index'
+import jsonrpc from 'jsonrpc-lite'
 
 jest.mock('ptokens-helpers')
 import { http } from 'ptokens-helpers'
@@ -18,7 +19,7 @@ describe('pTokensNode', () => {
 
   describe('getTransactionStatus', () =>
     it('Should return the provider set when calling contructor', async () => {
-      const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost')
+      const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue(jsonrpc.success(1, { data: 1 }))
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
       await node.getTransactionStatus('a-tx-hash', 'a-originating-chain-id')
@@ -32,24 +33,32 @@ describe('pTokensNode', () => {
 
   describe('getAssetInfo', () => {
     it('Should call fetchJsonByPost with correct arguments', async () => {
-      const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost')
+      const expected = [
+        { chainId: 'first-chain-id', info: 'first-info' },
+        { chainId: 'chain-id', info: 'info' },
+        { chainId: 'another-chain-id', info: 'another-info' },
+      ]
+      const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue(jsonrpc.success(1, expected))
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
-      await node.getAssetInfo('a-token')
+      const ret = await node.getAssetInfo('a-token')
       expect(fetchJsonByPostSpy).toHaveBeenNthCalledWith(1, 'a-url', {
         id: 1,
         jsonrpc: '2.0',
         method: 'node_getAssetInfo',
         params: ['a-token'],
       })
+      expect(ret).toStrictEqual(expected)
     })
 
     it('Should call fetchJsonByPost with correct arguments', async () => {
-      const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue([
-        { chainId: 'first-chain-id', info: 'first-info' },
-        { chainId: 'chain-id', info: 'info' },
-        { chainId: 'another-chain-id', info: 'another-info' },
-      ])
+      const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue(
+        jsonrpc.success(1, [
+          { chainId: 'first-chain-id', info: 'first-info' },
+          { chainId: 'chain-id', info: 'info' },
+          { chainId: 'another-chain-id', info: 'another-info' },
+        ])
+      )
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
       const ret = await node.getAssetInfo('a-token', 'chain-id')
@@ -86,6 +95,7 @@ describe('pTokensNode', () => {
   describe('getNativeDepositAddress', () => {
     it('Should return the provider set when calling contructor', async () => {
       const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost')
+        .mockResolvedValue(jsonrpc.success(1, { data: 'data' }))
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
       await node.getNativeDepositAddress('originating-chain-id', 'address', 'destination-chain-id')

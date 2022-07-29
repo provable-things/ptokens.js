@@ -5,7 +5,7 @@ import PromiEvent from 'promievent'
 import { Blockchain, ChainId, Network } from 'ptokens-entities'
 
 const vaultAbi = require('../src/abi/pERC20VaultContractAbi.json')
-const tokenAbi = require('../src/abi/pTokenOnETHContractAbi.json')
+const tokenAbi = require('../src/abi/pTokenOnETHV2ContractAbi.json')
 
 jest.mock('web3')
 jest.mock('ptokens-node')

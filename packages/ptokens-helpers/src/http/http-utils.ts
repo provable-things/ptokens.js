@@ -1,5 +1,5 @@
 import fetch, { HeadersInit, Response } from 'node-fetch'
-import { ERROR_JSON_RESPONSE_EXTRACTION } from '../errors'
+import { ERROR_JSON_RESPONSE_EXTRACTION, ERROR_UNEXPECTED_HTTP_STATUS } from '../errors'
 
 export async function postRequest(_url: string, _body, _headers: HeadersInit | undefined = {}, _timeout = 2000) {
   const controller = new AbortController()
@@ -47,18 +47,24 @@ export async function getRequest(_url: string, _headers: HeadersInit | undefined
 export async function getJsonBody<T>(_result: Response): Promise<T> {
   try {
     const jsonBody = await _result.json()
-    if (jsonBody.result) return jsonBody.result as T
-    throw new Error('Missing result in JSON response object')
+    return jsonBody as T
   } catch {
     throw new Error(ERROR_JSON_RESPONSE_EXTRACTION + JSON.stringify(_result))
   }
 }
+
+function checkResponseStatus(_resp: Response) {
+  if (!_resp.ok) throw new Error(`${ERROR_UNEXPECTED_HTTP_STATUS} - '${_resp.status} ${_resp.statusText}'`)
+  return _resp
+}
+
 export async function fetchJsonByGet<T>(
   _url: string,
   _headers: HeadersInit | undefined = {},
   _timeout = 50000
 ): Promise<T> {
   const resp = await getRequest(_url, _headers, _timeout)
+  checkResponseStatus(resp)
   return await getJsonBody<T>(resp)
 }
 
@@ -69,5 +75,6 @@ export async function fetchJsonByPost<T>(
   _timeout = 500
 ): Promise<T> {
   const resp = await postRequest(_url, _body, _headers, _timeout)
+  checkResponseStatus(resp)
   return await getJsonBody<T>(resp)
 }

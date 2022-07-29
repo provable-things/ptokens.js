@@ -66,7 +66,10 @@ describe('Http general tests', () => {
         _res.statusCode = 200
         _res.setHeader('Content-Type', 'application/json')
         if (_req.url.includes('incorrect')) _res.end('{"incorrect": json}')
-        else _res.end('{"Hello": "World"}')
+        else if (_req.url.includes('error')) {
+          _res.statusCode = 500
+          _res.end('{"incorrect": json}')
+        } else _res.end('{"Hello": "World"}')
       })
       server.listen(3000, '127.0.0.1')
     })
@@ -89,6 +92,15 @@ describe('Http general tests', () => {
         expect(err.message).toStrictEqual('Failed to extract the json from the response:{"size":0,"timeout":0}')
       }
     })
+
+    it('Should reject performing a GET request', async () => {
+      try {
+        await http.fetchJsonByGet('http://localhost:3000/error')
+        fail()
+      } catch (err) {
+        expect(err.message).toStrictEqual("Unexpected HTTP status - '500 Internal Server Error'")
+      }
+    })
   })
 
   describe('fetchJsonByPost', () => {
@@ -106,7 +118,10 @@ describe('Http general tests', () => {
             _res.statusCode = 200
             _res.setHeader('Content-Type', 'application/json')
             if (body.includes('incorrect')) _res.end('{"incorrect": json}')
-            else _res.end(body)
+            else if (body.includes('error')) {
+              _res.statusCode = 500
+              _res.end('{"incorrect": json}')
+            } else _res.end(body)
           })
         }
       })
@@ -130,6 +145,16 @@ describe('Http general tests', () => {
         fail()
       } catch (err) {
         expect(err.message).toStrictEqual('Failed to extract the json from the response:{"size":0,"timeout":0}')
+      }
+    })
+
+    it('Should reject with incorrect output', async () => {
+      const body = { hello: 'error' }
+      try {
+        await http.fetchJsonByPost('http://localhost:3000', body)
+        fail()
+      } catch (err) {
+        expect(err.message).toStrictEqual("Unexpected HTTP status - '500 Internal Server Error'")
       }
     })
 

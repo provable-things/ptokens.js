@@ -4,3 +4,4 @@ export const ERROR_WEBSOCKET_CONNECTION_FAILURE = 'Failed to connect to Websocke
 export const ERROR_WEBSOCKET_REQUEST_TIMEOUT = 'Websocket request expired!'
 export const ERROR_DB_CLIENT = 'Failed connecting to the db client, is it running?'
 export const ERROR_INVALID_PARAMETERS = 'Failed to validate object parameters'
+export const ERROR_UNEXPECTED_HTTP_STATUS = 'Unexpected HTTP status'
