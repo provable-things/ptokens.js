@@ -39,7 +39,7 @@ describe('UTXO asset', () => {
 
   test('Should not create an UTXO asset without symbol', () => {
     const builder = new pTokensUtxoAssetBuilder()
-    builder.setBlockchain(ChainId.EthereumMainnet)
+    builder.setBlockchain(ChainId.BitcoinMainnet)
     try {
       builder.build()
       fail()

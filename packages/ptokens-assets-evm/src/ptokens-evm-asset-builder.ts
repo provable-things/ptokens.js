@@ -16,6 +16,7 @@ export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
 
   build(): pTokensEvmAsset {
     if (!this.chainId) throw new Error('Missing chain ID')
+    if (!this.symbol) throw new Error('Missing symbol')
     const config = {
       symbol: this.symbol,
       chainId: this.chainId,

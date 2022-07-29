@@ -10,8 +10,7 @@ export type MakeContractSendOptions = {
   abi: AbiItem | AbiItem[]
   contractAddress: string
   value: number
-  transactionHashCallback?: (hash: string) => void
-  receiptCallback?: (receipt: TransactionReceipt) => void
+  gasLimit?: number
 }
 
 export type MakeContractCallOptions = {
@@ -46,6 +45,7 @@ export class pTokensEvmProvider {
 
   constructor(web3: Web3) {
     this._web3 = web3
+    this._gasLimit = 80000
   }
 
   public get gasPrice() {
@@ -81,12 +81,16 @@ export class pTokensEvmProvider {
       (resolve, reject) =>
         (async () => {
           try {
-            const { method, abi, contractAddress, value } = _options
+            const { method, abi, contractAddress, value, gasLimit } = _options
             const account = await getAccount(this._web3)
             const contract = getContract(this._web3, abi, contractAddress, account)
             // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             const receipt: TransactionReceipt = await contract.methods[method](..._args)
-              .send(new SendOptions(account, value).maybeSetGasLimit(this.gasLimit).maybeSetGasPrice(this.gasPrice))
+              .send(
+                new SendOptions(account, value)
+                  .maybeSetGasLimit(gasLimit || this.gasLimit)
+                  .maybeSetGasPrice(this.gasPrice)
+              )
               .once('transactionHash', (_hash: string) => promi.emit('txBroadcasted', _hash))
               .once('receipt', (_receipt: TransactionReceipt) => promi.emit('txConfirmed', _receipt.transactionHash))
               .once('error', (_error: Error) => promi.emit('txError', _error))

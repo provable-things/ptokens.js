@@ -1,9 +1,9 @@
 import { pTokensNodeProvider } from './ptokens-node-provider'
 
 export enum Status {
-  ERROR,
-  BROADCASTED,
-  CONFIRMED,
+  ERROR = -1,
+  BROADCASTED = 0,
+  CONFIRMED = 1,
 }
 
 export type InnerTransactionStatus = {

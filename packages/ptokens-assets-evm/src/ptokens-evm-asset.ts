@@ -5,7 +5,7 @@ import { pTokensEvmProvider } from './ptokens-evm-provider'
 import { AbiItem } from 'web3-utils'
 
 import pERC20VaultContractAbi from './abi/pERC20VaultContractAbi.json'
-import pTokenOnEVMContractAbi from './abi/pTokenOnETHContractAbi.json'
+import pTokenOnEVMContractAbi from './abi/pTokenOnETHV2ContractAbi.json'
 
 const SYSTEM_TOKEN_PEG_IN_METHOD = 'pegInEth'
 const ERC20_TOKEN_PEG_IN_METHOD = 'pegIn'

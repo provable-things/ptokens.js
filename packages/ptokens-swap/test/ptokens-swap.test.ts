@@ -23,8 +23,9 @@ describe('pTokensSwap', () => {
       })
     })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
-    getTransactionStatusSpy.mockResolvedValue({ inputs: [], outputs: [] })
     getTransactionStatusSpy
+      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
+      .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
         inputs: [],
         outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
@@ -96,9 +97,11 @@ describe('pTokensSwap', () => {
     expect(inputTxProcessed).toBeTruthy()
     expect(inputTxProcessedObj).toBe('originating-tx-hash')
     expect(outputTxDetected).toBeTruthy()
-    expect(outputTxDetectedObj).toStrictEqual([{ chain_id: 'chain-id', status: 1, tx_hash: 'tx-hash' }])
+    expect(outputTxDetectedObj).toStrictEqual([
+      { chain_id: 'chain-id', status: Status.BROADCASTED, tx_hash: 'tx-hash' },
+    ])
     expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: 2, tx_hash: 'tx-hash' }])
+    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: Status.CONFIRMED, tx_hash: 'tx-hash' }])
   })
 
   it('Should reject if getAssetInfo rejects', async () => {
@@ -107,8 +110,9 @@ describe('pTokensSwap', () => {
       .spyOn(pTokensNode.prototype, 'getAssetInfo')
       .mockRejectedValue(new Error('getAssetInfo error'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
-    getTransactionStatusSpy.mockResolvedValue({ inputs: [], outputs: [] })
     getTransactionStatusSpy
+      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
+      .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
         inputs: [],
         outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
@@ -160,8 +164,9 @@ describe('pTokensSwap', () => {
       })
     })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
-    getTransactionStatusSpy.mockResolvedValue({ inputs: [], outputs: [] })
     getTransactionStatusSpy
+      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
+      .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
         inputs: [],
         outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
@@ -233,9 +238,11 @@ describe('pTokensSwap', () => {
     expect(inputTxProcessed).toBeTruthy()
     expect(inputTxProcessedObj).toBe('originating-tx-hash')
     expect(outputTxDetected).toBeTruthy()
-    expect(outputTxDetectedObj).toStrictEqual([{ chain_id: 'chain-id', status: 1, tx_hash: 'tx-hash' }])
+    expect(outputTxDetectedObj).toStrictEqual([
+      { chain_id: 'chain-id', status: Status.BROADCASTED, tx_hash: 'tx-hash' },
+    ])
     expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: 2, tx_hash: 'tx-hash' }])
+    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: Status.CONFIRMED, tx_hash: 'tx-hash' }])
   })
 
   it('Should swap host asset without user data ', async () => {
@@ -249,8 +256,9 @@ describe('pTokensSwap', () => {
       })
     })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
-    getTransactionStatusSpy.mockResolvedValue({ inputs: [], outputs: [] })
     getTransactionStatusSpy
+      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
+      .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
         inputs: [],
         outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
@@ -319,9 +327,11 @@ describe('pTokensSwap', () => {
     expect(inputTxProcessed).toBeTruthy()
     expect(inputTxProcessedObj).toBe('originating-tx-hash')
     expect(outputTxDetected).toBeTruthy()
-    expect(outputTxDetectedObj).toStrictEqual([{ chain_id: 'chain-id', status: 1, tx_hash: 'tx-hash' }])
+    expect(outputTxDetectedObj).toStrictEqual([
+      { chain_id: 'chain-id', status: Status.BROADCASTED, tx_hash: 'tx-hash' },
+    ])
     expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: 2, tx_hash: 'tx-hash' }])
+    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: Status.CONFIRMED, tx_hash: 'tx-hash' }])
   })
 
   it('Should swap host asset with user data ', async () => {
@@ -335,8 +345,9 @@ describe('pTokensSwap', () => {
       })
     })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
-    getTransactionStatusSpy.mockResolvedValue({ inputs: [], outputs: [] })
     getTransactionStatusSpy
+      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
+      .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
         inputs: [],
         outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
@@ -408,8 +419,10 @@ describe('pTokensSwap', () => {
     expect(inputTxProcessed).toBeTruthy()
     expect(inputTxProcessedObj).toBe('originating-tx-hash')
     expect(outputTxDetected).toBeTruthy()
-    expect(outputTxDetectedObj).toStrictEqual([{ chain_id: 'chain-id', status: 1, tx_hash: 'tx-hash' }])
+    expect(outputTxDetectedObj).toStrictEqual([
+      { chain_id: 'chain-id', status: Status.BROADCASTED, tx_hash: 'tx-hash' },
+    ])
     expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: 2, tx_hash: 'tx-hash' }])
+    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: Status.CONFIRMED, tx_hash: 'tx-hash' }])
   })
 })

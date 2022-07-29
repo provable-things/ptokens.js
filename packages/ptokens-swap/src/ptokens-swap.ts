@@ -50,15 +50,18 @@ export class pTokensSwap {
           let resp: InnerTransactionStatus[]
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
           await polling(async () => {
-            resp = await getOutputTransactions(this.node)
-            if (resp.length && resp.every((el) => el.status == Status.CONFIRMED)) {
-              promi.emit('outputTxConfirmed', resp)
-              return true
-            } else if (resp.length && !notified) {
-              notified = true
-              promi.emit('outputTxBroadcasted', resp)
+            try {
+              resp = await getOutputTransactions(this.node)
+              if (resp.length && !notified) {
+                notified = true
+                promi.emit('outputTxBroadcasted', resp)
+              } else if (resp.length && resp.every((el) => el.status == Status.CONFIRMED)) {
+                promi.emit('outputTxConfirmed', resp)
+                return true
+              }
+            } catch (err) {
+              return false
             }
-            return false
           }, 1000)
           resolve(resp)
         })() as unknown
