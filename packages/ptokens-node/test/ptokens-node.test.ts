@@ -7,6 +7,7 @@ describe('pTokensNode', () => {
   beforeEach(() => {
     jest.resetAllMocks()
   })
+
   describe('getProvider', () => {
     it('Should return the provider set when calling contructor', () => {
       const provider = new pTokensNodeProvider('a-url')
@@ -14,6 +15,7 @@ describe('pTokensNode', () => {
       expect(node.getProvider()).toStrictEqual(provider)
     })
   })
+
   describe('getTransactionStatus', () =>
     it('Should return the provider set when calling contructor', async () => {
       const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost')
@@ -27,6 +29,7 @@ describe('pTokensNode', () => {
         params: ['a-tx-hash', 'a-originating-chain-id'],
       })
     }))
+
   describe('getAssetInfo', () => {
     it('Should call fetchJsonByPost with correct arguments', async () => {
       const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost')
@@ -40,6 +43,25 @@ describe('pTokensNode', () => {
         params: ['a-token'],
       })
     })
+
+    it('Should call fetchJsonByPost with correct arguments', async () => {
+      const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue([
+        { chainId: 'first-chain-id', info: 'first-info' },
+        { chainId: 'chain-id', info: 'info' },
+        { chainId: 'another-chain-id', info: 'another-info' },
+      ])
+      const provider = new pTokensNodeProvider('a-url')
+      const node = new pTokensNode(provider)
+      const ret = await node.getAssetInfo('a-token', 'chain-id')
+      expect(fetchJsonByPostSpy).toHaveBeenNthCalledWith(1, 'a-url', {
+        id: 1,
+        jsonrpc: '2.0',
+        method: 'node_getAssetInfo',
+        params: ['a-token', 'chain-id'],
+      })
+      expect(ret).toStrictEqual({ chainId: 'chain-id', info: 'info' })
+    })
+
     it('Should throw the provider set when calling contructor', async () => {
       const fetchJsonByPostSpy = jest
         .spyOn(http, 'fetchJsonByPost')
@@ -60,6 +82,7 @@ describe('pTokensNode', () => {
       }
     })
   })
+
   describe('getNativeDepositAddress', () => {
     it('Should return the provider set when calling contructor', async () => {
       const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost')

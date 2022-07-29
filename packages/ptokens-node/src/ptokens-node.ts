@@ -48,7 +48,9 @@ export class pTokensNode {
   async getAssetInfo(tokenSymbol: string): Promise<SupportingChainInfo[]>
   async getAssetInfo(tokenSymbol: string, chainId: string): Promise<SupportingChainInfo>
   async getAssetInfo(tokenSymbol: string, chainId?: string): Promise<SupportingChainInfo | SupportingChainInfo[]> {
-    const info: SupportingChainInfo[] = await this.provider.sendRpcRequest(1, 'node_getAssetInfo', [tokenSymbol])
+    const params = [tokenSymbol]
+    if (chainId) params.push(chainId)
+    const info: SupportingChainInfo[] = await this.provider.sendRpcRequest(1, 'node_getAssetInfo', params)
     return chainId ? info.filter((p) => p.chainId == chainId).at(0) : info
   }
 
