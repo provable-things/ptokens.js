@@ -7,10 +7,19 @@
     "build": "rollup -c ../../rollup.config.js",
     "dev": "rollup -c ../../rollup.config.js -w",
     "lint": "eslint ./src/",
+    "test": "jest",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "promievent": "^0.1.5",
     "ptokens-entities": "^0.1.0",
-    "promievent": "^0.1.5"
+    "ptokens-helpers": "^0.1.0",
+    "ptokens-node": "^0.1.0",
+    "eosjs": "^22.1.0",
+    "node-fetch": "^2.6.7",
+    "light-async-polling": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.1"
   }
 }

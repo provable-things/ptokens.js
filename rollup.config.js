@@ -5,6 +5,7 @@ import autoExternal from 'rollup-plugin-auto-external'
 import cleanup from 'rollup-plugin-cleanup'
 import dts from 'rollup-plugin-dts'
 import json from '@rollup/plugin-json'
+import commonjs from '@rollup/plugin-commonjs';
 
 const PACKAGE_ROOT_PATH = process.cwd()
 const PACKAGE_NAME = PACKAGE_ROOT_PATH.split('/').at(-1)
@@ -64,6 +65,7 @@ export default [
       format: 'es'
     },
     plugins: [
+      commonjs(),
       resolve(),
       json(),
       typescript({ tsconfig: './tsconfig.json' }),
