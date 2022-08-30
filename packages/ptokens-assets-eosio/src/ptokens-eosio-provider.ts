@@ -35,34 +35,38 @@ export class pTokensEosioProvider {
     return this._blocksBehind
   }
 
-  public set blocksBehind(_blocksBehind: number) {
+  public setBlocksBehind(_blocksBehind: number) {
     if (_blocksBehind <= 0 || _blocksBehind >= 20) {
       throw new Error('Invalid blocks behind')
     }
     this._blocksBehind = _blocksBehind
+    return this
   }
 
   public get expireSeconds() {
     return this._expireSeconds
   }
 
-  public set expireSeconds(_expireSeconds: number) {
+  public setExpireSeconds(_expireSeconds: number) {
     if (_expireSeconds <= 0 || _expireSeconds >= 1000) {
       throw new Error('Invalid expire seconds')
     }
     this._expireSeconds = _expireSeconds
+    return this
   }
 
   public get actor(): string {
     return this._actor
   }
 
-  public set actor(_actor: string) {
+  public setActor(_actor: string) {
     this._actor = _actor
+    return this
   }
 
   public setPrivateKey(_key: string) {
     this._api.signatureProvider = new JsSignatureProvider([_key])
+    return this
   }
 
   public makeContractSend = (_options: MakeContractSendOptions, _data: any = {}) => {

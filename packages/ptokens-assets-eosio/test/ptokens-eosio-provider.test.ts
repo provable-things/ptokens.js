@@ -18,7 +18,7 @@ describe('EOSIO provider', () => {
   test('Should throw with negative expireSeconds', () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
     try {
-      provider.expireSeconds = -1
+      provider.setExpireSeconds(-1)
       fail()
     } catch (err) {
       expect(err.message).toEqual('Invalid expire seconds')
@@ -28,7 +28,7 @@ describe('EOSIO provider', () => {
   test('Should throw with too large expireSeconds', () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
     try {
-      provider.expireSeconds = 1e12
+      provider.setExpireSeconds(1e12)
       fail()
     } catch (err) {
       expect(err.message).toEqual('Invalid expire seconds')
@@ -38,7 +38,7 @@ describe('EOSIO provider', () => {
   test('Should throw with negative blocksBehind', () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
     try {
-      provider.blocksBehind = -1
+      provider.setBlocksBehind(-1)
       fail()
     } catch (err) {
       expect(err.message).toEqual('Invalid blocks behind')
@@ -48,7 +48,7 @@ describe('EOSIO provider', () => {
   test('Should throw with too large blocksBehind', () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
     try {
-      provider.blocksBehind = 10e6
+      provider.setBlocksBehind(10e6)
       fail()
     } catch (err) {
       expect(err.message).toEqual('Invalid blocks behind')
@@ -96,7 +96,7 @@ describe('EOSIO provider', () => {
 
   test('Should throw when calling a contract method with an invalid ABI', async () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
-    provider.actor = 'eosioaccount'
+    provider.setActor('eosioaccount')
     const setAbiSpy = jest.spyOn(provider['_api'].cachedAbis, 'set').mockImplementation(() => {
       throw new Error('Set ABI error')
     })
@@ -120,7 +120,7 @@ describe('EOSIO provider', () => {
 
   test('Should throw when calling a contract method and there is no result in the transact return value', async () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
-    provider.actor = 'eosioaccount'
+    provider.setActor('eosioaccount')
     expect(provider.blocksBehind).toBe(3)
     expect(provider.expireSeconds).toBe(60)
     expect(provider.actor).toBe('eosioaccount')
@@ -179,7 +179,7 @@ describe('EOSIO provider', () => {
 
   test('Should call a contract method with default parameters', async () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
-    provider.actor = 'eosioaccount'
+    provider.setActor('eosioaccount')
     expect(provider.blocksBehind).toBe(3)
     expect(provider.expireSeconds).toBe(60)
     expect(provider.actor).toBe('eosioaccount')
@@ -242,7 +242,7 @@ describe('EOSIO provider', () => {
 
   test('Should call a contract method with default parameters and no data', async () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
-    provider.actor = 'eosioaccount'
+    provider.setActor('eosioaccount')
     expect(provider.blocksBehind).toBe(3)
     expect(provider.expireSeconds).toBe(60)
     expect(provider.actor).toBe('eosioaccount')
@@ -302,9 +302,8 @@ describe('EOSIO provider', () => {
 
   test('Should call a contract method with custom parameters', async () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
-    provider.blocksBehind = 5
-    provider.expireSeconds = 10
-    provider.actor = 'eosioaccount'
+    provider.setBlocksBehind(5)
+    provider.setActor('eosioaccount').setExpireSeconds(10)
     const setAbiSpy = jest.spyOn(provider['_api'].cachedAbis, 'set')
     let txBroadcastedHash = ''
     let txConfirmedHash = ''

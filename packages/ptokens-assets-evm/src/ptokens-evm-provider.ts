@@ -52,28 +52,31 @@ export class pTokensEvmProvider {
     return this._gasPrice
   }
 
-  public set gasPrice(_gasPrice: number) {
+  public setGasPrice(_gasPrice: number) {
     if (_gasPrice <= 0 || _gasPrice >= 1e12) {
       throw new Error('Invalid gas price')
     }
     this._gasPrice = _gasPrice
+    return this
   }
 
   public get gasLimit() {
     return this._gasLimit
   }
 
-  public set gasLimit(_gasLimit: number) {
+  public setGasLimit(_gasLimit: number) {
     if (_gasLimit <= 0 || _gasLimit >= 10e6) {
       throw new Error('Invalid gas limit')
     }
     this._gasLimit = _gasLimit
+    return this
   }
 
   public setPrivateKey(key: string) {
     const account = this._web3.eth.accounts.privateKeyToAccount('0x' + key)
     this._web3.eth.accounts.wallet.add(account)
     this._web3.eth.defaultAccount = account.address
+    return this
   }
 
   public makeContractSend = (_options: MakeContractSendOptions, _args: any[] = []) => {
