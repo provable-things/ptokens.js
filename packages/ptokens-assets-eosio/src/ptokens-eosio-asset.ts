@@ -58,7 +58,7 @@ export class pTokensEosioAsset extends pTokensAsset {
               user_data: userData || '',
               chain_id: destinationChainId.substring(2),
             }
-            const ret = await this.provider
+            const txHash: string = await this.provider
               .makeContractSend(
                 {
                   method: EOSIO_TOKEN_PEG_OUT_METHOD,
@@ -67,14 +67,10 @@ export class pTokensEosioAsset extends pTokensAsset {
                 },
                 data
               )
-              .once('txBroadcasted', (_hash) => {
-                promi.emit('txBroadcasted', _hash)
-              })
-              .once('txConfirmed', (_hash) => {
-                promi.emit('txConfirmed', _hash)
-              })
+              .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
+              .once('txConfirmed', (_hash) => promi.emit('txConfirmed', _hash))
               .once('error', reject)
-            return resolve(ret)
+            return resolve(txHash)
           } catch (_err) {
             return reject(_err)
           }

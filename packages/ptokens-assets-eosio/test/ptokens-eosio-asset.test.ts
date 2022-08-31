@@ -7,8 +7,8 @@ const tokenAbi = require('../src/abi/pTokenOnEOSContractAbiV2.json')
 
 jest.mock('ptokens-node')
 
-describe('EVM asset', () => {
-  test('Should create an EVM asset from constructor', () => {
+describe('EOSIO asset', () => {
+  test('Should create an EOSIO asset from constructor', () => {
     const asset = new pTokensEosioAsset({
       symbol: 'SYM',
       chainId: ChainId.EthereumMainnet,
@@ -474,13 +474,18 @@ describe('EVM asset', () => {
         provider: provider,
         sourceAddress: 'tokenOwner',
       })
-      let txHash = ''
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
       const ret = await asset
         .hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
+          txHashBroadcasted = _txHash
         })
-      expect(txHash).toEqual('tx-hash')
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
@@ -529,13 +534,18 @@ describe('EVM asset', () => {
         provider: provider,
         sourceAddress: 'tokenOwner',
       })
-      let txHash = ''
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
       const ret = await asset
         .hostToInterim(node, 1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
+          txHashBroadcasted = _txHash
         })
-      expect(txHash).toEqual('tx-hash')
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EosMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(

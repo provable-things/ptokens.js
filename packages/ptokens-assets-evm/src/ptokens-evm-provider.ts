@@ -79,7 +79,7 @@ export class pTokensEvmProvider {
     return this
   }
 
-  public makeContractSend = (_options: MakeContractSendOptions, _args: any[] = []) => {
+  public makeContractSend(_options: MakeContractSendOptions, _args: any[] = []) {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {

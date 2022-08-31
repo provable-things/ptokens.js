@@ -94,7 +94,8 @@ describe('pTokensNode', () => {
 
   describe('getNativeDepositAddress', () => {
     it('Should return the provider set when calling contructor', async () => {
-      const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost')
+      const fetchJsonByPostSpy = jest
+        .spyOn(http, 'fetchJsonByPost')
         .mockResolvedValue(jsonrpc.success(1, { data: 'data' }))
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)

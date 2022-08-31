@@ -145,13 +145,18 @@ describe('EVM asset', () => {
         network: Network.Mainnet,
         provider: provider,
       })
-      let txHash = ''
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
       const ret = await asset
         .nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
+          txHashBroadcasted = _txHash
         })
-      expect(txHash).toEqual('tx-hash')
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
@@ -196,13 +201,18 @@ describe('EVM asset', () => {
         network: Network.Mainnet,
         provider: provider,
       })
-      let txHash = ''
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
       const ret = await asset
         .nativeToInterim(node, 1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
+          txHashBroadcasted = _txHash
         })
-      expect(txHash).toEqual('tx-hash')
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
@@ -247,13 +257,18 @@ describe('EVM asset', () => {
         network: Network.Mainnet,
         provider: provider,
       })
-      let txHash = ''
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
       const ret = await asset
         .nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
+          txHashBroadcasted = _txHash
         })
-      expect(txHash).toEqual('tx-hash')
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
@@ -298,13 +313,18 @@ describe('EVM asset', () => {
         network: Network.Mainnet,
         provider: provider,
       })
-      let txHash = ''
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
       const ret = await asset
         .nativeToInterim(node, 1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
+          txHashBroadcasted = _txHash
         })
-      expect(txHash).toEqual('tx-hash')
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
@@ -480,13 +500,18 @@ describe('EVM asset', () => {
         network: Network.Mainnet,
         provider: provider,
       })
-      let txHash = ''
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
       const ret = await asset
         .hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
+          txHashBroadcasted = _txHash
         })
-      expect(txHash).toEqual('tx-hash')
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
@@ -530,13 +555,18 @@ describe('EVM asset', () => {
         network: Network.Mainnet,
         provider: provider,
       })
-      let txHash = ''
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
       const ret = await asset
         .hostToInterim(node, 1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
+          txHashBroadcasted = _txHash
         })
-      expect(txHash).toEqual('tx-hash')
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(

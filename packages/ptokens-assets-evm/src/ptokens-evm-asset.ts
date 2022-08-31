@@ -34,7 +34,7 @@ export class pTokensEvmAsset extends pTokensAsset {
             if (!this.provider) return reject(new Error('Missing provider'))
             const assetInfo = await node.getAssetInfo(this.symbol, this.chainId)
             if (!assetInfo.isNative) return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
-            await this.provider
+            const txHash: string = await this.provider
               .makeContractSend(
                 {
                   method: assetInfo.isSystemToken ? SYSTEM_TOKEN_PEG_IN_METHOD : ERC20_TOKEN_PEG_IN_METHOD,
@@ -50,11 +50,10 @@ export class pTokensEvmAsset extends pTokensAsset {
                   ? [destinationAddress, destinationChainId]
                   : [amount, assetInfo.tokenAddress, destinationAddress, destinationChainId]
               )
-              .once('txBroadcasted', (_hash) => {
-                promi.emit('txBroadcasted', _hash)
-              })
-              .once('txConfirmed', resolve)
+              .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
+              .once('txConfirmed', (_hash: string) => promi.emit('txConfirmed', _hash))
               .once('txError', reject)
+            return resolve(txHash)
           } catch (err) {
             return reject(err)
           }
@@ -77,7 +76,7 @@ export class pTokensEvmAsset extends pTokensAsset {
             if (!this.provider) return reject(new Error('Missing provider'))
             const assetInfo = await node.getAssetInfo(this.symbol, this.chainId)
             if (assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
-            await this.provider
+            const txHash: string = await this.provider
               .makeContractSend(
                 {
                   method: ERC20_TOKEN_PEG_OUT_METHOD,
@@ -89,11 +88,10 @@ export class pTokensEvmAsset extends pTokensAsset {
                   ? [amount, userData, destinationAddress, destinationChainId]
                   : [amount, destinationAddress, destinationChainId]
               )
-              .once('txBroadcasted', (_hash) => {
-                promi.emit('txBroadcasted', _hash)
-              })
-              .once('txConfirmed', resolve)
+              .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
+              .once('txConfirmed', (_hash: string) => promi.emit('txConfirmed', _hash))
               .once('error', reject)
+            return resolve(txHash)
           } catch (err) {
             return reject(err)
           }

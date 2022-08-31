@@ -1,8 +1,8 @@
 import { pTokensEosioAssetBuilder, pTokensEosioProvider } from '../src'
 import { Blockchain, ChainId, Network } from 'ptokens-entities'
 
-describe('EVM asset', () => {
-  test('Should create an EVM asset without provider', () => {
+describe('EOSIO asset', () => {
+  test('Should create an EOSIO asset without provider', () => {
     const builder = new pTokensEosioAssetBuilder()
     builder.setBlockchain(ChainId.EthereumMainnet)
     builder.setSymbol('SYM')
@@ -13,7 +13,7 @@ describe('EVM asset', () => {
     expect(asset.weight).toEqual(1)
   })
 
-  test('Should create an EVM asset with provider', () => {
+  test('Should create an EOSIO asset with provider', () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
     provider.setPrivateKey('5K7ZPXDP5ptRZHF3DptSy7C7Quq7D78X82jQwBG8JVgnY3N4irG')
     const builder = new pTokensEosioAssetBuilder()
@@ -28,7 +28,7 @@ describe('EVM asset', () => {
     expect(asset['provider']).toEqual(provider)
   })
 
-  test('Should not create an EVM asset without blockchain data', () => {
+  test('Should not create an EOSIO asset without blockchain data', () => {
     const builder = new pTokensEosioAssetBuilder()
     try {
       builder.build()
@@ -38,7 +38,7 @@ describe('EVM asset', () => {
     }
   })
 
-  test('Should not create an EVM asset without symbol', () => {
+  test('Should not create an EOSIO asset without symbol', () => {
     const builder = new pTokensEosioAssetBuilder()
     try {
       builder.setBlockchain(ChainId.EthereumMainnet)
