@@ -49,7 +49,7 @@ export class pTokensEosioAsset extends pTokensAsset {
           try {
             if (!this.provider) return reject(new Error('Missing provider'))
             if (!this.sourceAddress) return reject(new Error('Missing owner for source asset'))
-            const assetInfo = await node.getAssetInfo(this.symbol, this.chainId)
+            const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
             if (assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
             const data = {
               sender: this.sourceAddress,

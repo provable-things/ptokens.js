@@ -32,7 +32,7 @@ export class pTokensEvmAsset extends pTokensAsset {
         (async () => {
           try {
             if (!this.provider) return reject(new Error('Missing provider'))
-            const assetInfo = await node.getAssetInfo(this.symbol, this.chainId)
+            const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
             if (!assetInfo.isNative) return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
             const txHash: string = await this.provider
               .makeContractSend(
@@ -74,7 +74,7 @@ export class pTokensEvmAsset extends pTokensAsset {
         (async () => {
           try {
             if (!this.provider) return reject(new Error('Missing provider'))
-            const assetInfo = await node.getAssetInfo(this.symbol, this.chainId)
+            const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
             if (assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
             const txHash: string = await this.provider
               .makeContractSend(

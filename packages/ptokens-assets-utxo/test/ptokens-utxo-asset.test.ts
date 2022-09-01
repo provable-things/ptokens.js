@@ -65,7 +65,7 @@ describe('UTXO asset', () => {
   test('Should not call nativeToInterim for non-native tokens', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const provider = new pTokensBlockstreamUtxoProvider('insight-endpoint-url')
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
       return Promise.resolve({
         chainId: 'originating-chain-id',
         isNative: false,
@@ -93,7 +93,7 @@ describe('UTXO asset', () => {
   test('Should wait for deposit', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const provider = new pTokensBlockstreamUtxoProvider('insight-endpoint-url')
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
       return Promise.resolve({
         chainId: 'originating-chain-id',
         isNative: true,
@@ -135,7 +135,7 @@ describe('UTXO asset', () => {
   test('Should not call nativeToInterim for non-native tokens', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const provider = new pTokensBlockstreamUtxoProvider('insight-endpoint-url')
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
       return Promise.resolve({
         chainId: 'originating-chain-id',
         isNative: false,

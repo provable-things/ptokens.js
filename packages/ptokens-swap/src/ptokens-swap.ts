@@ -74,10 +74,14 @@ export class pTokensSwap {
       (resolve, reject) =>
         (async () => {
           try {
-            const sourceInfo = await this.node.getAssetInfo(this.sourceAsset.symbol, this.sourceAsset.chainId)
-            let ab: PromiEvent<string>
+            const assetInfo = await this.node.getAssetInfo(this.sourceAsset.symbol)
+            const sourceInfo = assetInfo.filter((info) => info.chainId == this.sourceAsset.chainId)[0]
+            const isSupported = (asset: pTokensAsset) => assetInfo.some((_info) => _info.chainId === asset.chainId)
+            if (!isSupported(this.sourceAsset) || !this.destinationAssets.every(isSupported))
+              return reject(new Error('Impossible to swap'))
+            let swapPromiEvent: PromiEvent<string>
             if (sourceInfo.isNative) {
-              ab = this.sourceAsset.nativeToInterim(
+              swapPromiEvent = this.sourceAsset.nativeToInterim(
                 this.node,
                 this.amount,
                 this._destinationAssets[0].destinationAddress,
@@ -85,7 +89,7 @@ export class pTokensSwap {
                 this._destinationAssets[0].userData
               )
             } else {
-              ab = this.sourceAsset.hostToInterim(
+              swapPromiEvent = this.sourceAsset.hostToInterim(
                 this.node,
                 this.amount,
                 this._destinationAssets[0].destinationAddress,
@@ -93,7 +97,7 @@ export class pTokensSwap {
                 this._destinationAssets[0].userData
               )
             }
-            const txHash = await ab
+            const txHash = await swapPromiEvent
               .on('txBroadcasted', (txHash) => {
                 promi.emit('inputTxDetected', txHash)
               })

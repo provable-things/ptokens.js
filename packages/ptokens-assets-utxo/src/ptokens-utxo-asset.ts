@@ -44,7 +44,7 @@ export class pTokensUtxoAsset extends pTokensAsset {
           if (node === undefined) return reject(new Error('Undefined node'))
           if (destinationChainId === undefined) return reject(new Error('Undefined chain ID'))
           if (!this.provider) return reject(new Error('Missing provider'))
-          const assetInfo = await node.getAssetInfo(this.symbol, this.chainId)
+          const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
           if (!assetInfo.isNative) return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
           const config = { nativeBlockchain: this.blockchain, nativeNetwork: this.network, node: node }
           const depositAddress = new pTokensDepositAddress(config)

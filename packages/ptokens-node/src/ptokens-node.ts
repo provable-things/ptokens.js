@@ -45,11 +45,13 @@ export class pTokensNode {
     return await this.provider.sendRpcRequest(1, 'node_getTransactionStatus', [txHash, originatingChainId])
   }
 
-  async getAssetInfo(tokenSymbol: string): Promise<SupportingChainInfo[]>
-  async getAssetInfo(tokenSymbol: string, chainId: string): Promise<SupportingChainInfo>
-  async getAssetInfo(tokenSymbol: string, chainId?: string): Promise<SupportingChainInfo | SupportingChainInfo[]> {
-    const info: SupportingChainInfo[] = await this.provider.sendRpcRequest(1, 'node_getAssetInfo', [tokenSymbol])
-    return chainId ? info.filter((p) => p.chainId == chainId).at(0) : info
+  async getAssetInfo(tokenSymbol: string): Promise<SupportingChainInfo[]> {
+    return await this.provider.sendRpcRequest(1, 'node_getAssetInfo', [tokenSymbol])
+  }
+
+  async getAssetInfoByChainId(tokenSymbol: string, chainId: string): Promise<SupportingChainInfo> {
+    const info = (await this.getAssetInfo(tokenSymbol)).filter((p) => p.chainId == chainId)
+    return info.length ? info[0] : null
   }
 
   async getNativeDepositAddress(

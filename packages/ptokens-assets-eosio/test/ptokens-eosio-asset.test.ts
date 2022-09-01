@@ -374,7 +374,7 @@ describe('EOSIO asset', () => {
     test('Should not call hostToInterim for native tokens', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: true,
@@ -415,7 +415,7 @@ describe('EOSIO asset', () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
       const getAssetInfoSpy = jest
-        .spyOn(pTokensNode.prototype, 'getAssetInfo')
+        .spyOn(pTokensNode.prototype, 'getAssetInfoByChainId')
         .mockRejectedValue(new Error('getAssetInfo error'))
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
@@ -448,7 +448,7 @@ describe('EOSIO asset', () => {
     test('Should call makeContractSend with redeem for non-native token', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: false,
@@ -508,7 +508,7 @@ describe('EOSIO asset', () => {
     test('Should call makeContractSend with redeem for non-native token with user data', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: false,

@@ -45,7 +45,7 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: false,
@@ -86,7 +86,7 @@ describe('EVM asset', () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
       const getAssetInfoSpy = jest
-        .spyOn(pTokensNode.prototype, 'getAssetInfo')
+        .spyOn(pTokensNode.prototype, 'getAssetInfoByChainId')
         .mockRejectedValue(new Error('getAssetInfo error'))
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
@@ -119,7 +119,7 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: true,
@@ -175,7 +175,7 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: true,
@@ -231,7 +231,7 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: true,
@@ -287,7 +287,7 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: true,
@@ -343,7 +343,7 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: false,
@@ -401,7 +401,7 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: true,
@@ -442,7 +442,7 @@ describe('EVM asset', () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
       const getAssetInfoSpy = jest
-        .spyOn(pTokensNode.prototype, 'getAssetInfo')
+        .spyOn(pTokensNode.prototype, 'getAssetInfoByChainId')
         .mockRejectedValue(new Error('getAssetInfo error'))
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
@@ -475,7 +475,7 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: false,
@@ -530,7 +530,7 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
           isNative: false,
