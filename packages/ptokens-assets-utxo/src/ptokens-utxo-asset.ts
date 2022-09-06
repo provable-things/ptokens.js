@@ -41,18 +41,23 @@ export class pTokensUtxoAsset extends pTokensAsset {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {
-          if (node === undefined) return reject(new Error('Undefined node'))
-          if (destinationChainId === undefined) return reject(new Error('Undefined chain ID'))
-          if (!this.provider) return reject(new Error('Missing provider'))
-          const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
-          if (!assetInfo.isNative) return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
-          const config = { nativeBlockchain: this.blockchain, nativeNetwork: this.network, node: node }
-          const depositAddress = new pTokensDepositAddress(config)
-          const address = await depositAddress.generate(destinationAddress, this.chainId, destinationChainId)
-          const txHash: string = await this.waitForDeposit(address)
-            .on('txBroadcasted', (_txHash) => promi.emit('txBroadcasted', _txHash))
-            .on('txConfirmed', (_txHash) => promi.emit('txConfirmed', _txHash))
-          return resolve(txHash)
+          try {
+            if (!node) return reject(new Error('Undefined node'))
+            if (!destinationChainId) return reject(new Error('Undefined chain ID'))
+            if (!this.provider) return reject(new Error('Missing provider'))
+            const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
+            if (!assetInfo.isNative) return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
+            const config = { nativeBlockchain: this.blockchain, nativeNetwork: this.network, node: node }
+            const depositAddress = new pTokensDepositAddress(config)
+            const address = await depositAddress.generate(destinationAddress, this.chainId, destinationChainId)
+            promi.emit('depositAddress', address)
+            const txHash: string = await this.waitForDeposit(address)
+              .on('txBroadcasted', (_txHash) => promi.emit('txBroadcasted', _txHash))
+              .on('txConfirmed', (_txHash) => promi.emit('txConfirmed', _txHash))
+            return resolve(txHash)
+          } catch (err) {
+            return reject(err)
+          }
         })() as unknown
     )
     return promi
