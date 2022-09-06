@@ -14,12 +14,14 @@ export class pTokensSwap {
   private _sourceAsset: pTokensAsset
   private _destinationAssets: Array<DestinationInfo>
   private _amount: number
+  private controller: AbortController
 
   constructor(node: pTokensNode, sourceAsset: pTokensAsset, destinationAssets: Array<DestinationInfo>, amount: number) {
     this._node = node
     this._sourceAsset = sourceAsset
     this._destinationAssets = destinationAssets
     this._amount = amount
+    this.controller = new AbortController()
   }
 
   public get sourceAsset(): pTokensAsset {
@@ -69,11 +71,16 @@ export class pTokensSwap {
     return promi
   }
 
+  abort() {
+    this.controller.abort()
+  }
+
   execute() {
     const promi = new PromiEvent<InnerTransactionStatus[]>(
       (resolve, reject) =>
         (async () => {
           try {
+            this.controller.signal.addEventListener('abort', _ => reject(new Error('Swap aborted by user')))
             const assetInfo = await this.node.getAssetInfo(this.sourceAsset.symbol)
             const sourceInfo = assetInfo.filter((info) => info.chainId == this.sourceAsset.chainId)[0]
             const isSupported = (asset: pTokensAsset) => assetInfo.some((_info) => _info.chainId === asset.chainId)
@@ -98,6 +105,9 @@ export class pTokensSwap {
               )
             }
             const txHash = await swapPromiEvent
+              .on('depositAddress', (depositAddress) => {
+                promi.emit('depositAddress', depositAddress)
+              })
               .on('txBroadcasted', (txHash) => {
                 promi.emit('inputTxDetected', txHash)
               })

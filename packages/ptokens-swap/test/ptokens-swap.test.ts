@@ -72,8 +72,11 @@ describe('pTokensSwap', () => {
       inputTxProcessed = false,
       outputTxDetected = false,
       outputTxProcessed = false
-    let inputTxDetectedObj, inputTxProcessedObj, outputTxDetectedObj, outputTxProcessedObj
+    let depositAddress, inputTxDetectedObj, inputTxProcessedObj, outputTxDetectedObj, outputTxProcessedObj
     await promi
+      .on('depositAddress', (address) => {
+        depositAddress = address
+      })
       .on('inputTxDetected', (obj) => {
         inputTxDetectedObj = obj
         inputTxDetected = true
@@ -100,6 +103,7 @@ describe('pTokensSwap', () => {
       undefined
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
+    expect(depositAddress).toStrictEqual('deposit-address')
     expect(inputTxDetected).toBeTruthy()
     expect(inputTxDetectedObj).toBe('originating-tx-hash')
     expect(inputTxProcessed).toBeTruthy()
@@ -221,8 +225,11 @@ describe('pTokensSwap', () => {
       inputTxProcessed = false,
       outputTxDetected = false,
       outputTxProcessed = false
-    let inputTxDetectedObj, inputTxProcessedObj, outputTxDetectedObj, outputTxProcessedObj
+    let depositAddress, inputTxDetectedObj, inputTxProcessedObj, outputTxDetectedObj, outputTxProcessedObj
     await promi
+      .on('depositAddress', (address) => {
+        depositAddress = address
+      })
       .on('inputTxDetected', (obj) => {
         inputTxDetectedObj = obj
         inputTxDetected = true
@@ -249,6 +256,7 @@ describe('pTokensSwap', () => {
       Buffer.from('user-data')
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
+    expect(depositAddress).toStrictEqual('deposit-address')
     expect(inputTxDetected).toBeTruthy()
     expect(inputTxDetectedObj).toBe('originating-tx-hash')
     expect(inputTxProcessed).toBeTruthy()
@@ -521,6 +529,51 @@ describe('pTokensSwap', () => {
       expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE')
       expect(nativeToInterimSpy).toHaveBeenCalledTimes(0)
       expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
+    }
+  })
+
+  it('Should abort a running swap', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+      return Promise.resolve([
+        {
+          chainId: ChainId.BitcoinMainnet,
+          isNative: false,
+          tokenAddress: '',
+          isSystemToken: false,
+        },
+        {
+          chainId: ChainId.EthereumMainnet,
+          isNative: false,
+          tokenAddress: '',
+          isSystemToken: false,
+        },
+      ])
+    })
+    const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
+    getTransactionStatusSpy.mockResolvedValue({ inputs: [], outputs: [] })
+
+    const builder = new pTokensSwapBuilder(node)
+    const sourceAsset = new pTokenAssetMock({
+      symbol: 'SOURCE',
+      chainId: ChainId.BitcoinMainnet,
+      blockchain: Blockchain.Bitcoin,
+      network: Network.Mainnet,
+    })
+    const destinationAsset = new pTokenAssetMock({
+      symbol: 'DESTINATION',
+      chainId: ChainId.EthereumMainnet,
+      blockchain: Blockchain.Ethereum,
+      network: Network.Mainnet,
+    })
+    builder.setAmount(123.456).setSourceAsset(sourceAsset).addDestinationAsset(destinationAsset, 'destination-address')
+    const swap = builder.build()
+    try {
+      const promi = swap.execute()
+      setTimeout(_ => swap.abort(), 1000)
+      await promi
+    } catch (err) {
+      expect(err.message).toStrictEqual('Swap aborted by user')
     }
   })
 
