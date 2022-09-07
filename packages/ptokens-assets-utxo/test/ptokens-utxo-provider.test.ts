@@ -74,6 +74,7 @@ describe('UTXO provider', () => {
     const axiosGetSpy = jest
       .spyOn(axios, 'get')
       .mockResolvedValueOnce({ data: [] })
+      .mockRejectedValueOnce(new Error('Network Error'))
       .mockResolvedValueOnce({ data: [{ txid: 'tx-hash', status: { confirmed: false } }] })
       .mockResolvedValue({ data: [{ txid: 'tx-hash', status: { confirmed: true } }] })
     const axiosPostSpy = jest.spyOn(axios, 'post').mockResolvedValue({ data: 'post-resp' })
@@ -97,10 +98,11 @@ describe('UTXO provider', () => {
     expect(ret).toEqual('tx-hash')
     expect(txHashBroadcasted).toEqual('tx-hash')
     expect(txHashConfirmed).toEqual('tx-hash')
-    expect(axiosGetSpy).toHaveBeenCalledTimes(3)
+    expect(axiosGetSpy).toHaveBeenCalledTimes(4)
     expect(axiosGetSpy).toHaveBeenNthCalledWith(1, '/address/address/utxo')
     expect(axiosGetSpy).toHaveBeenNthCalledWith(2, '/address/address/utxo')
     expect(axiosGetSpy).toHaveBeenNthCalledWith(3, '/address/address/utxo')
+    expect(axiosGetSpy).toHaveBeenNthCalledWith(4, '/address/address/utxo')
     expect(axiosPostSpy).toHaveBeenCalledTimes(0)
   })
 

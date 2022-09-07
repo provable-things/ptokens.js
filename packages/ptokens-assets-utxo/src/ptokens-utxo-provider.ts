@@ -77,20 +77,24 @@ export class pTokensBlockstreamUtxoProvider extends pTokensUtxoProvider {
           let utxos: Utxo[] = []
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           await polling(async () => {
-            utxos = await this._makeApiCall<Utxo[]>(CallTypes.CALL_GET, `/address/${_address}/utxo`)
-            if (utxos.length > 0) {
-              if (utxos[0].status.confirmed) {
-                if (!isBroadcasted) {
+            try {
+              utxos = await this.getUtxoByAddress(_address)
+              if (utxos.length > 0) {
+                if (utxos[0].status.confirmed) {
+                  if (!isBroadcasted) {
+                    promi.emit('txBroadcasted', utxos[0].txid)
+                  }
+                  promi.emit('txConfirmed', utxos[0].txid)
+                  return true
+                } else if (!isBroadcasted) {
+                  isBroadcasted = true
                   promi.emit('txBroadcasted', utxos[0].txid)
+                  return false
                 }
-                promi.emit('txConfirmed', utxos[0].txid)
-                return true
-              } else if (!isBroadcasted) {
-                isBroadcasted = true
-                promi.emit('txBroadcasted', utxos[0].txid)
+              } else {
                 return false
               }
-            } else {
+            } catch (err) {
               return false
             }
           }, _pollingTime)
