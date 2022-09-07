@@ -35,16 +35,16 @@ describe('pTokensSwap', () => {
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
+        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [],
       })
       .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
+        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.BROADCASTED }],
       })
       .mockResolvedValue({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.CONFIRMED }],
+        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.CONFIRMED }],
       })
 
     const sourceAsset = new pTokenAssetMock({
@@ -68,22 +68,32 @@ describe('pTokensSwap', () => {
       10
     )
     const promi = swap.execute()
-    let inputTxDetected = false,
-      inputTxProcessed = false,
+    let inputTxBroadcasted = false,
+      inputTxConfirmed = false,
+      inputTxDetected = false,
       outputTxDetected = false,
       outputTxProcessed = false
-    let depositAddress, inputTxDetectedObj, inputTxProcessedObj, outputTxDetectedObj, outputTxProcessedObj
+    let depositAddress,
+      inputTxBroadcastedObj,
+      inputTxConfirmedObj,
+      inputTxDetectedObj,
+      outputTxDetectedObj,
+      outputTxProcessedObj
     await promi
       .on('depositAddress', (address) => {
         depositAddress = address
       })
+      .on('inputTxBroadcasted', (obj) => {
+        inputTxBroadcastedObj = obj
+        inputTxBroadcasted = true
+      })
+      .on('inputTxConfirmed', (obj) => {
+        inputTxConfirmedObj = obj
+        inputTxConfirmed = true
+      })
       .on('inputTxDetected', (obj) => {
         inputTxDetectedObj = obj
         inputTxDetected = true
-      })
-      .on('inputTxProcessed', (obj) => {
-        inputTxProcessedObj = obj
-        inputTxProcessed = true
       })
       .on('outputTxDetected', (obj) => {
         outputTxDetectedObj = obj
@@ -104,16 +114,22 @@ describe('pTokensSwap', () => {
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
     expect(depositAddress).toStrictEqual('deposit-address')
+    expect(inputTxBroadcasted).toBeTruthy()
+    expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
+    expect(inputTxConfirmed).toBeTruthy()
+    expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
-    expect(inputTxDetectedObj).toBe('originating-tx-hash')
-    expect(inputTxProcessed).toBeTruthy()
-    expect(inputTxProcessedObj).toBe('originating-tx-hash')
+    expect(inputTxDetectedObj).toStrictEqual([
+      { chain_id: 'input-chain-id', status: Status.BROADCASTED, tx_hash: 'originating-tx-hash' },
+    ])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
-      { chain_id: 'chain-id', status: Status.BROADCASTED, tx_hash: 'tx-hash' },
+      { chain_id: 'output-chain-id', status: Status.BROADCASTED, tx_hash: 'output-tx-hash' },
     ])
     expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: Status.CONFIRMED, tx_hash: 'tx-hash' }])
+    expect(outputTxProcessedObj).toStrictEqual([
+      { chain_id: 'output-chain-id', status: Status.CONFIRMED, tx_hash: 'output-tx-hash' },
+    ])
   })
 
   it('Should reject if getAssetInfo rejects', async () => {
@@ -122,22 +138,6 @@ describe('pTokensSwap', () => {
       .spyOn(pTokensNode.prototype, 'getAssetInfo')
       .mockRejectedValue(new Error('getAssetInfo error'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
-    getTransactionStatusSpy
-      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
-      .mockResolvedValueOnce({ inputs: [], outputs: [] })
-      .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
-      })
-      .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
-      })
-      .mockResolvedValue({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.CONFIRMED }],
-      })
-
     const sourceAsset = new pTokenAssetMock({
       symbol: 'SOURCE',
       chainId: ChainId.BitcoinMainnet,
@@ -162,6 +162,7 @@ describe('pTokensSwap', () => {
     } catch (err) {
       expect(err.message).toEqual('getAssetInfo error')
       expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SOURCE')
+      expect(getTransactionStatusSpy).toHaveBeenCalledTimes(0)
     }
   })
 
@@ -188,16 +189,17 @@ describe('pTokensSwap', () => {
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
+        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [],
       })
       .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
+        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.BROADCASTED }],
       })
+      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValue({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.CONFIRMED }],
+        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.CONFIRMED }],
       })
 
     const builder = new pTokensSwapBuilder(node)
@@ -221,22 +223,32 @@ describe('pTokensSwap', () => {
       .addDestinationAsset(destinationAsset, 'destination-address', Buffer.from('user-data'))
     const swap = builder.build()
     const promi = swap.execute()
-    let inputTxDetected = false,
-      inputTxProcessed = false,
+    let inputTxBroadcasted = false,
+      inputTxConfirmed = false,
+      inputTxDetected = false,
       outputTxDetected = false,
       outputTxProcessed = false
-    let depositAddress, inputTxDetectedObj, inputTxProcessedObj, outputTxDetectedObj, outputTxProcessedObj
+    let depositAddress,
+      inputTxBroadcastedObj,
+      inputTxConfirmedObj,
+      inputTxDetectedObj,
+      outputTxDetectedObj,
+      outputTxProcessedObj
     await promi
       .on('depositAddress', (address) => {
         depositAddress = address
       })
+      .on('inputTxBroadcasted', (obj) => {
+        inputTxBroadcastedObj = obj
+        inputTxBroadcasted = true
+      })
+      .on('inputTxConfirmed', (obj) => {
+        inputTxConfirmedObj = obj
+        inputTxConfirmed = true
+      })
       .on('inputTxDetected', (obj) => {
         inputTxDetectedObj = obj
         inputTxDetected = true
-      })
-      .on('inputTxProcessed', (obj) => {
-        inputTxProcessedObj = obj
-        inputTxProcessed = true
       })
       .on('outputTxDetected', (obj) => {
         outputTxDetectedObj = obj
@@ -257,16 +269,22 @@ describe('pTokensSwap', () => {
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
     expect(depositAddress).toStrictEqual('deposit-address')
+    expect(inputTxBroadcasted).toBeTruthy()
+    expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
+    expect(inputTxConfirmed).toBeTruthy()
+    expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
-    expect(inputTxDetectedObj).toBe('originating-tx-hash')
-    expect(inputTxProcessed).toBeTruthy()
-    expect(inputTxProcessedObj).toBe('originating-tx-hash')
+    expect(inputTxDetectedObj).toStrictEqual([
+      { chain_id: 'input-chain-id', status: Status.BROADCASTED, tx_hash: 'originating-tx-hash' },
+    ])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
-      { chain_id: 'chain-id', status: Status.BROADCASTED, tx_hash: 'tx-hash' },
+      { chain_id: 'output-chain-id', status: Status.BROADCASTED, tx_hash: 'output-tx-hash' },
     ])
     expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: Status.CONFIRMED, tx_hash: 'tx-hash' }])
+    expect(outputTxProcessedObj).toStrictEqual([
+      { chain_id: 'output-chain-id', status: Status.CONFIRMED, tx_hash: 'output-tx-hash' },
+    ])
   })
 
   it('Should swap host asset without user data ', async () => {
@@ -292,16 +310,16 @@ describe('pTokensSwap', () => {
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
+        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [],
       })
       .mockResolvedValueOnce({
         inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
+        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.BROADCASTED }],
       })
       .mockResolvedValue({
         inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.CONFIRMED }],
+        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.CONFIRMED }],
       })
 
     const builder = new pTokensSwapBuilder(node)
@@ -322,19 +340,24 @@ describe('pTokensSwap', () => {
     builder.setAmount(123.456).setSourceAsset(sourceAsset).addDestinationAsset(destinationAsset, 'destination-address')
     const swap = builder.build()
     const promi = swap.execute()
-    let inputTxDetected = false,
-      inputTxProcessed = false,
+    let inputTxBroadcasted = false,
+      inputTxConfirmed = false,
+      inputTxDetected = false,
       outputTxDetected = false,
       outputTxProcessed = false
-    let inputTxDetectedObj, inputTxProcessedObj, outputTxDetectedObj, outputTxProcessedObj
+    let inputTxBroadcastedObj, inputTxConfirmedObj, inputTxDetectedObj, outputTxDetectedObj, outputTxProcessedObj
     await promi
+      .on('inputTxBroadcasted', (obj) => {
+        inputTxBroadcastedObj = obj
+        inputTxBroadcasted = true
+      })
+      .on('inputTxConfirmed', (obj) => {
+        inputTxConfirmedObj = obj
+        inputTxConfirmed = true
+      })
       .on('inputTxDetected', (obj) => {
         inputTxDetectedObj = obj
         inputTxDetected = true
-      })
-      .on('inputTxProcessed', (obj) => {
-        inputTxProcessedObj = obj
-        inputTxProcessed = true
       })
       .on('outputTxDetected', (obj) => {
         outputTxDetectedObj = obj
@@ -354,16 +377,22 @@ describe('pTokensSwap', () => {
       undefined
     )
     expect(nativeToInterimSpy).toHaveBeenCalledTimes(0)
+    expect(inputTxBroadcasted).toBeTruthy()
+    expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
+    expect(inputTxConfirmed).toBeTruthy()
+    expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
-    expect(inputTxDetectedObj).toBe('originating-tx-hash')
-    expect(inputTxProcessed).toBeTruthy()
-    expect(inputTxProcessedObj).toBe('originating-tx-hash')
+    expect(inputTxDetectedObj).toStrictEqual([
+      { chain_id: 'input-chain-id', status: Status.BROADCASTED, tx_hash: 'originating-tx-hash' },
+    ])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
-      { chain_id: 'chain-id', status: Status.BROADCASTED, tx_hash: 'tx-hash' },
+      { chain_id: 'output-chain-id', status: Status.BROADCASTED, tx_hash: 'output-tx-hash' },
     ])
     expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: Status.CONFIRMED, tx_hash: 'tx-hash' }])
+    expect(outputTxProcessedObj).toStrictEqual([
+      { chain_id: 'output-chain-id', status: Status.CONFIRMED, tx_hash: 'output-tx-hash' },
+    ])
   })
 
   it('Should swap host asset with user data ', async () => {
@@ -389,16 +418,16 @@ describe('pTokensSwap', () => {
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
+        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [],
       })
       .mockResolvedValueOnce({
         inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
+        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.BROADCASTED }],
       })
       .mockResolvedValue({
         inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.CONFIRMED }],
+        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.CONFIRMED }],
       })
 
     const builder = new pTokensSwapBuilder(node)
@@ -422,19 +451,24 @@ describe('pTokensSwap', () => {
       .addDestinationAsset(destinationAsset, 'destination-address', Buffer.from('user-data'))
     const swap = builder.build()
     const promi = swap.execute()
-    let inputTxDetected = false,
-      inputTxProcessed = false,
+    let inputTxBroadcasted = false,
+      inputTxConfirmed = false,
+      inputTxDetected = false,
       outputTxDetected = false,
       outputTxProcessed = false
-    let inputTxDetectedObj, inputTxProcessedObj, outputTxDetectedObj, outputTxProcessedObj
+    let inputTxBroadcastedObj, inputTxConfirmedObj, inputTxDetectedObj, outputTxDetectedObj, outputTxProcessedObj
     await promi
+      .on('inputTxBroadcasted', (obj) => {
+        inputTxBroadcastedObj = obj
+        inputTxBroadcasted = true
+      })
+      .on('inputTxConfirmed', (obj) => {
+        inputTxConfirmedObj = obj
+        inputTxConfirmed = true
+      })
       .on('inputTxDetected', (obj) => {
         inputTxDetectedObj = obj
         inputTxDetected = true
-      })
-      .on('inputTxProcessed', (obj) => {
-        inputTxProcessedObj = obj
-        inputTxProcessed = true
       })
       .on('outputTxDetected', (obj) => {
         outputTxDetectedObj = obj
@@ -454,16 +488,22 @@ describe('pTokensSwap', () => {
       Buffer.from('user-data')
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
+    expect(inputTxBroadcasted).toBeTruthy()
+    expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
+    expect(inputTxConfirmed).toBeTruthy()
+    expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
-    expect(inputTxDetectedObj).toBe('originating-tx-hash')
-    expect(inputTxProcessed).toBeTruthy()
-    expect(inputTxProcessedObj).toBe('originating-tx-hash')
+    expect(inputTxDetectedObj).toStrictEqual([
+      { chain_id: 'input-chain-id', status: 0, tx_hash: 'originating-tx-hash' },
+    ])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
-      { chain_id: 'chain-id', status: Status.BROADCASTED, tx_hash: 'tx-hash' },
+      { chain_id: 'output-chain-id', status: Status.BROADCASTED, tx_hash: 'output-tx-hash' },
     ])
     expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([{ chain_id: 'chain-id', status: Status.CONFIRMED, tx_hash: 'tx-hash' }])
+    expect(outputTxProcessedObj).toStrictEqual([
+      { chain_id: 'output-chain-id', status: Status.CONFIRMED, tx_hash: 'output-tx-hash' },
+    ])
   })
 
   it('Should reject when swapping unsupported tokens', async () => {
@@ -485,22 +525,6 @@ describe('pTokensSwap', () => {
       ])
     })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
-    getTransactionStatusSpy
-      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
-      .mockResolvedValueOnce({ inputs: [], outputs: [] })
-      .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
-      })
-      .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
-      })
-      .mockResolvedValue({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.CONFIRMED }],
-      })
-
     const sourceAsset = new pTokenAssetMock({
       symbol: 'SOURCE',
       chainId: ChainId.BitcoinMainnet,
@@ -529,9 +553,14 @@ describe('pTokensSwap', () => {
       expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE')
       expect(nativeToInterimSpy).toHaveBeenCalledTimes(0)
       expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
+      expect(getTransactionStatusSpy).toHaveBeenCalledTimes(0)
     }
   })
 
+  // Note: this test causes jest to report 'A worker process has failed to exit gracefully and has been force exited.
+  // This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks.
+  // Active timers can also cause this, ensure that .unref() was called on them.'
+  // This is because the polling function withing the transactions monitoring does not exit when abort is sent
   it('Should abort a running swap', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
@@ -570,7 +599,7 @@ describe('pTokensSwap', () => {
     const swap = builder.build()
     try {
       const promi = swap.execute()
-      setTimeout(_ => swap.abort(), 1000)
+      setTimeout(() => swap.abort(), 1000)
       await promi
     } catch (err) {
       expect(err.message).toStrictEqual('Swap aborted by user')

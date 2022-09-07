@@ -40,6 +40,33 @@ export class pTokensSwap {
     return this._node
   }
 
+  private monitorInputTransactions(txHash: string, origChainId: string): PromiEvent<InnerTransactionStatus[]> {
+    const promi = new PromiEvent<InnerTransactionStatus[]>(
+      (resolve) =>
+        (async () => {
+          async function getInputTransactions(node: pTokensNode) {
+            const resp = await node.getTransactionStatus(txHash, origChainId)
+            return resp.inputs
+          }
+          let resp: InnerTransactionStatus[]
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+          await polling(async () => {
+            try {
+              resp = await getInputTransactions(this.node)
+              if (resp.length) {
+                promi.emit('inputTxDetected', resp)
+                return true
+              }
+            } catch (err) {
+              return false
+            }
+          }, 1000)
+          resolve(resp)
+        })() as unknown
+    )
+    return promi
+  }
+
   private monitorOutputTransactions(txHash: string, origChainId: string): PromiEvent<InnerTransactionStatus[]> {
     const promi = new PromiEvent<InnerTransactionStatus[]>(
       (resolve) =>
@@ -80,7 +107,7 @@ export class pTokensSwap {
       (resolve, reject) =>
         (async () => {
           try {
-            this.controller.signal.addEventListener('abort', _ => reject(new Error('Swap aborted by user')))
+            this.controller.signal.addEventListener('abort', () => reject(new Error('Swap aborted by user')))
             const assetInfo = await this.node.getAssetInfo(this.sourceAsset.symbol)
             const sourceInfo = assetInfo.filter((info) => info.chainId == this.sourceAsset.chainId)[0]
             const isSupported = (asset: pTokensAsset) => assetInfo.some((_info) => _info.chainId === asset.chainId)
@@ -109,11 +136,14 @@ export class pTokensSwap {
                 promi.emit('depositAddress', depositAddress)
               })
               .on('txBroadcasted', (txHash) => {
-                promi.emit('inputTxDetected', txHash)
+                promi.emit('inputTxBroadcasted', txHash)
               })
               .on('txConfirmed', (txHash) => {
-                promi.emit('inputTxProcessed', txHash)
+                promi.emit('inputTxConfirmed', txHash)
               })
+            await this.monitorInputTransactions(txHash, this.sourceAsset.chainId).on('inputTxDetected', (inputs) => {
+              promi.emit('inputTxDetected', inputs)
+            })
             const outputs = await this.monitorOutputTransactions(txHash, this.sourceAsset.chainId)
               .on('outputTxBroadcasted', (outputs) => {
                 promi.emit('outputTxDetected', outputs)
