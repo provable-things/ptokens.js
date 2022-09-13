@@ -78,14 +78,14 @@ describe('EOSIO provider', () => {
     const setAbiSpy = jest.spyOn(provider['_api'].cachedAbis, 'set')
     const transactSpy = jest.spyOn(Api.prototype, 'transact')
     try {
-      await provider.makeContractSend(
+      await provider.transact([
         {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
+          arguments: [1, 'arg2', 'arg3'],
         },
-        [1, 'arg2', 'arg3']
-      )
+      ])
       fail()
     } catch (err) {
       expect(err.message).toStrictEqual('Missing actor')
@@ -102,14 +102,14 @@ describe('EOSIO provider', () => {
     })
     const transactSpy = jest.spyOn(Api.prototype, 'transact')
     try {
-      await provider.makeContractSend(
+      await provider.transact([
         {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
+          arguments: [1, 'arg2', 'arg3'],
         },
-        [1, 'arg2', 'arg3']
-      )
+      ])
       fail()
     } catch (err) {
       expect(err.message).toStrictEqual('Set ABI error')
@@ -149,14 +149,14 @@ describe('EOSIO provider', () => {
       },
     })
     try {
-      await provider.makeContractSend(
+      await provider.transact([
         {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
+          arguments: [1, 'arg2', 'arg3'],
         },
-        [1, 'arg2', 'arg3']
-      )
+      ])
     } catch (err) {
       expect(err.message).toBe('Unexpected return value from transact()')
       expect(setAbiSpy).toHaveBeenCalledWith('contract-address', { abi, rawAbi: null })
@@ -205,14 +205,14 @@ describe('EOSIO provider', () => {
       },
     })
     const txHash = await provider
-      .makeContractSend(
+      .transact([
         {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
+          arguments: [1, 'arg2', 'arg3'],
         },
-        [1, 'arg2', 'arg3']
-      )
+      ])
       .once('txBroadcasted', (_hash) => {
         txBroadcastedHash = _hash
       })
@@ -268,11 +268,13 @@ describe('EOSIO provider', () => {
       },
     })
     const txHash = await provider
-      .makeContractSend({
-        method: 'setNumber',
-        abi,
-        contractAddress: 'contract-address',
-      })
+      .transact([
+        {
+          method: 'setNumber',
+          abi,
+          contractAddress: 'contract-address',
+        },
+      ])
       .once('txBroadcasted', (_hash) => {
         txBroadcastedHash = _hash
       })
@@ -304,6 +306,7 @@ describe('EOSIO provider', () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
     provider.setBlocksBehind(5)
     provider.setActor('eosioaccount').setExpireSeconds(10)
+    provider.setPermission('owner')
     const setAbiSpy = jest.spyOn(provider['_api'].cachedAbis, 'set')
     let txBroadcastedHash = ''
     let txConfirmedHash = ''
@@ -326,15 +329,14 @@ describe('EOSIO provider', () => {
       },
     })
     const txHash = await provider
-      .makeContractSend(
+      .transact([
         {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
-          permission: 'owner',
+          arguments: [1, 'arg2', 'arg3'],
         },
-        [1, 'arg2', 'arg3']
-      )
+      ])
       .once('txBroadcasted', (_hash) => {
         txBroadcastedHash = _hash
       })

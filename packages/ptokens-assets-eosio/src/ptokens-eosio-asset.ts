@@ -1,18 +1,21 @@
 import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
 import PromiEvent from 'promievent'
 import { pTokensNode } from 'ptokens-node'
-import { pTokensEosioProvider } from './ptokens-eosio-provider'
+import { Action, pTokensEosioProvider } from './ptokens-eosio-provider'
 
 import pTokenOnEOSIOContractAbi from './abi/pTokenOnEOSContractAbiV2.json'
+import ptokenOnEOSIOVaultAbi from './abi/pTokenVaultOnEOSContractAbiV2.json'
 
 const EOSIO_TOKEN_PEG_OUT_METHOD = 'redeem2'
+const EOSIO_TOKEN_TRANSFER_METHOD = 'transfer'
+const EOSIO_VAULT_ADD_USER_DATA_METHOD = 'adduserdata'
 
 export type pTokenEosioAssetConfig = pTokenAssetConfig & {
   provider?: pTokensEosioProvider
   sourceAddress?: string
 }
 
-const getAmountInEosFormat = (_amount: number, _decimals = 4, symbol: string) => {
+const getAmountInEosFormat = (_amount: number, _decimals: number, symbol: string) => {
   return `${_amount.toFixed(_decimals)} ${symbol}`
 }
 
@@ -33,7 +36,48 @@ export class pTokensEosioAsset extends pTokensAsset {
     destinationChainId: string,
     userData?: BinaryData
   ): PromiEvent<string> {
-    throw new Error('Method not implemented.')
+    const promi = new PromiEvent<string>(
+      (resolve, reject) =>
+        (async () => {
+          try {
+            if (!this.provider) return reject(new Error('Missing provider'))
+            if (!this.sourceAddress) return reject(new Error('Missing owner for source asset'))
+            const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
+            if (!assetInfo.isNative) return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
+            const actions: Action[] = [
+              {
+                contractAddress: assetInfo.tokenAddress,
+                method: EOSIO_TOKEN_TRANSFER_METHOD,
+                abi: pTokenOnEOSIOContractAbi,
+                arguments: {
+                  from: this.sourceAddress,
+                  to: assetInfo.vaultAddress,
+                  quantity: getAmountInEosFormat(amount, 8, this.symbol.toUpperCase()),
+                  memo: `${destinationAddress},${destinationChainId}${userData ? ',1' : ''}`,
+                },
+              },
+            ]
+            if (userData)
+              actions.push({
+                contractAddress: assetInfo.vaultAddress,
+                method: EOSIO_VAULT_ADD_USER_DATA_METHOD,
+                abi: ptokenOnEOSIOVaultAbi,
+                arguments: {
+                  user_data: userData,
+                },
+              })
+            const txHash: string = await this.provider
+              .transact(actions)
+              .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
+              .once('txConfirmed', (_hash) => promi.emit('txConfirmed', _hash))
+              .once('error', reject)
+            return resolve(txHash)
+          } catch (_err) {
+            return reject(_err)
+          }
+        })() as unknown
+    )
+    return promi
   }
 
   hostToInterim(
@@ -51,7 +95,7 @@ export class pTokensEosioAsset extends pTokensAsset {
             if (!this.sourceAddress) return reject(new Error('Missing owner for source asset'))
             const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
             if (assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
-            const data = {
+            const callArguments = {
               sender: this.sourceAddress,
               quantity: getAmountInEosFormat(amount, 8, this.symbol.toUpperCase()),
               memo: destinationAddress,
@@ -59,14 +103,14 @@ export class pTokensEosioAsset extends pTokensAsset {
               chain_id: destinationChainId.substring(2),
             }
             const txHash: string = await this.provider
-              .makeContractSend(
+              .transact([
                 {
                   method: EOSIO_TOKEN_PEG_OUT_METHOD,
                   abi: pTokenOnEOSIOContractAbi,
                   contractAddress: assetInfo.tokenAddress,
+                  arguments: callArguments,
                 },
-                data
-              )
+              ])
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash) => promi.emit('txConfirmed', _hash))
               .once('error', reject)

@@ -7,11 +7,11 @@ import { GetTransactionResult } from 'eosjs/dist/eosjs-rpc-interfaces'
 
 const EOS_TRANSACTION_EXECUTED = 'executed'
 
-export type MakeContractSendOptions = {
+export type Action = {
+  contractAddress: string
   method: string
   abi: any
-  contractAddress: string
-  permission?: string
+  arguments?: any
 }
 
 export class pTokensEosioProvider {
@@ -19,6 +19,7 @@ export class pTokensEosioProvider {
   private _blocksBehind: number
   private _expireSeconds: number
   private _actor: string
+  private _permission: string
 
   constructor(_rpc: JsonRpc | string, _signatureProvider: JsSignatureProvider = null) {
     this._api = new Api({
@@ -29,6 +30,7 @@ export class pTokensEosioProvider {
     })
     this._expireSeconds = 60
     this._blocksBehind = 3
+    this._permission = 'active'
   }
 
   public get blocksBehind() {
@@ -64,37 +66,36 @@ export class pTokensEosioProvider {
     return this
   }
 
+  public setPermission(_permission: string) {
+    this._permission = _permission
+    return this
+  }
+
   public setPrivateKey(_key: string) {
     this._api.signatureProvider = new JsSignatureProvider([_key])
     return this
   }
 
-  public makeContractSend = (_options: MakeContractSendOptions, _data: any = {}) => {
+  public transact(actions: Action[]) {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {
           try {
             if (!this._actor) return reject(new Error('Missing actor'))
-            const { method, abi, contractAddress, permission } = _options
-            this._api.cachedAbis.set(contractAddress, {
-              abi: abi,
-              rawAbi: null,
+            actions.forEach((action) => {
+              this._api.cachedAbis.set(action.contractAddress, {
+                abi: action.abi,
+                rawAbi: null,
+              })
             })
             const ret = await this._api.transact(
               {
-                actions: [
-                  {
-                    account: contractAddress,
-                    name: method,
-                    authorization: [
-                      {
-                        actor: this._actor,
-                        permission: permission || 'active',
-                      },
-                    ],
-                    data: _data,
-                  },
-                ],
+                actions: actions.map((_action) => ({
+                  name: _action.method,
+                  account: _action.contractAddress,
+                  data: _action.arguments !== undefined ? _action.arguments : {},
+                  authorization: [{ actor: this.actor, permission: this._permission }],
+                })),
               },
               {
                 blocksBehind: this._blocksBehind,
