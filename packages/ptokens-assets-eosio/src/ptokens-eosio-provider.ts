@@ -22,6 +22,7 @@ export class pTokensEosioProvider {
   private _permission: string
 
   constructor(_rpc: JsonRpc | string, _signatureProvider: JsSignatureProvider = null) {
+    if (!_rpc) throw new Error('Invalid RPC argument')
     this._api = new Api({
       rpc: typeof _rpc === 'string' ? new JsonRpc(_rpc, { fetch }) : _rpc,
       textDecoder: new TextDecoder(),

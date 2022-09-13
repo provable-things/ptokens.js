@@ -45,6 +45,7 @@ describe('EOSIO asset', () => {
     test('Should not call nativeToInterim for non-native tokens', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
@@ -70,7 +71,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       try {
         await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
@@ -98,7 +98,7 @@ describe('EOSIO asset', () => {
         await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
-        expect(err.message).toEqual('Missing owner for source asset')
+        expect(err.message).toEqual('Missing actor')
         expect(getAssetInfoSpy).toHaveBeenCalledTimes(0)
         expect(transactSpy).toHaveBeenCalledTimes(0)
       }
@@ -107,6 +107,7 @@ describe('EOSIO asset', () => {
     test('Should reject if getAssetInfoReject', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest
         .spyOn(pTokensNode.prototype, 'getAssetInfoByChainId')
         .mockRejectedValue(new Error('getAssetInfo error'))
@@ -126,7 +127,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       try {
         await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
@@ -141,6 +141,7 @@ describe('EOSIO asset', () => {
     test('Should call makeContractSend with pegIn for native token', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
@@ -166,7 +167,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       let txHash = ''
       const ret = await asset
@@ -195,6 +195,7 @@ describe('EOSIO asset', () => {
     test('Should call makeContractSend with pegIn for native token and user data', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
@@ -220,7 +221,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       let txHash = ''
       const ret = await asset
@@ -255,6 +255,7 @@ describe('EOSIO asset', () => {
     test('Should call makeContractSend with pegInEth for system token', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
@@ -280,7 +281,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       let txHash = ''
       const ret = await asset
@@ -309,6 +309,7 @@ describe('EOSIO asset', () => {
     test('Should call transact with transfer and adduserdata for system token with user data', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
@@ -334,7 +335,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       let txHash = ''
       const ret = await asset
@@ -369,6 +369,7 @@ describe('EOSIO asset', () => {
     test('Should not call nativeToInterim for non-native tokens', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
@@ -394,7 +395,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       try {
         await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
@@ -418,7 +418,6 @@ describe('EOSIO asset', () => {
         chainId: ChainId.EthereumMainnet,
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
-        sourceAddress: 'tokenOwner',
       })
       try {
         await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
@@ -431,6 +430,7 @@ describe('EOSIO asset', () => {
     test('Should not call hostToInterim for native tokens', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
@@ -456,7 +456,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       try {
         await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
@@ -484,7 +483,7 @@ describe('EOSIO asset', () => {
         await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
-        expect(err.message).toEqual('Missing owner for source asset')
+        expect(err.message).toEqual('Missing actor')
         expect(getAssetInfoSpy).toHaveBeenCalledTimes(0)
         expect(transactSpy).toHaveBeenCalledTimes(0)
       }
@@ -493,6 +492,7 @@ describe('EOSIO asset', () => {
     test('Should reject if getAssetInfo rejects', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest
         .spyOn(pTokensNode.prototype, 'getAssetInfoByChainId')
         .mockRejectedValue(new Error('getAssetInfo error'))
@@ -512,7 +512,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       try {
         await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
@@ -527,6 +526,7 @@ describe('EOSIO asset', () => {
     test('Should call makeContractSend with redeem for non-native token', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
@@ -551,7 +551,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Ethereum,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
@@ -586,6 +585,7 @@ describe('EOSIO asset', () => {
     test('Should call makeContractSend with redeem for non-native token with user data', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
       const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
         return Promise.resolve({
           chainId: 'originating-chain-id',
@@ -610,7 +610,6 @@ describe('EOSIO asset', () => {
         blockchain: Blockchain.Eos,
         network: Network.Mainnet,
         provider: provider,
-        sourceAddress: 'tokenOwner',
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''

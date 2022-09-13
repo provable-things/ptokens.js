@@ -15,6 +15,24 @@ describe('EOSIO provider', () => {
       .mockResolvedValueOnce(executedGetTransactionResult)
   })
 
+  test('Should throw if rpc is undefined', () => {
+    try {
+      new pTokensEosioProvider(undefined)
+      fail()
+    } catch (err) {
+      expect(err.message).toEqual('Invalid RPC argument')
+    }
+  })
+
+  test('Should throw if rpc is null', () => {
+    try {
+      new pTokensEosioProvider(null)
+      fail()
+    } catch (err) {
+      expect(err.message).toEqual('Invalid RPC argument')
+    }
+  })
+
   test('Should throw with negative expireSeconds', () => {
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
     try {

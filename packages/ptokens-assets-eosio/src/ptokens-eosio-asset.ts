@@ -12,7 +12,6 @@ const EOSIO_VAULT_ADD_USER_DATA_METHOD = 'adduserdata'
 
 export type pTokenEosioAssetConfig = pTokenAssetConfig & {
   provider?: pTokensEosioProvider
-  sourceAddress?: string
 }
 
 const getAmountInEosFormat = (_amount: number, _decimals: number, symbol: string) => {
@@ -21,12 +20,10 @@ const getAmountInEosFormat = (_amount: number, _decimals: number, symbol: string
 
 export class pTokensEosioAsset extends pTokensAsset {
   private provider: pTokensEosioProvider
-  private sourceAddress: string
 
   constructor(config: pTokenEosioAssetConfig) {
     super(config)
     this.provider = config.provider
-    this.sourceAddress = config.sourceAddress
   }
 
   nativeToInterim(
@@ -41,7 +38,7 @@ export class pTokensEosioAsset extends pTokensAsset {
         (async () => {
           try {
             if (!this.provider) return reject(new Error('Missing provider'))
-            if (!this.sourceAddress) return reject(new Error('Missing owner for source asset'))
+            if (!this.provider.actor) return reject(new Error('Missing actor'))
             const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
             if (!assetInfo.isNative) return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
             const actions: Action[] = [
@@ -50,7 +47,7 @@ export class pTokensEosioAsset extends pTokensAsset {
                 method: EOSIO_TOKEN_TRANSFER_METHOD,
                 abi: pTokenOnEOSIOContractAbi,
                 arguments: {
-                  from: this.sourceAddress,
+                  from: this.provider.actor,
                   to: assetInfo.vaultAddress,
                   quantity: getAmountInEosFormat(amount, 8, this.symbol.toUpperCase()),
                   memo: `${destinationAddress},${destinationChainId}${userData ? ',1' : ''}`,
@@ -92,11 +89,11 @@ export class pTokensEosioAsset extends pTokensAsset {
         (async () => {
           try {
             if (!this.provider) return reject(new Error('Missing provider'))
-            if (!this.sourceAddress) return reject(new Error('Missing owner for source asset'))
+            if (!this.provider.actor) return reject(new Error('Missing actor'))
             const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
             if (assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
             const callArguments = {
-              sender: this.sourceAddress,
+              sender: this.provider.actor,
               quantity: getAmountInEosFormat(amount, 8, this.symbol.toUpperCase()),
               memo: destinationAddress,
               user_data: userData || '',
