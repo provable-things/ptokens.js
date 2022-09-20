@@ -1,10 +1,99 @@
-import { pTokensAsset } from 'ptokens-entities'
+import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
+import { pTokensAlgorandProvider } from './ptokens-algorand-provider'
+import { pTokensNode } from 'ptokens-node'
 import PromiEvent from 'promievent'
+import algosdk from 'algosdk'
+import { encode } from '@msgpack/msgpack'
+
+export type pTokenAlgorandAssetConfig = pTokenAssetConfig & {
+  provider?: pTokensAlgorandProvider
+}
+
+// function encodeStringForArgs(_str: string) {
+//   return new Uint8Array(Buffer.from(_str))
+// }
+
+// function parseHexString(_str: string): number[] {
+//   let inStr = _str
+//   const result: number[] = []
+//   while (inStr.length >= 2) {
+//     result.push(parseInt(inStr.substring(0, 2), 16))
+//     inStr = inStr.substring(2, inStr.length)
+//   }
+//   return result
+// }
 export class pTokensAlgorandAsset extends pTokensAsset {
-  nativeToInterim(): PromiEvent<string> {
+  private provider: pTokensAlgorandProvider
+  private customHostToInterimTransactions: algosdk.Transaction[]
+  private _hostIdentity: string
+  private _nativeIdentity: string
+
+  constructor(config: pTokenAlgorandAssetConfig) {
+    super(config)
+    this.provider = config.provider
+  }
+
+  async getAssetInfo(node: pTokensNode) {
+    const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
+    if (assetInfo.nativeIdentity) this._nativeIdentity = assetInfo.nativeIdentity
+    if (assetInfo.hostIdentity) this._hostIdentity = assetInfo.hostIdentity
+  }
+
+  public get hostIdentity() {
+    if (this._hostIdentity) return this._hostIdentity
+  }
+
+  public get nativeIdentity() {
+    if (this._nativeIdentity) return this._nativeIdentity
+  }
+
+  nativeToInterim(
+    node: pTokensNode,
+    amount: number,
+    destinationAddress: string,
+    destinationChainId: string,
+    userData?: BinaryData
+  ): PromiEvent<string> {
     throw new Error('Method not implemented.')
   }
-  hostToInterim(): PromiEvent<string> {
-    throw new Error('Method not implemented.')
+  hostToInterim(
+    node: pTokensNode,
+    amount: number,
+    destinationAddress: string,
+    destinationChainId: string,
+    userData?: BinaryData
+  ): PromiEvent<string> {
+    const promi = new PromiEvent<string>(
+      (resolve, reject) =>
+        (async () => {
+          try {
+            if (!this.provider) return reject(new Error('Missing provider'))
+            if (!this.provider.account) return reject(new Error('Missing account'))
+            const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
+            if (assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
+            const transactions = this.customHostToInterimTransactions
+              ? this.customHostToInterimTransactions
+              : [
+                  algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+                    from: this.provider.account,
+                    to: assetInfo.hostIdentity,
+                    assetIndex: parseInt(assetInfo.tokenAddress),
+                    amount,
+                    suggestedParams: await this.provider.getTransactionParams(),
+                    note: encode([0, destinationChainId, destinationAddress, []]),
+                  }),
+                ]
+            const groupId: string = await this.provider
+              .transactInGroup(transactions)
+              .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
+              .once('txConfirmed', (_hash) => promi.emit('txConfirmed', _hash))
+              .once('error', reject)
+            return resolve(groupId)
+          } catch (_err) {
+            return reject(_err)
+          }
+        })() as unknown
+    )
+    return promi
   }
 }

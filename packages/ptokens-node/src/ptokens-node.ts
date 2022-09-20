@@ -23,6 +23,8 @@ export type SupportingChainInfo = {
   isSystemToken: boolean
   tokenAddress: string
   vaultAddress?: string
+  hostIdentity?: string
+  nativeIdentity?: string
 }
 
 export type NativeDepositAddress = {

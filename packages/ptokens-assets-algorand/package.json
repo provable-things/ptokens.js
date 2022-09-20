@@ -1,16 +1,21 @@
 {
   "name": "ptokens-assets-algorand",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c ../../rollup.config.js",
     "dev": "rollup -c ../../rollup.config.js -w",
     "lint": "eslint ./src/",
+    "test": "jest",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "ptokens-entities": "^0.1.0",
-    "promievent": "^0.1.5"
+    "ptokens-node": "^0.1.0",
+    "promievent": "^0.1.5",
+    "algosdk": "^1.20.0",
+    "@msgpack/msgpack": "^2.8.0"
   }
 }
