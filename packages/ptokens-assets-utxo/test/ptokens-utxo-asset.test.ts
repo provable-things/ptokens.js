@@ -33,11 +33,19 @@ describe('UTXO asset', () => {
   })
 
   test('Should create an EVM asset from constructor', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const asset = new pTokensUtxoAsset({
+      node,
       symbol: 'SYM',
       chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     expect(asset.symbol).toStrictEqual('SYM')
     expect(asset.chainId).toStrictEqual(ChainId.BitcoinMainnet)
@@ -49,13 +57,20 @@ describe('UTXO asset', () => {
   test('Should not call nativeToInterim if provider is missing', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const asset = new pTokensUtxoAsset({
+      node,
       symbol: 'SYM',
       chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     try {
-      await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
+      await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
       fail()
     } catch (err) {
       expect(err.message).toEqual('Missing provider')
@@ -65,55 +80,50 @@ describe('UTXO asset', () => {
   test('Should not call nativeToInterim for non-native tokens', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const provider = new pTokensBlockstreamUtxoProvider('insight-endpoint-url')
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-      return Promise.resolve({
+    const asset = new pTokensUtxoAsset({
+      node,
+      symbol: 'SYM',
+      chainId: ChainId.BitcoinMainnet,
+      provider: provider,
+      assetInfo: {
         chainId: 'originating-chain-id',
         isNative: false,
         tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
         isSystemToken: false,
         vaultAddress: 'vault-contract-address',
-      })
-    })
-    const asset = new pTokensUtxoAsset({
-      symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
-      provider: provider,
+      },
     })
     try {
-      await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
+      await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
       fail()
     } catch (err) {
       expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.BitcoinMainnet)
     }
   })
 
   test('Should wait for deposit', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const provider = new pTokensBlockstreamUtxoProvider('insight-endpoint-url')
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-      return Promise.resolve({
+    const asset = new pTokensUtxoAsset({
+      node,
+      symbol: 'SYM',
+      chainId: ChainId.BitcoinMainnet,
+      provider: provider,
+      assetInfo: {
         chainId: 'originating-chain-id',
         isNative: true,
         tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
         isSystemToken: false,
         vaultAddress: 'vault-contract-address',
-      })
-    })
-    const asset = new pTokensUtxoAsset({
-      symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
-      provider: provider,
+      },
     })
     let txHashBroadcasted = ''
     let txHashConfirmed = ''
     let depositAddress
     const ret = await asset
-      .nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
+      .nativeToInterim(1, 'destination-address', 'destination-chain-id')
       .on('depositAddress', (_address) => {
         depositAddress = _address
       })
@@ -127,7 +137,6 @@ describe('UTXO asset', () => {
     expect(txHashBroadcasted).toEqual('tx-hash')
     expect(txHashConfirmed).toEqual('tx-hash')
     expect(ret).toEqual('tx-hash')
-    expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.BitcoinMainnet)
     expect(monitorUtxoByAddressSpy).toHaveBeenNthCalledWith(1, 'deposit-address', 3000, 1)
     expect(depositAddressGenerateSpy).toHaveBeenNthCalledWith(
       1,
@@ -140,37 +149,42 @@ describe('UTXO asset', () => {
   test('Should not call nativeToInterim for non-native tokens', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const provider = new pTokensBlockstreamUtxoProvider('insight-endpoint-url')
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-      return Promise.resolve({
+    const asset = new pTokensUtxoAsset({
+      node,
+      symbol: 'SYM',
+      chainId: ChainId.BitcoinMainnet,
+      provider: provider,
+      assetInfo: {
         chainId: 'originating-chain-id',
         isNative: false,
         tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
         isSystemToken: false,
         vaultAddress: 'vault-contract-address',
-      })
-    })
-    const asset = new pTokensUtxoAsset({
-      symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
-      provider: provider,
+      },
     })
     try {
-      await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
+      await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
       fail()
     } catch (err) {
       expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.BitcoinMainnet)
     }
   })
 
   test('Should not call hostToInterim if provider is missing', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const asset = new pTokensUtxoAsset({
+      node,
       symbol: 'SYM',
       chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     try {
       await asset.hostToInterim()
@@ -186,27 +200,24 @@ describe('UTXO asset', () => {
     depositAddressGenerateSpy = jest.spyOn(pTokensDepositAddress.prototype, 'generate').mockImplementation(() => {
       throw new Error('Address generation error')
     })
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-      return Promise.resolve({
+    const asset = new pTokensUtxoAsset({
+      node,
+      symbol: 'SYM',
+      chainId: ChainId.BitcoinMainnet,
+      provider: provider,
+      assetInfo: {
         chainId: 'originating-chain-id',
         isNative: true,
         tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
         isSystemToken: false,
         vaultAddress: 'vault-contract-address',
-      })
-    })
-    const asset = new pTokensUtxoAsset({
-      symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
-      provider: provider,
+      },
     })
     try {
-      await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
+      await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
     } catch (err) {
       expect(err.message).toStrictEqual('Address generation error')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.BitcoinMainnet)
       expect(monitorUtxoByAddressSpy).toHaveBeenCalledTimes(0)
       expect(depositAddressGenerateSpy).toHaveBeenNthCalledWith(
         1,
@@ -217,58 +228,27 @@ describe('UTXO asset', () => {
     }
   })
 
-  test('Should reject if node is not specified', async () => {
-    const provider = new pTokensBlockstreamUtxoProvider('insight-endpoint-url')
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-      return Promise.resolve({
-        chainId: 'originating-chain-id',
-        isNative: true,
-        tokenAddress: 'token-contract-address',
-        isSystemToken: false,
-        vaultAddress: 'vault-contract-address',
-      })
-    })
-    const asset = new pTokensUtxoAsset({
-      symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
-      provider: provider,
-    })
-    try {
-      await asset.nativeToInterim(null, 1, 'destination-address', 'destination-chain-id')
-    } catch (err) {
-      expect(err.message).toStrictEqual('Undefined node')
-      expect(getAssetInfoSpy).toHaveBeenCalledTimes(0)
-      expect(monitorUtxoByAddressSpy).toHaveBeenCalledTimes(0)
-      expect(depositAddressGenerateSpy).toHaveBeenCalledTimes(0)
-    }
-  })
-
   test('Should reject if chain id is not specified', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const provider = new pTokensBlockstreamUtxoProvider('insight-endpoint-url')
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-      return Promise.resolve({
+    const asset = new pTokensUtxoAsset({
+      node,
+      symbol: 'SYM',
+      chainId: ChainId.BitcoinMainnet,
+      provider: provider,
+      assetInfo: {
         chainId: 'originating-chain-id',
         isNative: true,
         tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
         isSystemToken: false,
         vaultAddress: 'vault-contract-address',
-      })
-    })
-    const asset = new pTokensUtxoAsset({
-      symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
-      provider: provider,
+      },
     })
     try {
-      await asset.nativeToInterim(node, 1, 'destination-address', undefined)
+      await asset.nativeToInterim(1, 'destination-address', undefined)
     } catch (err) {
       expect(err.message).toStrictEqual('Undefined chain ID')
-      expect(getAssetInfoSpy).toHaveBeenCalledTimes(0)
       expect(monitorUtxoByAddressSpy).toHaveBeenCalledTimes(0)
       expect(depositAddressGenerateSpy).toHaveBeenCalledTimes(0)
     }

@@ -1,4 +1,4 @@
-import { Blockchain, ChainId, Network } from 'ptokens-entities'
+import { ChainId } from 'ptokens-entities'
 import { pTokensNode, pTokensNodeProvider, Status } from 'ptokens-node'
 import { pTokensSwap, pTokensSwapBuilder } from '../src/index'
 import { pTokenAssetMock } from './mocks/ptoken-asset'
@@ -14,22 +14,6 @@ describe('pTokensSwap', () => {
 
   it('Should swap native asset without user data ', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
-      return Promise.resolve([
-        {
-          chainId: ChainId.BitcoinMainnet,
-          isNative: true,
-          tokenAddress: '',
-          isSystemToken: false,
-        },
-        {
-          chainId: ChainId.EthereumMainnet,
-          isNative: false,
-          tokenAddress: '',
-          isSystemToken: false,
-        },
-      ])
-    })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
@@ -48,16 +32,30 @@ describe('pTokensSwap', () => {
       })
 
     const sourceAsset = new pTokenAssetMock({
+      node,
       symbol: 'SOURCE',
       chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     const destinationAsset = new pTokenAssetMock({
+      node,
       symbol: 'DESTINATION',
       chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
@@ -103,15 +101,7 @@ describe('pTokensSwap', () => {
         outputTxProcessedObj = obj
         outputTxProcessed = true
       })
-    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE')
-    expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
-      1,
-      node,
-      10,
-      'destination-address',
-      ChainId.EthereumMainnet,
-      undefined
-    )
+    expect(nativeToInterimSpy).toHaveBeenNthCalledWith(1, 10, 'destination-address', ChainId.EthereumMainnet, undefined)
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
     expect(depositAddress).toStrictEqual('deposit-address')
     expect(inputTxBroadcasted).toBeTruthy()
@@ -132,58 +122,8 @@ describe('pTokensSwap', () => {
     ])
   })
 
-  it('Should reject if getAssetInfo rejects', async () => {
-    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-    const getAssetInfoSpy = jest
-      .spyOn(pTokensNode.prototype, 'getAssetInfo')
-      .mockRejectedValue(new Error('getAssetInfo error'))
-    const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
-    const sourceAsset = new pTokenAssetMock({
-      symbol: 'SOURCE',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
-    })
-    const destinationAsset = new pTokenAssetMock({
-      symbol: 'DESTINATION',
-      chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
-    })
-    const swap = new pTokensSwap(
-      node,
-      sourceAsset,
-      [{ asset: destinationAsset, destinationAddress: 'destination-address' }],
-      10
-    )
-    try {
-      await swap.execute()
-      fail()
-    } catch (err) {
-      expect(err.message).toEqual('getAssetInfo error')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SOURCE')
-      expect(getTransactionStatusSpy).toHaveBeenCalledTimes(0)
-    }
-  })
-
   it('Should swap native asset with user data ', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
-      return Promise.resolve([
-        {
-          chainId: ChainId.BitcoinMainnet,
-          isNative: true,
-          tokenAddress: '',
-          isSystemToken: false,
-        },
-        {
-          chainId: ChainId.EthereumMainnet,
-          isNative: true,
-          tokenAddress: '',
-          isSystemToken: false,
-        },
-      ])
-    })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
@@ -204,16 +144,30 @@ describe('pTokensSwap', () => {
 
     const builder = new pTokensSwapBuilder(node)
     const sourceAsset = new pTokenAssetMock({
+      node,
       symbol: 'SOURCE',
       chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: ChainId.BitcoinMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     const destinationAsset = new pTokenAssetMock({
+      node,
       symbol: 'DESTINATION',
       chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
@@ -258,10 +212,8 @@ describe('pTokensSwap', () => {
         outputTxProcessedObj = obj
         outputTxProcessed = true
       })
-    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE')
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
-      node,
       123.456,
       'destination-address',
       ChainId.EthereumMainnet,
@@ -289,22 +241,6 @@ describe('pTokensSwap', () => {
 
   it('Should swap host asset without user data ', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
-      return Promise.resolve([
-        {
-          chainId: ChainId.BitcoinMainnet,
-          isNative: false,
-          tokenAddress: '',
-          isSystemToken: false,
-        },
-        {
-          chainId: ChainId.EthereumMainnet,
-          isNative: false,
-          tokenAddress: '',
-          isSystemToken: false,
-        },
-      ])
-    })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
@@ -324,16 +260,30 @@ describe('pTokensSwap', () => {
 
     const builder = new pTokensSwapBuilder(node)
     const sourceAsset = new pTokenAssetMock({
+      node,
       symbol: 'SOURCE',
       chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     const destinationAsset = new pTokenAssetMock({
+      node,
       symbol: 'DESTINATION',
       chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
@@ -367,10 +317,8 @@ describe('pTokensSwap', () => {
         outputTxProcessedObj = obj
         outputTxProcessed = true
       })
-    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE')
     expect(hostToInterimSpy).toHaveBeenNthCalledWith(
       1,
-      node,
       123.456,
       'destination-address',
       ChainId.EthereumMainnet,
@@ -397,22 +345,6 @@ describe('pTokensSwap', () => {
 
   it('Should swap host asset with user data ', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
-      return Promise.resolve([
-        {
-          chainId: ChainId.BitcoinMainnet,
-          isNative: true,
-          tokenAddress: '',
-          isSystemToken: false,
-        },
-        {
-          chainId: ChainId.EthereumMainnet,
-          isNative: true,
-          tokenAddress: '',
-          isSystemToken: false,
-        },
-      ])
-    })
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
@@ -432,16 +364,30 @@ describe('pTokensSwap', () => {
 
     const builder = new pTokensSwapBuilder(node)
     const sourceAsset = new pTokenAssetMock({
-      symbol: 'SOURCE',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
+      node,
+      symbol: 'SRC',
+      chainId: ChainId.EthereumMainnet,
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     const destinationAsset = new pTokenAssetMock({
-      symbol: 'DESTINATION',
-      chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
+      node,
+      symbol: 'DST',
+      chainId: ChainId.BitcoinMainnet,
+      assetInfo: {
+        chainId: ChainId.BitcoinMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
@@ -478,13 +424,11 @@ describe('pTokensSwap', () => {
         outputTxProcessedObj = obj
         outputTxProcessed = true
       })
-    expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE')
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
-      node,
       123.456,
       'destination-address',
-      ChainId.EthereumMainnet,
+      ChainId.BitcoinMainnet,
       Buffer.from('user-data')
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
@@ -504,57 +448,6 @@ describe('pTokensSwap', () => {
     expect(outputTxProcessedObj).toStrictEqual([
       { chain_id: 'output-chain-id', status: Status.CONFIRMED, tx_hash: 'output-tx-hash' },
     ])
-  })
-
-  it('Should reject when swapping unsupported tokens', async () => {
-    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
-      return Promise.resolve([
-        {
-          chainId: ChainId.BitcoinMainnet,
-          isNative: true,
-          tokenAddress: '',
-          isSystemToken: false,
-        },
-        {
-          chainId: ChainId.BscMainnet,
-          isNative: false,
-          tokenAddress: '',
-          isSystemToken: false,
-        },
-      ])
-    })
-    const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
-    const sourceAsset = new pTokenAssetMock({
-      symbol: 'SOURCE',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
-    })
-    const destinationAsset = new pTokenAssetMock({
-      symbol: 'DESTINATION',
-      chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
-    })
-    const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
-    const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
-    const swap = new pTokensSwap(
-      node,
-      sourceAsset,
-      [{ asset: destinationAsset, destinationAddress: 'destination-address' }],
-      10
-    )
-    try {
-      await swap.execute()
-      fail()
-    } catch (err) {
-      expect(err.message).toStrictEqual('Impossible to swap')
-      expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE')
-      expect(nativeToInterimSpy).toHaveBeenCalledTimes(0)
-      expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
-      expect(getTransactionStatusSpy).toHaveBeenCalledTimes(0)
-    }
   })
 
   // Note: this test causes jest to report 'A worker process has failed to exit gracefully and has been force exited.
@@ -605,58 +498,4 @@ describe('pTokensSwap', () => {
   //     expect(err.message).toStrictEqual('Swap aborted by user')
   //   }
   // })
-
-  it('Should reject when swappin unsupported tokens (empty asset info response)', async () => {
-    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return Promise.resolve([])
-    })
-    const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
-    getTransactionStatusSpy
-      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
-      .mockResolvedValueOnce({ inputs: [], outputs: [] })
-      .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
-      })
-      .mockResolvedValueOnce({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.BROADCASTED }],
-      })
-      .mockResolvedValue({
-        inputs: [],
-        outputs: [{ tx_hash: 'tx-hash', chain_id: 'chain-id', status: Status.CONFIRMED }],
-      })
-
-    const sourceAsset = new pTokenAssetMock({
-      symbol: 'SOURCE',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
-    })
-    const destinationAsset = new pTokenAssetMock({
-      symbol: 'DESTINATION',
-      chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
-    })
-    const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
-    const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
-    const swap = new pTokensSwap(
-      node,
-      sourceAsset,
-      [{ asset: destinationAsset, destinationAddress: 'destination-address' }],
-      10
-    )
-    try {
-      await swap.execute()
-      fail()
-    } catch (err) {
-      expect(err.message).toStrictEqual('Impossible to swap')
-      expect(getAssetInfoSpy).toHaveBeenCalledWith('SOURCE')
-      expect(nativeToInterimSpy).toHaveBeenCalledTimes(0)
-      expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
-    }
-  })
 })

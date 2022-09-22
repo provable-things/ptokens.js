@@ -1,28 +1,30 @@
 import { pTokensAssetBuilder } from 'ptokens-entities'
+import { pTokensNode } from 'ptokens-node'
 import { pTokensEvmAsset } from './ptokens-evm-asset'
 import { pTokensEvmProvider } from './ptokens-evm-provider'
 
 export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
-  private provider: pTokensEvmProvider
+  private _provider: pTokensEvmProvider
 
-  constructor() {
-    super()
+  constructor(node: pTokensNode) {
+    super(node)
   }
 
   setProvider(provider: pTokensEvmProvider): this {
-    this.provider = provider
+    this._provider = provider
     return this
   }
 
-  build(): pTokensEvmAsset {
-    if (!this.chainId) throw new Error('Missing chain ID')
-    if (!this.symbol) throw new Error('Missing symbol')
+  async build(): Promise<pTokensEvmAsset> {
+    await super.populateAssetInfo()
     const config = {
-      symbol: this.symbol,
-      chainId: this.chainId,
-      blockchain: this.blockchain,
-      network: this.network,
-      provider: this.provider,
+      node: this._node,
+      symbol: this._symbol,
+      chainId: this._chainId,
+      blockchain: this._blockchain,
+      network: this._network,
+      assetInfo: this._assetInfo,
+      provider: this._provider,
     }
     return new pTokensEvmAsset(config)
   }

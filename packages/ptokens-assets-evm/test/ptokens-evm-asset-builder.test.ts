@@ -1,28 +1,49 @@
 import Web3 from 'web3'
 import { pTokensEvmAssetBuilder, pTokensEvmProvider } from '../src'
 import { Blockchain, ChainId, Network } from 'ptokens-entities'
+import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 
 jest.mock('web3')
 
 describe('EVM asset', () => {
-  test('Should create an EVM asset without provider', () => {
-    const builder = new pTokensEvmAssetBuilder()
+  test('Should create an EVM asset without provider', async () => {
+    const assetInfo = {
+      chainId: ChainId.AlgorandMainnet,
+      isNative: false,
+      tokenAddress: '123456789',
+      tokenInternalAddress: 'token-internal-address',
+      isSystemToken: false,
+    }
+    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
+    const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))
+    const builder = new pTokensEvmAssetBuilder(node)
     builder.setBlockchain(ChainId.EthereumMainnet)
     builder.setSymbol('SYM')
-    const asset = builder.build()
+    const asset = await builder.build()
+    expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
     expect(asset.blockchain).toStrictEqual(Blockchain.Ethereum)
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.chainId).toStrictEqual(ChainId.EthereumMainnet)
     expect(asset.weight).toEqual(1)
   })
 
-  test('Should create an EVM asset with provider', () => {
+  test('Should create an EVM asset with provider', async () => {
+    const assetInfo = {
+      chainId: ChainId.AlgorandMainnet,
+      isNative: false,
+      tokenAddress: '123456789',
+      tokenInternalAddress: 'token-internal-address',
+      isSystemToken: false,
+    }
+    const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const provider = new pTokensEvmProvider(new Web3())
-    const builder = new pTokensEvmAssetBuilder()
+    const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))
+    const builder = new pTokensEvmAssetBuilder(node)
     builder.setBlockchain(ChainId.EthereumMainnet)
     builder.setSymbol('SYM')
     builder.setProvider(provider)
-    const asset = builder.build()
+    const asset = await builder.build()
+    expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
     expect(asset.blockchain).toStrictEqual(Blockchain.Ethereum)
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.chainId).toStrictEqual(ChainId.EthereumMainnet)
@@ -30,21 +51,23 @@ describe('EVM asset', () => {
     expect(asset['provider']).toEqual(provider)
   })
 
-  test('Should not create an EVM asset without blockchain data', () => {
-    const builder = new pTokensEvmAssetBuilder()
+  test('Should not create an EVM asset without blockchain data', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))
+    const builder = new pTokensEvmAssetBuilder(node)
     try {
-      builder.build()
+      await builder.build()
       fail()
     } catch (err) {
       expect(err.message).toStrictEqual('Missing chain ID')
     }
   })
 
-  test('Should not create an EVM asset without symbol', () => {
-    const builder = new pTokensEvmAssetBuilder()
+  test('Should not create an EVM asset without symbol', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))
+    const builder = new pTokensEvmAssetBuilder(node)
     try {
       builder.setBlockchain(ChainId.EthereumMainnet)
-      builder.build()
+      await builder.build()
       fail()
     } catch (err) {
       expect(err.message).toStrictEqual('Missing symbol')

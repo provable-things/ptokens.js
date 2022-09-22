@@ -39,3 +39,23 @@ test('Should return false since hello is not 0x prefixed', () => {
   const result = stringUtils.isHexPrefixed(string0xNotPrefixed)
   expect(result).toBe(false)
 })
+
+describe('splitCamelCase', () => {
+  test('Should correctly split camelCase string', () => {
+    const str = 'helloHowAreYou'
+    const result = stringUtils.splitCamelCase(str)
+    expect(result).toStrictEqual(['hello', 'How', 'Are', 'You'])
+  })
+
+  test('Should correctly split mixed string', () => {
+    const str = 'hello_howAreYou'
+    const result = stringUtils.splitCamelCase(str)
+    expect(result).toStrictEqual(['hello_how', 'Are', 'You'])
+  })
+
+  test('Should not split snake case', () => {
+    const str = 'hello_how_are_you'
+    const result = stringUtils.splitCamelCase(str)
+    expect(result).toStrictEqual(['hello_how_are_you'])
+  })
+})

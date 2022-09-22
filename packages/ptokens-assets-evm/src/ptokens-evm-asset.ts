@@ -1,6 +1,5 @@
 import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
 import PromiEvent from 'promievent'
-import { pTokensNode } from 'ptokens-node'
 import { pTokensEvmProvider } from './ptokens-evm-provider'
 import { AbiItem } from 'web3-utils'
 
@@ -21,7 +20,6 @@ export class pTokensEvmAsset extends pTokensAsset {
   }
 
   nativeToInterim(
-    node: pTokensNode,
     amount: number,
     destinationAddress: string,
     destinationChainId: string,
@@ -32,23 +30,23 @@ export class pTokensEvmAsset extends pTokensAsset {
         (async () => {
           try {
             if (!this.provider) return reject(new Error('Missing provider'))
-            const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
-            if (!assetInfo.isNative) return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
+            if (!this.assetInfo.isNative)
+              return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
             const txHash: string = await this.provider
               .makeContractSend(
                 {
-                  method: assetInfo.isSystemToken ? SYSTEM_TOKEN_PEG_IN_METHOD : ERC20_TOKEN_PEG_IN_METHOD,
+                  method: this.assetInfo.isSystemToken ? SYSTEM_TOKEN_PEG_IN_METHOD : ERC20_TOKEN_PEG_IN_METHOD,
                   abi: pERC20VaultContractAbi as unknown as AbiItem,
-                  contractAddress: assetInfo.vaultAddress,
-                  value: assetInfo.isSystemToken ? amount : 0,
+                  contractAddress: this.assetInfo.vaultAddress,
+                  value: this.assetInfo.isSystemToken ? amount : 0,
                 },
                 userData
-                  ? assetInfo.isSystemToken
+                  ? this.assetInfo.isSystemToken
                     ? [destinationAddress, destinationChainId, userData]
-                    : [amount, assetInfo.tokenAddress, destinationAddress, userData, destinationChainId]
-                  : assetInfo.isSystemToken
+                    : [amount, this.assetInfo.tokenAddress, destinationAddress, userData, destinationChainId]
+                  : this.assetInfo.isSystemToken
                   ? [destinationAddress, destinationChainId]
-                  : [amount, assetInfo.tokenAddress, destinationAddress, destinationChainId]
+                  : [amount, this.assetInfo.tokenAddress, destinationAddress, destinationChainId]
               )
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash: string) => promi.emit('txConfirmed', _hash))
@@ -63,7 +61,6 @@ export class pTokensEvmAsset extends pTokensAsset {
   }
 
   hostToInterim(
-    node: pTokensNode,
     amount: number,
     destinationAddress: string,
     destinationChainId: string,
@@ -74,14 +71,13 @@ export class pTokensEvmAsset extends pTokensAsset {
         (async () => {
           try {
             if (!this.provider) return reject(new Error('Missing provider'))
-            const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
-            if (assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
+            if (this.assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
             const txHash: string = await this.provider
               .makeContractSend(
                 {
                   method: ERC20_TOKEN_PEG_OUT_METHOD,
                   abi: pTokenOnEVMContractAbi as unknown as AbiItem,
-                  contractAddress: assetInfo.tokenAddress,
+                  contractAddress: this.assetInfo.tokenAddress,
                   value: 0,
                 },
                 userData

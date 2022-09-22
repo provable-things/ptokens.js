@@ -12,11 +12,19 @@ jest.mock('ptokens-node')
 
 describe('EVM asset', () => {
   test('Should create an EVM asset from constructor', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const asset = new pTokensEvmAsset({
+      node,
       symbol: 'SYM',
       chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     expect(asset.symbol).toStrictEqual('SYM')
     expect(asset.chainId).toStrictEqual(ChainId.EthereumMainnet)
@@ -28,13 +36,20 @@ describe('EVM asset', () => {
     test('Should not call nativeToInterim if provider is missing', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const asset = new pTokensEvmAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: false,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       })
       try {
-        await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing provider')
@@ -45,72 +60,35 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
+      const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
+        const promi = new PromiEvent<string>((resolve) =>
+          setImmediate(() => {
+            promi.emit('txBroadcasted', 'tx-hash')
+            promi.emit('txConfirmed', 'tx-hash')
+            return resolve('tx-hash')
+          })
+        )
+        return promi
+      })
+      const asset = new pTokensEvmAsset({
+        node,
+        symbol: 'SYM',
+        chainId: ChainId.EthereumMainnet,
+        provider: provider,
+        assetInfo: {
           chainId: 'originating-chain-id',
           isNative: false,
           tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
           isSystemToken: false,
           vaultAddress: 'vault-contract-address',
-        })
-      })
-      const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
-        const promi = new PromiEvent<string>((resolve) =>
-          setImmediate(() => {
-            promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
-            return resolve('tx-hash')
-          })
-        )
-        return promi
-      })
-      const asset = new pTokensEvmAsset({
-        symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
-        provider: provider,
+        },
       })
       try {
-        await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
-        expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
-        expect(makeContractSendSpy).toHaveBeenCalledTimes(0)
-      }
-    })
-
-    test('Should reject if getAssetInfoReject', async () => {
-      const web3 = new Web3()
-      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest
-        .spyOn(pTokensNode.prototype, 'getAssetInfoByChainId')
-        .mockRejectedValue(new Error('getAssetInfo error'))
-      const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
-        const promi = new PromiEvent<string>((resolve) =>
-          setImmediate(() => {
-            promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
-            return resolve('tx-hash')
-          })
-        )
-        return promi
-      })
-      const asset = new pTokensEvmAsset({
-        symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
-        provider: provider,
-      })
-      try {
-        await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
-        fail()
-      } catch (err) {
-        expect(err.message).toEqual('getAssetInfo error')
-        expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
         expect(makeContractSendSpy).toHaveBeenCalledTimes(0)
       }
     })
@@ -119,15 +97,6 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
-          chainId: 'originating-chain-id',
-          isNative: true,
-          tokenAddress: 'token-contract-address',
-          isSystemToken: false,
-          vaultAddress: 'vault-contract-address',
-        })
-      })
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -139,16 +108,23 @@ describe('EVM asset', () => {
         return promi
       })
       const asset = new pTokensEvmAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        .nativeToInterim(1, 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -158,7 +134,6 @@ describe('EVM asset', () => {
       expect(txHashBroadcasted).toEqual('tx-hash')
       expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
         1,
         {
@@ -175,15 +150,6 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
-          chainId: 'originating-chain-id',
-          isNative: true,
-          tokenAddress: 'token-contract-address',
-          isSystemToken: false,
-          vaultAddress: 'vault-contract-address',
-        })
-      })
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -195,16 +161,23 @@ describe('EVM asset', () => {
         return promi
       })
       const asset = new pTokensEvmAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .nativeToInterim(node, 1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
+        .nativeToInterim(1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -214,7 +187,6 @@ describe('EVM asset', () => {
       expect(txHashBroadcasted).toEqual('tx-hash')
       expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
         1,
         {
@@ -231,15 +203,6 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
-          chainId: 'originating-chain-id',
-          isNative: true,
-          tokenAddress: 'token-contract-address',
-          isSystemToken: true,
-          vaultAddress: 'vault-contract-address',
-        })
-      })
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -251,16 +214,23 @@ describe('EVM asset', () => {
         return promi
       })
       const asset = new pTokensEvmAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: true,
+          vaultAddress: 'vault-contract-address',
+        },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        .nativeToInterim(1, 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -270,7 +240,6 @@ describe('EVM asset', () => {
       expect(txHashBroadcasted).toEqual('tx-hash')
       expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
         1,
         {
@@ -287,15 +256,6 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
-          chainId: 'originating-chain-id',
-          isNative: true,
-          tokenAddress: 'token-contract-address',
-          isSystemToken: true,
-          vaultAddress: 'vault-contract-address',
-        })
-      })
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -307,16 +267,23 @@ describe('EVM asset', () => {
         return promi
       })
       const asset = new pTokensEvmAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: true,
+          vaultAddress: 'vault-contract-address',
+        },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .nativeToInterim(node, 1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
+        .nativeToInterim(1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -326,7 +293,6 @@ describe('EVM asset', () => {
       expect(txHashBroadcasted).toEqual('tx-hash')
       expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
         1,
         {
@@ -343,15 +309,6 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
-          chainId: 'originating-chain-id',
-          isNative: false,
-          tokenAddress: 'token-contract-address',
-          isSystemToken: false,
-          vaultAddress: 'vault-contract-address',
-        })
-      })
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -363,18 +320,24 @@ describe('EVM asset', () => {
         return promi
       })
       const asset = new pTokensEvmAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: false,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       })
       try {
-        await asset.nativeToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
-        expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
         expect(makeContractSendSpy).toHaveBeenCalledTimes(0)
       }
     })
@@ -384,13 +347,20 @@ describe('EVM asset', () => {
     test('Should not call hostToInterim if provider is missing', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const asset = new pTokensEvmAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       })
       try {
-        await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing provider')
@@ -401,72 +371,35 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
+      const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
+        const promi = new PromiEvent<string>((resolve) =>
+          setImmediate(() => {
+            promi.emit('txBroadcasted', 'tx-hash')
+            promi.emit('txConfirmed', 'tx-hash')
+            return resolve('tx-hash')
+          })
+        )
+        return promi
+      })
+      const asset = new pTokensEvmAsset({
+        node,
+        symbol: 'SYM',
+        chainId: ChainId.EthereumMainnet,
+        provider: provider,
+        assetInfo: {
           chainId: 'originating-chain-id',
           isNative: true,
           tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
           isSystemToken: false,
           vaultAddress: 'vault-contract-address',
-        })
-      })
-      const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
-        const promi = new PromiEvent<string>((resolve) =>
-          setImmediate(() => {
-            promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
-            return resolve('tx-hash')
-          })
-        )
-        return promi
-      })
-      const asset = new pTokensEvmAsset({
-        symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
-        provider: provider,
+        },
       })
       try {
-        await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to hostToInterim() for native token')
-        expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
-        expect(makeContractSendSpy).toHaveBeenCalledTimes(0)
-      }
-    })
-
-    test('Should reject if getAssetInfo rejects', async () => {
-      const web3 = new Web3()
-      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest
-        .spyOn(pTokensNode.prototype, 'getAssetInfoByChainId')
-        .mockRejectedValue(new Error('getAssetInfo error'))
-      const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
-        const promi = new PromiEvent<string>((resolve) =>
-          setImmediate(() => {
-            promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
-            return resolve('tx-hash')
-          })
-        )
-        return promi
-      })
-      const asset = new pTokensEvmAsset({
-        symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
-        provider: provider,
-      })
-      try {
-        await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
-        fail()
-      } catch (err) {
-        expect(err.message).toEqual('getAssetInfo error')
-        expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
         expect(makeContractSendSpy).toHaveBeenCalledTimes(0)
       }
     })
@@ -475,14 +408,6 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
-          chainId: 'originating-chain-id',
-          isNative: false,
-          tokenAddress: 'token-contract-address',
-          isSystemToken: false,
-        })
-      })
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -494,16 +419,22 @@ describe('EVM asset', () => {
         return promi
       })
       const asset = new pTokensEvmAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: false,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+        },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        .hostToInterim(1, 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -513,7 +444,6 @@ describe('EVM asset', () => {
       expect(txHashBroadcasted).toEqual('tx-hash')
       expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
         1,
         {
@@ -530,14 +460,6 @@ describe('EVM asset', () => {
       const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEvmProvider(web3)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
-          chainId: 'originating-chain-id',
-          isNative: false,
-          tokenAddress: 'token-contract-address',
-          isSystemToken: false,
-        })
-      })
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -549,16 +471,22 @@ describe('EVM asset', () => {
         return promi
       })
       const asset = new pTokensEvmAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: false,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+        },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(node, 1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
+        .hostToInterim(1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -568,7 +496,6 @@ describe('EVM asset', () => {
       expect(txHashBroadcasted).toEqual('tx-hash')
       expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
         1,
         {

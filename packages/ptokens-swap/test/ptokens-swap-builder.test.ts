@@ -1,7 +1,7 @@
 import { pTokensSwapBuilder } from '../src/index'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensEvmAsset } from 'ptokens-assets-evm'
-import { Blockchain, ChainId, Network } from 'ptokens-entities'
+import { ChainId } from 'ptokens-entities'
 
 jest.mock('ptokens-node')
 
@@ -10,16 +10,30 @@ describe('pTokensSwapBuilder', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)
     const originatingToken = new pTokensEvmAsset({
+      node,
       symbol: 'A',
-      chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
+      chainId: ChainId.BscMainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     const destinationToken = new pTokensEvmAsset({
+      node,
       symbol: 'B',
       chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     builder.setSourceAsset(originatingToken)
     builder.addDestinationAsset(destinationToken, 'destination-address', Buffer.from('user-data'))
@@ -38,10 +52,17 @@ describe('pTokensSwapBuilder', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)
     const destinationToken = new pTokensEvmAsset({
+      node,
       symbol: 'B',
       chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     builder.addDestinationAsset(destinationToken, 'destination-address')
     builder.setAmount(1)
@@ -57,16 +78,30 @@ describe('pTokensSwapBuilder', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)
     const originatingToken = new pTokensEvmAsset({
+      node,
       symbol: 'A',
       chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     const destinationToken = new pTokensEvmAsset({
+      node,
       symbol: 'B',
       chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     builder.setSourceAsset(originatingToken)
     builder.addDestinationAsset(destinationToken, 'destination-address')
@@ -82,10 +117,17 @@ describe('pTokensSwapBuilder', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)
     const originatingToken = new pTokensEvmAsset({
+      node,
       symbol: 'A',
       chainId: ChainId.BitcoinMainnet,
-      blockchain: Blockchain.Bitcoin,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     builder.setSourceAsset(originatingToken)
     builder.setAmount(1)

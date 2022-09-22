@@ -13,3 +13,7 @@ export function addHexPrefix(_string: string) {
 export function removeHexPrefix(_string: string) {
   return isHexPrefixed(_string) ? _string.substring(2) : _string
 }
+
+export function splitCamelCase(str: string): string[] {
+  return str.split(/(?=[A-Z])/)
+}

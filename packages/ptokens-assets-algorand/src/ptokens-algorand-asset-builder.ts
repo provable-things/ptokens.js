@@ -1,12 +1,13 @@
 import { pTokensAssetBuilder } from 'ptokens-entities'
+import { pTokensNode } from 'ptokens-node'
 import { pTokensAlgorandAsset } from './ptokens-algorand-asset'
 import { pTokensAlgorandProvider } from './ptokens-algorand-provider'
 
 export class pTokensAlgorandAssetBuilder extends pTokensAssetBuilder {
   private provider: pTokensAlgorandProvider
 
-  constructor() {
-    super()
+  constructor(node: pTokensNode) {
+    super(node)
   }
 
   setProvider(provider: pTokensAlgorandProvider): this {
@@ -14,14 +15,15 @@ export class pTokensAlgorandAssetBuilder extends pTokensAssetBuilder {
     return this
   }
 
-  build(): pTokensAlgorandAsset {
-    if (!this.chainId) throw new Error('Missing chain ID')
-    if (!this.symbol) throw new Error('Missing symbol')
+  async build(): Promise<pTokensAlgorandAsset> {
+    await super.populateAssetInfo()
     const config = {
-      symbol: this.symbol,
-      chainId: this.chainId,
-      blockchain: this.blockchain,
-      network: this.network,
+      node: this._node,
+      symbol: this._symbol,
+      chainId: this._chainId,
+      blockchain: this._blockchain,
+      network: this._network,
+      assetInfo: this._assetInfo,
       provider: this.provider,
     }
     return new pTokensAlgorandAsset(config)

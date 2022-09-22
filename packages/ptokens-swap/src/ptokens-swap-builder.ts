@@ -47,6 +47,12 @@ export class pTokensSwapBuilder {
     if (!this._amount) throw new Error('Missing amount')
     if (!this._sourceAsset) throw new Error('Missing source asset')
     if (this._destinationAssets.length === 0) throw new Error('Missing destination assets')
+    if (
+      !this.destinationAssets.every(
+        (_asset) => _asset.assetInfo.tokenInternalAddress === this.sourceAsset.assetInfo.tokenInternalAddress
+      )
+    )
+      throw new Error('Invalid swap')
     const ret = new pTokensSwap(this._node, this.sourceAsset, this._destinationAssets, this._amount)
     return ret
   }

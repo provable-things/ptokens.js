@@ -108,15 +108,9 @@ export class pTokensSwap {
         (async () => {
           try {
             this.controller.signal.addEventListener('abort', () => reject(new Error('Swap aborted by user')))
-            const assetInfo = await this.node.getAssetInfo(this.sourceAsset.symbol)
-            const sourceInfo = assetInfo.filter((info) => info.chainId == this.sourceAsset.chainId)[0]
-            const isSupported = (asset: pTokensAsset) => assetInfo.some((_info) => _info.chainId === asset.chainId)
-            if (!isSupported(this.sourceAsset) || !this.destinationAssets.every(isSupported))
-              return reject(new Error('Impossible to swap'))
             let swapPromiEvent: PromiEvent<string>
-            if (sourceInfo.isNative) {
+            if (this.sourceAsset.assetInfo.isNative) {
               swapPromiEvent = this.sourceAsset.nativeToInterim(
-                this.node,
                 this.amount,
                 this._destinationAssets[0].destinationAddress,
                 this._destinationAssets[0].asset.chainId,
@@ -124,7 +118,6 @@ export class pTokensSwap {
               )
             } else {
               swapPromiEvent = this.sourceAsset.hostToInterim(
-                this.node,
                 this.amount,
                 this._destinationAssets[0].destinationAddress,
                 this._destinationAssets[0].asset.chainId,

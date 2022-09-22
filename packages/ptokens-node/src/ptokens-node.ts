@@ -17,11 +17,12 @@ export type TransactionStatus = {
   outputs: InnerTransactionStatus[]
 }
 
-export type SupportingChainInfo = {
+export type AssetInfo = {
   chainId: string
   isNative: boolean
   isSystemToken: boolean
   tokenAddress: string
+  tokenInternalAddress: string
   vaultAddress?: string
   hostIdentity?: string
   nativeIdentity?: string
@@ -47,13 +48,13 @@ export class pTokensNode {
     return await this.provider.sendRpcRequest(1, 'node_getTransactionStatus', [txHash, originatingChainId])
   }
 
-  async getAssetInfo(tokenSymbol: string): Promise<SupportingChainInfo[]> {
+  async getAssetInfo(tokenSymbol: string): Promise<AssetInfo[]> {
     return await this.provider.sendRpcRequest(1, 'node_getAssetInfo', [tokenSymbol])
   }
 
-  async getAssetInfoByChainId(tokenSymbol: string, chainId: string): Promise<SupportingChainInfo> {
+  async getAssetInfoByChainId(tokenSymbol: string, chainId: string): Promise<AssetInfo> {
     const info = (await this.getAssetInfo(tokenSymbol)).filter((p) => p.chainId == chainId)
-    return info.length ? info[0] : null
+    return info.length ? info.at(0) : null
   }
 
   async getNativeDepositAddress(

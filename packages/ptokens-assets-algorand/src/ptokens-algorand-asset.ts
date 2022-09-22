@@ -23,14 +23,14 @@ export type pTokenAlgorandAssetConfig = pTokenAssetConfig & {
 //   return result
 // }
 export class pTokensAlgorandAsset extends pTokensAsset {
-  private provider: pTokensAlgorandProvider
-  private customHostToInterimTransactions: algosdk.Transaction[]
+  private _provider: pTokensAlgorandProvider
+  private _customHostToInterimTransactions: algosdk.Transaction[]
   private _hostIdentity: string
   private _nativeIdentity: string
 
   constructor(config: pTokenAlgorandAssetConfig) {
     super(config)
-    this.provider = config.provider
+    this._provider = config.provider
   }
 
   async getAssetInfo(node: pTokensNode) {
@@ -47,17 +47,10 @@ export class pTokensAlgorandAsset extends pTokensAsset {
     if (this._nativeIdentity) return this._nativeIdentity
   }
 
-  nativeToInterim(
-    node: pTokensNode,
-    amount: number,
-    destinationAddress: string,
-    destinationChainId: string,
-    userData?: BinaryData
-  ): PromiEvent<string> {
+  nativeToInterim(): PromiEvent<string> {
     throw new Error('Method not implemented.')
   }
   hostToInterim(
-    node: pTokensNode,
     amount: number,
     destinationAddress: string,
     destinationChainId: string,
@@ -67,23 +60,22 @@ export class pTokensAlgorandAsset extends pTokensAsset {
       (resolve, reject) =>
         (async () => {
           try {
-            if (!this.provider) return reject(new Error('Missing provider'))
-            if (!this.provider.account) return reject(new Error('Missing account'))
-            const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
-            if (assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
-            const transactions = this.customHostToInterimTransactions
-              ? this.customHostToInterimTransactions
+            if (!this._provider) return reject(new Error('Missing provider'))
+            if (!this._provider.account) return reject(new Error('Missing account'))
+            if (this.assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
+            const transactions = this._customHostToInterimTransactions
+              ? this._customHostToInterimTransactions
               : [
                   algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-                    from: this.provider.account,
-                    to: assetInfo.hostIdentity,
-                    assetIndex: parseInt(assetInfo.tokenAddress),
+                    from: this._provider.account,
+                    to: this.assetInfo.hostIdentity,
+                    assetIndex: parseInt(this.assetInfo.tokenAddress),
                     amount,
-                    suggestedParams: await this.provider.getTransactionParams(),
+                    suggestedParams: await this._provider.getTransactionParams(),
                     note: encode([0, destinationChainId, destinationAddress, []]),
                   }),
                 ]
-            const groupId: string = await this.provider
+            const groupId: string = await this._provider
               .transactInGroup(transactions)
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash) => promi.emit('txConfirmed', _hash))

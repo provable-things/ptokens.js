@@ -1,5 +1,4 @@
 import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
-import { pTokensNode } from 'ptokens-node'
 import { pTokensDepositAddress } from './ptokens-deposit-address'
 import { pTokensUtxoProvider } from './ptokens-utxo-provider'
 import { Blockchain } from 'ptokens-entities'
@@ -32,22 +31,17 @@ export class pTokensUtxoAsset extends pTokensAsset {
     return promi
   }
 
-  nativeToInterim(
-    node: pTokensNode,
-    amount: number,
-    destinationAddress: string,
-    destinationChainId: string
-  ): PromiEvent<string> {
+  nativeToInterim(amount: number, destinationAddress: string, destinationChainId: string): PromiEvent<string> {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {
           try {
-            if (!node) return reject(new Error('Undefined node'))
+            if (!this._node) return reject(new Error('Undefined node'))
             if (!destinationChainId) return reject(new Error('Undefined chain ID'))
             if (!this.provider) return reject(new Error('Missing provider'))
-            const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
-            if (!assetInfo.isNative) return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
-            const config = { nativeBlockchain: this.blockchain, nativeNetwork: this.network, node: node }
+            if (!this.assetInfo.isNative)
+              return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
+            const config = { nativeBlockchain: this.blockchain, nativeNetwork: this.network, node: this._node }
             const depositAddress = new pTokensDepositAddress(config)
             const address = await depositAddress.generate(destinationAddress, this.chainId, destinationChainId)
             promi.emit('depositAddress', address)

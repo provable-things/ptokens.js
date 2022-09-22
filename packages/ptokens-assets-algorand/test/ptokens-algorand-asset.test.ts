@@ -12,11 +12,19 @@ jest.mock('ptokens-node')
 
 describe('Algorand asset', () => {
   test('Should create an Algorand asset from constructor', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const asset = new pTokensAlgorandAsset({
+      node,
       symbol: 'SYM',
       chainId: ChainId.EthereumMainnet,
-      blockchain: Blockchain.Ethereum,
-      network: Network.Mainnet,
+      assetInfo: {
+        chainId: 'originating-chain-id',
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address',
+        isSystemToken: false,
+        vaultAddress: 'vault-contract-address',
+      },
     })
     expect(asset.symbol).toStrictEqual('SYM')
     expect(asset.chainId).toStrictEqual(ChainId.EthereumMainnet)
@@ -32,13 +40,20 @@ describe('Algorand asset', () => {
     test('Should not call hostToInterim if provider is missing', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const asset = new pTokensAlgorandAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       })
       try {
-        await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing provider')
@@ -52,15 +67,6 @@ describe('Algorand asset', () => {
       const provider = new pTokensAlgorandProvider(client, signatureProvider)
       const account = algosdk.mnemonicToSecretKey(TEST_MNEMONIC)
       provider.setAccount(account.addr)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
-          chainId: 'originating-chain-id',
-          isNative: true,
-          tokenAddress: 'token-contract-address',
-          isSystemToken: false,
-          vaultAddress: 'vault-contract-address',
-        })
-      })
       const transactSpy = jest.spyOn(provider, 'transactInGroup').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -72,18 +78,24 @@ describe('Algorand asset', () => {
         return promi
       })
       const asset = new pTokensAlgorandAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       })
       try {
-        await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to hostToInterim() for native token')
-        expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
         expect(transactSpy).toHaveBeenCalledTimes(0)
       }
     })
@@ -96,55 +108,25 @@ describe('Algorand asset', () => {
       const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId')
       const transactSpy = jest.spyOn(provider, 'transactInGroup')
       const asset = new pTokensAlgorandAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: false,
+          tokenAddress: '123456789',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+        },
       })
       try {
-        await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing account')
         expect(getAssetInfoSpy).toHaveBeenCalledTimes(0)
-        expect(transactSpy).toHaveBeenCalledTimes(0)
-      }
-    })
-
-    test('Should reject if getAssetInfo rejects', async () => {
-      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const client = new algosdk.Algodv2('algorand-endpoint')
-      const signatureProvider = new BasicSignatureProvider(TEST_MNEMONIC)
-      const provider = new pTokensAlgorandProvider(client, signatureProvider)
-      const account = algosdk.mnemonicToSecretKey(TEST_MNEMONIC)
-      provider.setAccount(account.addr)
-      const getAssetInfoSpy = jest
-        .spyOn(pTokensNode.prototype, 'getAssetInfoByChainId')
-        .mockRejectedValue(new Error('getAssetInfo error'))
-      const transactSpy = jest.spyOn(provider, 'transactInGroup').mockImplementation(() => {
-        const promi = new PromiEvent<string>((resolve) =>
-          setImmediate(() => {
-            promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
-            return resolve('tx-hash')
-          })
-        )
-        return promi
-      })
-      const asset = new pTokensAlgorandAsset({
-        symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
-        provider: provider,
-      })
-      try {
-        await asset.hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
-        fail()
-      } catch (err) {
-        expect(err.message).toEqual('getAssetInfo error')
-        expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
         expect(transactSpy).toHaveBeenCalledTimes(0)
       }
     })
@@ -156,15 +138,6 @@ describe('Algorand asset', () => {
       const provider = new pTokensAlgorandProvider(client, signatureProvider)
       const account = algosdk.mnemonicToSecretKey(TEST_MNEMONIC)
       provider.setAccount(account.addr)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
-          chainId: 'originating-chain-id',
-          isNative: false,
-          tokenAddress: '123456789',
-          isSystemToken: false,
-          hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
-        })
-      })
       const suggestedParams = {
         fee: 100,
         lastRound: 10000,
@@ -184,16 +157,23 @@ describe('Algorand asset', () => {
         return promi
       })
       const asset = new pTokensAlgorandAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EthereumMainnet,
-        blockchain: Blockchain.Ethereum,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: false,
+          tokenAddress: '123456789',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+        },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(node, 1, 'destination-address', 'destination-chain-id')
+        .hostToInterim(1, 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -203,7 +183,6 @@ describe('Algorand asset', () => {
       expect(txHashBroadcasted).toEqual('tx-hash')
       expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
       expect(getTransactionParamsSpy).toHaveBeenNthCalledWith(1)
       expect(transactSpy).toHaveBeenNthCalledWith(1, [
         algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
@@ -227,15 +206,6 @@ describe('Algorand asset', () => {
       const provider = new pTokensAlgorandProvider(client, signatureProvider)
       const account = algosdk.mnemonicToSecretKey(TEST_MNEMONIC)
       provider.setAccount(account.addr)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockImplementation(() => {
-        return Promise.resolve({
-          chainId: 'originating-chain-id',
-          isNative: false,
-          tokenAddress: '123456789',
-          isSystemToken: false,
-          hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
-        })
-      })
       const suggestedParams = {
         fee: 100,
         lastRound: 10000,
@@ -261,16 +231,23 @@ describe('Algorand asset', () => {
         return promi
       })
       const asset = new pTokensAlgorandAsset({
+        node,
         symbol: 'SYM',
         chainId: ChainId.EosMainnet,
-        blockchain: Blockchain.Eos,
-        network: Network.Mainnet,
         provider: provider,
+        assetInfo: {
+          chainId: 'originating-chain-id',
+          isNative: false,
+          tokenAddress: '123456789',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+        },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(node, 1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
+        .hostToInterim(1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -280,7 +257,6 @@ describe('Algorand asset', () => {
       expect(txHashBroadcasted).toEqual('tx-hash')
       expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
-      expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EosMainnet)
       expect(getTransactionParamsSpy).toHaveBeenNthCalledWith(1)
       expect(transactSpy).toHaveBeenNthCalledWith(1, [
         algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({

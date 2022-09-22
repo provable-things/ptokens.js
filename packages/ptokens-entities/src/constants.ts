@@ -1,3 +1,5 @@
+import { stringUtils } from 'ptokens-helpers'
+
 export enum ChainId {
   EthereumMainnet = '0x005fe7f9',
   EthereumRopsten = '0x0069c322',
@@ -8,7 +10,7 @@ export enum ChainId {
   TelosMainnet = '0x028c7109',
   BscMainnet = '0x00e4b170',
   EosJungle = '0x0282317f',
-  XDaiMainnet = '0x00f1918e',
+  XdaiMainnet = '0x00f1918e',
   PolygonMainnet = '0x0075dd4c',
   UltraMainnet = '0x025d3c68',
   FioMainnet = '0x02174f20',
@@ -34,7 +36,7 @@ export enum Blockchain {
   Eos,
   Telos,
   Bsc,
-  XDai,
+  Xdai,
   Polygon,
   Ultra,
   Fio,
@@ -53,13 +55,9 @@ export enum Network {
   Jungle,
 }
 
-function splitCamelCase(str: string): string[] {
-  return str.split(/(?=[A-Z])/)
-}
-
 function parseChainIdKey(chainId: ChainId): { blockchain: Blockchain; network: Network } {
   const chainIdKey = Object.keys(ChainId)[Object.values(ChainId).indexOf(chainId)]
-  const tokens = splitCamelCase(chainIdKey)
+  const tokens = stringUtils.splitCamelCase(chainIdKey)
   return { blockchain: Blockchain[tokens[0]], network: Network[tokens[1]] }
 }
 
