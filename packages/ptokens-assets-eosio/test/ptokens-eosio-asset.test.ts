@@ -14,9 +14,8 @@ describe('EOSIO asset', () => {
     const asset = new pTokensEosioAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.EthereumMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.EosMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -25,8 +24,8 @@ describe('EOSIO asset', () => {
       },
     })
     expect(asset.symbol).toStrictEqual('SYM')
-    expect(asset.chainId).toStrictEqual(ChainId.EthereumMainnet)
-    expect(asset.blockchain).toStrictEqual(Blockchain.Ethereum)
+    expect(asset.chainId).toStrictEqual(ChainId.EosMainnet)
+    expect(asset.blockchain).toStrictEqual(Blockchain.Eos)
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.weight).toEqual(1)
   })
@@ -39,9 +38,8 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -74,10 +72,9 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -102,10 +99,9 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -140,9 +136,8 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -191,10 +186,9 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -248,10 +242,9 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -299,10 +292,9 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -356,10 +348,9 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -386,9 +377,8 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -421,10 +411,9 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -448,10 +437,9 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -485,10 +473,9 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -541,10 +528,9 @@ describe('EOSIO asset', () => {
       const asset = new pTokensEosioAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EosMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EosMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',

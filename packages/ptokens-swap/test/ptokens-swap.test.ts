@@ -1,4 +1,4 @@
-import { ChainId } from 'ptokens-entities'
+import { BlockchainType, ChainId } from 'ptokens-entities'
 import { pTokensNode, pTokensNodeProvider, Status } from 'ptokens-node'
 import { pTokensSwap, pTokensSwapBuilder } from '../src/index'
 import { pTokenAssetMock } from './mocks/ptoken-asset'
@@ -31,32 +31,36 @@ describe('pTokensSwap', () => {
         outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.CONFIRMED }],
       })
 
-    const sourceAsset = new pTokenAssetMock({
-      node,
-      symbol: 'SOURCE',
-      chainId: ChainId.BitcoinMainnet,
-      assetInfo: {
-        chainId: 'originating-chain-id',
-        isNative: true,
-        tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
-        vaultAddress: 'vault-contract-address',
+    const sourceAsset = new pTokenAssetMock(
+      {
+        node,
+        symbol: 'SOURCE',
+        assetInfo: {
+          chainId: ChainId.BitcoinMainnet,
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       },
-    })
-    const destinationAsset = new pTokenAssetMock({
-      node,
-      symbol: 'DESTINATION',
-      chainId: ChainId.EthereumMainnet,
-      assetInfo: {
-        chainId: 'originating-chain-id',
-        isNative: false,
-        tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
-        vaultAddress: 'vault-contract-address',
+      BlockchainType.UTXO
+    )
+    const destinationAsset = new pTokenAssetMock(
+      {
+        node,
+        symbol: 'DESTINATION',
+        assetInfo: {
+          chainId: ChainId.EthereumMainnet,
+          isNative: false,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       },
-    })
+      BlockchainType.EVM
+    )
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
     const swap = new pTokensSwap(
@@ -143,32 +147,36 @@ describe('pTokensSwap', () => {
       })
 
     const builder = new pTokensSwapBuilder(node)
-    const sourceAsset = new pTokenAssetMock({
-      node,
-      symbol: 'SOURCE',
-      chainId: ChainId.BitcoinMainnet,
-      assetInfo: {
-        chainId: ChainId.BitcoinMainnet,
-        isNative: true,
-        tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
-        vaultAddress: 'vault-contract-address',
+    const sourceAsset = new pTokenAssetMock(
+      {
+        node,
+        symbol: 'SOURCE',
+        assetInfo: {
+          chainId: ChainId.BitcoinMainnet,
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       },
-    })
-    const destinationAsset = new pTokenAssetMock({
-      node,
-      symbol: 'DESTINATION',
-      chainId: ChainId.EthereumMainnet,
-      assetInfo: {
-        chainId: ChainId.EthereumMainnet,
-        isNative: false,
-        tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
-        vaultAddress: 'vault-contract-address',
+      BlockchainType.UTXO
+    )
+    const destinationAsset = new pTokenAssetMock(
+      {
+        node,
+        symbol: 'DESTINATION',
+        assetInfo: {
+          chainId: ChainId.EthereumMainnet,
+          isNative: false,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       },
-    })
+      BlockchainType.EVM
+    )
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
     builder
@@ -259,32 +267,36 @@ describe('pTokensSwap', () => {
       })
 
     const builder = new pTokensSwapBuilder(node)
-    const sourceAsset = new pTokenAssetMock({
-      node,
-      symbol: 'SOURCE',
-      chainId: ChainId.BitcoinMainnet,
-      assetInfo: {
-        chainId: 'originating-chain-id',
-        isNative: false,
-        tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
-        vaultAddress: 'vault-contract-address',
+    const sourceAsset = new pTokenAssetMock(
+      {
+        node,
+        symbol: 'SOURCE',
+        assetInfo: {
+          chainId: ChainId.BitcoinMainnet,
+          isNative: false,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       },
-    })
-    const destinationAsset = new pTokenAssetMock({
-      node,
-      symbol: 'DESTINATION',
-      chainId: ChainId.EthereumMainnet,
-      assetInfo: {
-        chainId: 'originating-chain-id',
-        isNative: false,
-        tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
-        vaultAddress: 'vault-contract-address',
+      BlockchainType.UTXO
+    )
+    const destinationAsset = new pTokenAssetMock(
+      {
+        node,
+        symbol: 'DESTINATION',
+        assetInfo: {
+          chainId: ChainId.EthereumMainnet,
+          isNative: false,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       },
-    })
+      BlockchainType.EVM
+    )
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
     builder.setAmount(123.456).setSourceAsset(sourceAsset).addDestinationAsset(destinationAsset, 'destination-address')
@@ -363,32 +375,36 @@ describe('pTokensSwap', () => {
       })
 
     const builder = new pTokensSwapBuilder(node)
-    const sourceAsset = new pTokenAssetMock({
-      node,
-      symbol: 'SRC',
-      chainId: ChainId.EthereumMainnet,
-      assetInfo: {
-        chainId: ChainId.EthereumMainnet,
-        isNative: true,
-        tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
-        vaultAddress: 'vault-contract-address',
+    const sourceAsset = new pTokenAssetMock(
+      {
+        node,
+        symbol: 'SRC',
+        assetInfo: {
+          chainId: ChainId.EthereumMainnet,
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       },
-    })
-    const destinationAsset = new pTokenAssetMock({
-      node,
-      symbol: 'DST',
-      chainId: ChainId.BitcoinMainnet,
-      assetInfo: {
-        chainId: ChainId.BitcoinMainnet,
-        isNative: false,
-        tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
-        vaultAddress: 'vault-contract-address',
+      BlockchainType.EVM
+    )
+    const destinationAsset = new pTokenAssetMock(
+      {
+        node,
+        symbol: 'DST',
+        assetInfo: {
+          chainId: ChainId.BitcoinMainnet,
+          isNative: false,
+          tokenAddress: 'token-contract-address',
+          tokenInternalAddress: 'token-internal-address',
+          isSystemToken: false,
+          vaultAddress: 'vault-contract-address',
+        },
       },
-    })
+      BlockchainType.UTXO
+    )
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
     builder

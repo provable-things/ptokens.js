@@ -1,4 +1,4 @@
-import { pTokensAssetBuilder } from 'ptokens-entities'
+import { BlockchainType, pTokensAssetBuilder } from 'ptokens-entities'
 import { pTokensNode } from 'ptokens-node'
 import { pTokensEvmAsset } from './ptokens-evm-asset'
 import { pTokensEvmProvider } from './ptokens-evm-provider'
@@ -7,7 +7,7 @@ export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
   private _provider: pTokensEvmProvider
 
   constructor(node: pTokensNode) {
-    super(node)
+    super(node, BlockchainType.EVM)
   }
 
   setProvider(provider: pTokensEvmProvider): this {
@@ -15,8 +15,8 @@ export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
     return this
   }
 
-  async build(): Promise<pTokensEvmAsset> {
-    await super.populateAssetInfo()
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async _build(): Promise<pTokensEvmAsset> {
     const config = {
       node: this._node,
       symbol: this._symbol,

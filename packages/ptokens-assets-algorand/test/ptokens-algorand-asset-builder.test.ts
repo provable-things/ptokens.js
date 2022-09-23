@@ -57,7 +57,7 @@ describe('Algorand asset', () => {
     const node = new pTokensNode(nodeProvider)
     const builder = new pTokensAlgorandAssetBuilder(node)
     try {
-      builder.setBlockchain(ChainId.EthereumMainnet)
+      builder.setBlockchain(ChainId.AlgorandMainnet)
       await builder.build()
       fail()
     } catch (err) {

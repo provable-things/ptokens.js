@@ -1,15 +1,10 @@
-import { Blockchain, Network } from 'ptokens-entities'
 import { pTokensNode } from 'ptokens-node'
 
 export type DepositAddressConfig = {
-  nativeBlockchain: Blockchain
-  nativeNetwork: Network
   node: pTokensNode
 }
 
 export class pTokensDepositAddress {
-  nativeBlockchain: Blockchain
-  nativeNetwork: Network
   node: pTokensNode
   nonce: number
   enclavePublicKey: string
@@ -17,8 +12,6 @@ export class pTokensDepositAddress {
   hostAddress: string
 
   constructor(_config: DepositAddressConfig) {
-    this.nativeBlockchain = _config.nativeBlockchain
-    this.nativeNetwork = _config.nativeNetwork
     this.node = _config.node
   }
 

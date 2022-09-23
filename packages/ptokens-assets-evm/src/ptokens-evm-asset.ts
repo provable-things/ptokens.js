@@ -1,4 +1,4 @@
-import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
+import { pTokensAsset, pTokenAssetConfig, BlockchainType } from 'ptokens-entities'
 import PromiEvent from 'promievent'
 import { pTokensEvmProvider } from './ptokens-evm-provider'
 import { AbiItem } from 'web3-utils'
@@ -15,7 +15,7 @@ export class pTokensEvmAsset extends pTokensAsset {
   private provider: pTokensEvmProvider
 
   constructor(config: pTokenEvmAssetConfig) {
-    super(config)
+    super(config, BlockchainType.EVM)
     this.provider = config.provider
   }
 

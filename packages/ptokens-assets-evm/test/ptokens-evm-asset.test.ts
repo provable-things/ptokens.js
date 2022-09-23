@@ -16,9 +16,8 @@ describe('EVM asset', () => {
     const asset = new pTokensEvmAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.EthereumMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.EthereumMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -38,9 +37,8 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -73,10 +71,9 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -110,10 +107,9 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -163,10 +159,9 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -216,10 +211,9 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -269,10 +263,9 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -322,10 +315,9 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -349,9 +341,8 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -384,10 +375,9 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -421,10 +411,9 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -473,10 +462,9 @@ describe('EVM asset', () => {
       const asset = new pTokensEvmAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.EthereumMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',

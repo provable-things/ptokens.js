@@ -16,9 +16,8 @@ describe('Algorand asset', () => {
     const asset = new pTokensAlgorandAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.EthereumMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.AlgorandMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -27,8 +26,8 @@ describe('Algorand asset', () => {
       },
     })
     expect(asset.symbol).toStrictEqual('SYM')
-    expect(asset.chainId).toStrictEqual(ChainId.EthereumMainnet)
-    expect(asset.blockchain).toStrictEqual(Blockchain.Ethereum)
+    expect(asset.chainId).toStrictEqual(ChainId.AlgorandMainnet)
+    expect(asset.blockchain).toStrictEqual(Blockchain.Algorand)
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.weight).toEqual(1)
   })
@@ -42,9 +41,8 @@ describe('Algorand asset', () => {
       const asset = new pTokensAlgorandAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.AlgorandMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -80,10 +78,9 @@ describe('Algorand asset', () => {
       const asset = new pTokensAlgorandAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.AlgorandMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
@@ -110,10 +107,9 @@ describe('Algorand asset', () => {
       const asset = new pTokensAlgorandAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.AlgorandMainnet,
           isNative: false,
           tokenAddress: '123456789',
           tokenInternalAddress: 'token-internal-address',
@@ -159,10 +155,9 @@ describe('Algorand asset', () => {
       const asset = new pTokensAlgorandAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EthereumMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.AlgorandMainnet,
           isNative: false,
           tokenAddress: '123456789',
           tokenInternalAddress: 'token-internal-address',
@@ -233,10 +228,9 @@ describe('Algorand asset', () => {
       const asset = new pTokensAlgorandAsset({
         node,
         symbol: 'SYM',
-        chainId: ChainId.EosMainnet,
         provider: provider,
         assetInfo: {
-          chainId: 'originating-chain-id',
+          chainId: ChainId.AlgorandMainnet,
           isNative: false,
           tokenAddress: '123456789',
           tokenInternalAddress: 'token-internal-address',

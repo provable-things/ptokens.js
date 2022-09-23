@@ -12,9 +12,8 @@ describe('pTokensSwapBuilder', () => {
     const originatingToken = new pTokensEvmAsset({
       node,
       symbol: 'A',
-      chainId: ChainId.BscMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.BscMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -25,9 +24,8 @@ describe('pTokensSwapBuilder', () => {
     const destinationToken = new pTokensEvmAsset({
       node,
       symbol: 'B',
-      chainId: ChainId.EthereumMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.EthereumMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -54,9 +52,8 @@ describe('pTokensSwapBuilder', () => {
     const destinationToken = new pTokensEvmAsset({
       node,
       symbol: 'B',
-      chainId: ChainId.EthereumMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.EthereumMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -80,9 +77,8 @@ describe('pTokensSwapBuilder', () => {
     const originatingToken = new pTokensEvmAsset({
       node,
       symbol: 'A',
-      chainId: ChainId.BitcoinMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.EthereumMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -93,9 +89,8 @@ describe('pTokensSwapBuilder', () => {
     const destinationToken = new pTokensEvmAsset({
       node,
       symbol: 'B',
-      chainId: ChainId.EthereumMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.EthereumMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -119,9 +114,8 @@ describe('pTokensSwapBuilder', () => {
     const originatingToken = new pTokensEvmAsset({
       node,
       symbol: 'A',
-      chainId: ChainId.BitcoinMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.EthereumMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',

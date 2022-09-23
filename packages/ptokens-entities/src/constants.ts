@@ -30,6 +30,29 @@ export enum BlockchainType {
   ALGORAND,
 }
 
+export const chainIdToTypeMap = new Map<string, BlockchainType>([
+  [ChainId.EthereumMainnet, BlockchainType.EVM],
+  [ChainId.EthereumRopsten, BlockchainType.EVM],
+  [ChainId.EthereumRinkeby, BlockchainType.EVM],
+  [ChainId.BitcoinMainnet, BlockchainType.UTXO],
+  [ChainId.BitcoinTestnet, BlockchainType.UTXO],
+  [ChainId.EosMainnet, BlockchainType.EOSIO],
+  [ChainId.TelosMainnet, BlockchainType.EOSIO],
+  [ChainId.BscMainnet, BlockchainType.EVM],
+  [ChainId.EosJungle, BlockchainType.EOSIO],
+  [ChainId.XdaiMainnet, BlockchainType.EVM],
+  [ChainId.PolygonMainnet, BlockchainType.EVM],
+  [ChainId.UltraMainnet, BlockchainType.EOSIO],
+  [ChainId.FioMainnet, BlockchainType.EOSIO],
+  [ChainId.UltraTestnet, BlockchainType.EOSIO],
+  [ChainId.ArbitrumMainnet, BlockchainType.EVM],
+  [ChainId.LuxochainMainnet, BlockchainType.EVM],
+  [ChainId.FantomMainnet, BlockchainType.EVM],
+  [ChainId.AlgorandMainnet, BlockchainType.ALGORAND],
+  [ChainId.LibreTestnet, BlockchainType.EOSIO],
+  [ChainId.LibreMainnet, BlockchainType.EOSIO],
+])
+
 export enum Blockchain {
   Ethereum,
   Bitcoin,
@@ -61,6 +84,6 @@ function parseChainIdKey(chainId: ChainId): { blockchain: Blockchain; network: N
   return { blockchain: Blockchain[tokens[0]], network: Network[tokens[1]] }
 }
 
-export const chainIdToBlockchain: Map<ChainId, { blockchain: Blockchain; network: Network }> = new Map(
+export const chainIdToBlockchain: Map<string, { blockchain: Blockchain; network: Network }> = new Map(
   Object.values(ChainId).map((_value) => [_value, parseChainIdKey(_value)])
 )

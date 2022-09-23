@@ -8,7 +8,7 @@ jest.mock('web3')
 describe('EVM asset', () => {
   test('Should create an EVM asset without provider', async () => {
     const assetInfo = {
-      chainId: ChainId.AlgorandMainnet,
+      chainId: ChainId.EthereumMainnet,
       isNative: false,
       tokenAddress: '123456789',
       tokenInternalAddress: 'token-internal-address',
@@ -29,7 +29,7 @@ describe('EVM asset', () => {
 
   test('Should create an EVM asset with provider', async () => {
     const assetInfo = {
-      chainId: ChainId.AlgorandMainnet,
+      chainId: ChainId.EthereumMainnet,
       isNative: false,
       tokenAddress: '123456789',
       tokenInternalAddress: 'token-internal-address',

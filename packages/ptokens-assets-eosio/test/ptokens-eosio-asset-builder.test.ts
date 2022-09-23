@@ -5,7 +5,7 @@ import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 describe('EOSIO asset', () => {
   test('Should create an EOSIO asset without provider', async () => {
     const assetInfo = {
-      chainId: ChainId.AlgorandMainnet,
+      chainId: ChainId.EosMainnet,
       isNative: false,
       tokenAddress: '123456789',
       tokenInternalAddress: 'token-internal-address',
@@ -14,12 +14,13 @@ describe('EOSIO asset', () => {
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const builder = new pTokensEosioAssetBuilder(node)
-    builder.setBlockchain(ChainId.EthereumMainnet)
+    builder.setBlockchain(ChainId.EosMainnet)
     builder.setSymbol('SYM')
     const asset = await builder.build()
-    expect(asset.blockchain).toStrictEqual(Blockchain.Ethereum)
+    expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EosMainnet)
+    expect(asset.blockchain).toStrictEqual(Blockchain.Eos)
     expect(asset.network).toStrictEqual(Network.Mainnet)
-    expect(asset.chainId).toStrictEqual(ChainId.EthereumMainnet)
+    expect(asset.chainId).toStrictEqual(ChainId.EosMainnet)
     expect(asset.weight).toEqual(1)
   })
 
@@ -36,13 +37,14 @@ describe('EOSIO asset', () => {
     provider.setPrivateKey('5K7ZPXDP5ptRZHF3DptSy7C7Quq7D78X82jQwBG8JVgnY3N4irG')
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const builder = new pTokensEosioAssetBuilder(node)
-    builder.setBlockchain(ChainId.EthereumMainnet)
+    builder.setBlockchain(ChainId.EosMainnet)
     builder.setSymbol('SYM')
     builder.setProvider(provider)
     const asset = await builder.build()
-    expect(asset.blockchain).toStrictEqual(Blockchain.Ethereum)
+    expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EosMainnet)
+    expect(asset.blockchain).toStrictEqual(Blockchain.Eos)
     expect(asset.network).toStrictEqual(Network.Mainnet)
-    expect(asset.chainId).toStrictEqual(ChainId.EthereumMainnet)
+    expect(asset.chainId).toStrictEqual(ChainId.EosMainnet)
     expect(asset.weight).toEqual(1)
     expect(asset['provider']).toEqual(provider)
   })
@@ -62,7 +64,7 @@ describe('EOSIO asset', () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const builder = new pTokensEosioAssetBuilder(node)
     try {
-      builder.setBlockchain(ChainId.EthereumMainnet)
+      builder.setBlockchain(ChainId.EosMainnet)
       await builder.build()
       fail()
     } catch (err) {

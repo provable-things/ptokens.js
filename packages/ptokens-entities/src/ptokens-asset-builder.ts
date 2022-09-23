@@ -1,9 +1,8 @@
 import { pTokensAsset } from './ptokens-asset'
-import { ChainId, Blockchain, Network } from './constants'
+import { ChainId, Blockchain, Network, BlockchainType, chainIdToTypeMap } from './constants'
 import { pTokensNode, AssetInfo } from 'ptokens-node'
 
 export abstract class pTokensAssetBuilder {
-  protected _name: string
   protected _symbol: string
   protected _weight: number
   protected _network: Network
@@ -11,14 +10,11 @@ export abstract class pTokensAssetBuilder {
   protected _chainId: ChainId
   protected _node: pTokensNode
   protected _assetInfo: AssetInfo
+  private _type: BlockchainType
 
-  constructor(_node: pTokensNode) {
+  constructor(_node: pTokensNode, _type: BlockchainType) {
     this._node = _node
-  }
-
-  setName(name: string) {
-    this._name = name
-    return this
+    this._type = _type
   }
 
   setSymbol(symbol: string) {
@@ -32,11 +28,14 @@ export abstract class pTokensAssetBuilder {
   }
 
   setBlockchain(chainId: ChainId) {
+    if (chainIdToTypeMap.get(chainId) !== this._type) throw new Error('Unsupported chain ID')
     this._chainId = chainId
     return this
   }
 
-  async populateAssetInfo() {
+  abstract _build(): Promise<pTokensAsset>
+
+  private async validate() {
     if (!this._chainId) throw new Error('Missing chain ID')
     if (!this._symbol) throw new Error('Missing symbol')
     const assetInfo = await this._node.getAssetInfoByChainId(this._symbol, this._chainId)
@@ -44,5 +43,8 @@ export abstract class pTokensAssetBuilder {
     this._assetInfo = assetInfo
   }
 
-  abstract build(): Promise<pTokensAsset>
+  async build(): Promise<pTokensAsset> {
+    await this.validate()
+    return this._build()
+  }
 }

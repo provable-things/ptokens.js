@@ -1,4 +1,4 @@
-import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
+import { pTokensAsset, pTokenAssetConfig, BlockchainType } from 'ptokens-entities'
 import { pTokensAlgorandProvider } from './ptokens-algorand-provider'
 import { pTokensNode } from 'ptokens-node'
 import PromiEvent from 'promievent'
@@ -29,7 +29,7 @@ export class pTokensAlgorandAsset extends pTokensAsset {
   private _nativeIdentity: string
 
   constructor(config: pTokenAlgorandAssetConfig) {
-    super(config)
+    super(config, BlockchainType.ALGORAND)
     this._provider = config.provider
   }
 

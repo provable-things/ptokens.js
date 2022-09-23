@@ -1,4 +1,4 @@
-import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
+import { pTokensAsset, pTokenAssetConfig, BlockchainType } from 'ptokens-entities'
 import PromiEvent from 'promievent'
 import { Action, pTokensEosioProvider } from './ptokens-eosio-provider'
 
@@ -21,7 +21,7 @@ export class pTokensEosioAsset extends pTokensAsset {
   private provider: pTokensEosioProvider
 
   constructor(config: pTokenEosioAssetConfig) {
-    super(config)
+    super(config, BlockchainType.EOSIO)
     this.provider = config.provider
   }
 

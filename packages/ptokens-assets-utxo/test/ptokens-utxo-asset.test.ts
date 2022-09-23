@@ -32,14 +32,13 @@ describe('UTXO asset', () => {
     jest.clearAllMocks()
   })
 
-  test('Should create an EVM asset from constructor', () => {
+  test('Should create an UTXO asset from constructor', () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const asset = new pTokensUtxoAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.BitcoinMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -59,9 +58,8 @@ describe('UTXO asset', () => {
     const asset = new pTokensUtxoAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.BitcoinMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -83,10 +81,9 @@ describe('UTXO asset', () => {
     const asset = new pTokensUtxoAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
       provider: provider,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.BitcoinMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -108,10 +105,9 @@ describe('UTXO asset', () => {
     const asset = new pTokensUtxoAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
       provider: provider,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.BitcoinMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -152,10 +148,9 @@ describe('UTXO asset', () => {
     const asset = new pTokensUtxoAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
       provider: provider,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.BitcoinMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -176,9 +171,8 @@ describe('UTXO asset', () => {
     const asset = new pTokensUtxoAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.BitcoinMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -203,10 +197,9 @@ describe('UTXO asset', () => {
     const asset = new pTokensUtxoAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
       provider: provider,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.BitcoinMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
@@ -234,10 +227,9 @@ describe('UTXO asset', () => {
     const asset = new pTokensUtxoAsset({
       node,
       symbol: 'SYM',
-      chainId: ChainId.BitcoinMainnet,
       provider: provider,
       assetInfo: {
-        chainId: 'originating-chain-id',
+        chainId: ChainId.BitcoinMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',

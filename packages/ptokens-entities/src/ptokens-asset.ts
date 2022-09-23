@@ -1,11 +1,10 @@
 import { pTokensNode, AssetInfo } from 'ptokens-node'
 import PromiEvent from 'promievent'
-import { ChainId, Blockchain, Network, chainIdToBlockchain } from './constants'
+import { Blockchain, BlockchainType, ChainId, chainIdToBlockchain, chainIdToTypeMap, Network } from './constants'
 
 export type pTokenAssetConfig = {
   node: pTokensNode
   symbol: string
-  chainId: ChainId
   assetInfo: AssetInfo
   weight?: number
   destinationAddress?: string
@@ -14,47 +13,42 @@ export type pTokenAssetConfig = {
 export abstract class pTokensAsset {
   protected _node: pTokensNode
   private _symbol: string
-  private _chainId: ChainId
-  private _blockchain: Blockchain
-  private _network: Network
   private _assetInfo: AssetInfo
   private _weight: number
   private _destinationAddress: string
+  private _type: BlockchainType
 
-  constructor(config: pTokenAssetConfig) {
-    if (!config.node) throw new Error('Missing node')
-    if (!config.symbol) throw new Error('Missing symbol')
-    if (!config.chainId) throw new Error('Missing chain ID')
-    if (!config.assetInfo) throw new Error('Missing asset info')
-    this._node = config.node
-    this._symbol = config.symbol
-    this._chainId = config.chainId
-    const { blockchain, network } = chainIdToBlockchain.get(config.chainId)
-    this._blockchain = blockchain
-    this._network = network
-    this._assetInfo = config.assetInfo
-    this._weight = config.weight || 1
-    this._destinationAddress = config.destinationAddress || undefined
+  constructor(_config: pTokenAssetConfig, _type: BlockchainType) {
+    if (!_config.node) throw new Error('Missing node')
+    if (!_config.symbol) throw new Error('Missing symbol')
+    if (!_config.assetInfo) throw new Error('Missing asset info')
+    if (chainIdToTypeMap.get(_config.assetInfo.chainId) !== _type) throw new Error('Not supported chain ID')
+    this._type = _type
+    this._node = _config.node
+    this._symbol = _config.symbol
+    this._assetInfo = _config.assetInfo
+    this._weight = _config.weight || 1
+    this._destinationAddress = _config.destinationAddress || undefined
   }
 
   public get symbol(): string {
     return this._symbol
   }
 
-  public get chainId(): string {
-    return this._chainId
+  public get chainId(): ChainId {
+    return this.assetInfo.chainId as ChainId
+  }
+
+  public get blockchain(): Blockchain {
+    return chainIdToBlockchain.get(this._assetInfo.chainId).blockchain
+  }
+
+  public get network(): Network {
+    return chainIdToBlockchain.get(this._assetInfo.chainId).network
   }
 
   public get destinationAddress(): string {
     return this._destinationAddress
-  }
-
-  public get blockchain(): Blockchain {
-    return this._blockchain
-  }
-
-  public get network(): Network {
-    return this._network
   }
 
   public get weight(): number {
