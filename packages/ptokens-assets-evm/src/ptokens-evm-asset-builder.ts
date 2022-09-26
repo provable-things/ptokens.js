@@ -16,7 +16,7 @@ export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async _build(): Promise<pTokensEvmAsset> {
+  protected async _build(): Promise<pTokensEvmAsset> {
     const config = {
       node: this._node,
       symbol: this._symbol,

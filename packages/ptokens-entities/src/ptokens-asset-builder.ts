@@ -33,7 +33,10 @@ export abstract class pTokensAssetBuilder {
     return this
   }
 
-  abstract _build(): Promise<pTokensAsset>
+  // eslint-disable-next-line @typescript-eslint/require-await
+  protected async _build(): Promise<pTokensAsset> {
+    throw new Error('_build() is not implemented')
+  }
 
   private async validate() {
     if (!this._chainId) throw new Error('Missing chain ID')
