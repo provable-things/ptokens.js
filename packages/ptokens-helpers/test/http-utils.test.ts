@@ -18,7 +18,7 @@ describe('Http general tests', () => {
       server.close()
     })
 
-    it('Should reject when timeout expires', async () => {
+    test('Should reject when timeout expires', async () => {
       try {
         await http.getRequest('http://localhost:3000/golong', {}, 100)
         fail()
@@ -27,13 +27,13 @@ describe('Http general tests', () => {
       }
     })
 
-    it('Should not reject fetching the correct data', async () => {
+    test('Should not reject fetching the correct data', async () => {
       const result = await http.getRequest('http://localhost:3000', {}, 400)
       const data = await result.text()
       expect(data).toStrictEqual('data')
     })
 
-    it('Should reject when timeout expires', async () => {
+    test('Should reject when timeout expires', async () => {
       try {
         await http.postRequest('http://localhost:3000/golong', {}, {}, 100)
         fail()
@@ -42,7 +42,7 @@ describe('Http general tests', () => {
       }
     })
 
-    it('Should throw when URL is empty', async () => {
+    test('Should throw when URL is empty', async () => {
       try {
         await http.postRequest('', {}, {}, 100)
         fail()
@@ -51,7 +51,7 @@ describe('Http general tests', () => {
       }
     })
 
-    it('Should not reject fetching the correct data', async () => {
+    test('Should not reject fetching the correct data', async () => {
       const result = await http.postRequest('http://localhost:3000', {}, {}, 400)
       const data = await result.text()
       expect(data).toStrictEqual('data')
@@ -78,13 +78,13 @@ describe('Http general tests', () => {
       server.close()
     })
 
-    it('Should not reject performing a GET request', async () => {
+    test('Should not reject performing a GET request', async () => {
       const result = await http.fetchJsonByGet('http://localhost:3000')
       const expected = { Hello: 'World' }
       expect(result).toStrictEqual(expected)
     })
 
-    it('Should reject performing a GET request', async () => {
+    test('Should reject performing a GET request', async () => {
       try {
         await http.fetchJsonByGet('http://localhost:3000/incorrect')
         fail()
@@ -93,7 +93,7 @@ describe('Http general tests', () => {
       }
     })
 
-    it('Should reject performing a GET request', async () => {
+    test('Should reject performing a GET request', async () => {
       try {
         await http.fetchJsonByGet('http://localhost:3000/error')
         fail()
@@ -132,13 +132,13 @@ describe('Http general tests', () => {
       server.close()
     })
 
-    it('Should not reject returning the correct response', async () => {
+    test('Should not reject returning the correct response', async () => {
       const body = { hello: 'world' }
       const result = await http.fetchJsonByPost('http://localhost:3000', body)
       expect(result).toStrictEqual(body)
     })
 
-    it('Should reject with incorrect output', async () => {
+    test('Should reject with incorrect output', async () => {
       const body = { hello: 'incorrect' }
       try {
         await http.fetchJsonByPost('http://localhost:3000', body)
@@ -148,7 +148,7 @@ describe('Http general tests', () => {
       }
     })
 
-    it('Should reject with incorrect output', async () => {
+    test('Should reject with incorrect output', async () => {
       const body = { hello: 'error' }
       try {
         await http.fetchJsonByPost('http://localhost:3000', body)
@@ -158,7 +158,7 @@ describe('Http general tests', () => {
       }
     })
 
-    it('Should reject with incorrect URL', async () => {
+    test('Should reject with incorrect URL', async () => {
       const body = { hello: 'world' }
       try {
         await http.fetchJsonByPost('', body)

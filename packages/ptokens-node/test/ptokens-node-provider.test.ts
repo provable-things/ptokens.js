@@ -6,13 +6,13 @@ jest.mock('ptokens-helpers')
 
 describe('pTokensNodeProvider', () => {
   describe('getUrl', () =>
-    it('Should return the URL set when calling constructor', () => {
+    test('Should return the URL set when calling constructor', () => {
       const provider = new pTokensNodeProvider('a-url')
       expect(provider.getUrl()).toStrictEqual('a-url')
     }))
 
   describe('sendRpcRequest', () => {
-    it('Should call fetch with correct parameters', async () => {
+    test('Should call fetch with correct parameters', async () => {
       const provider = new pTokensNodeProvider('http://test-node.p.tokens')
       const httpPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue(jsonrpc.success(1, { data: 'data' }))
       await provider.sendRpcRequest(1, 'method', ['param', 1])
@@ -24,7 +24,7 @@ describe('pTokensNodeProvider', () => {
       })
     })
 
-    it('Should throw if fetchJsonByPost throws', async () => {
+    test('Should throw if fetchJsonByPost throws', async () => {
       const provider = new pTokensNodeProvider('http://test-node.p.tokens')
       const httpPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockRejectedValue(new Error('fetchJsonByPost error'))
       try {
@@ -41,7 +41,7 @@ describe('pTokensNodeProvider', () => {
       }
     })
 
-    it('Should throw if response has error', async () => {
+    test('Should throw if response has error', async () => {
       const provider = new pTokensNodeProvider('http://test-node.p.tokens')
       const httpPostSpy = jest
         .spyOn(http, 'fetchJsonByPost')
@@ -60,7 +60,7 @@ describe('pTokensNodeProvider', () => {
       }
     })
 
-    it('Should throw if response is not RPC', async () => {
+    test('Should throw if response is not RPC', async () => {
       const provider = new pTokensNodeProvider('http://test-node.p.tokens')
       const httpPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue({ data: 'non-rpc-response' })
       try {

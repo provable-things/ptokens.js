@@ -10,7 +10,7 @@ describe('pTokensNode', () => {
   })
 
   describe('getProvider', () => {
-    it('Should return the provider set when calling contructor', () => {
+    test('Should return the provider set when calling contructor', () => {
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
       expect(node.getProvider()).toStrictEqual(provider)
@@ -18,7 +18,7 @@ describe('pTokensNode', () => {
   })
 
   describe('getTransactionStatus', () =>
-    it('Should return the provider set when calling contructor', async () => {
+    test('Should return the provider set when calling contructor', async () => {
       const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue(jsonrpc.success(1, { data: 1 }))
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
@@ -32,7 +32,7 @@ describe('pTokensNode', () => {
     }))
 
   describe('getAssetInfo', () => {
-    it('Should call fetchJsonByPost with correct arguments', async () => {
+    test('Should call fetchJsonByPost with correct arguments', async () => {
       const expected = [
         { chainId: 'first-chain-id', info: 'first-info' },
         { chainId: 'chain-id', info: 'info' },
@@ -51,7 +51,7 @@ describe('pTokensNode', () => {
       expect(ret).toStrictEqual(expected)
     })
 
-    it('Should call fetchJsonByPost with correct arguments', async () => {
+    test('Should call fetchJsonByPost with correct arguments', async () => {
       const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue(
         jsonrpc.success(1, [
           { chainId: 'first-chain-id', info: 'first-info' },
@@ -71,7 +71,7 @@ describe('pTokensNode', () => {
       expect(ret).toStrictEqual({ chainId: 'chain-id', info: 'info' })
     })
 
-    it('Should call fetchJsonByPost with correct arguments', async () => {
+    test('Should call fetchJsonByPost with correct arguments', async () => {
       const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue(
         jsonrpc.success(1, [
           { chainId: 'first-chain-id', info: 'first-info' },
@@ -90,7 +90,7 @@ describe('pTokensNode', () => {
       expect(ret).toStrictEqual(null)
     })
 
-    it('Should throw the provider set when calling contructor', async () => {
+    test('Should throw the provider set when calling contructor', async () => {
       const fetchJsonByPostSpy = jest
         .spyOn(http, 'fetchJsonByPost')
         .mockRejectedValue(new Error('fetchJsonByPost error'))
@@ -112,7 +112,7 @@ describe('pTokensNode', () => {
   })
 
   describe('getNativeDepositAddress', () => {
-    it('Should return the provider set when calling contructor', async () => {
+    test('Should return the provider set when calling contructor', async () => {
       const fetchJsonByPostSpy = jest
         .spyOn(http, 'fetchJsonByPost')
         .mockResolvedValue(jsonrpc.success(1, { data: 'data' }))

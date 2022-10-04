@@ -6,7 +6,7 @@ import { ChainId } from 'ptokens-entities'
 jest.mock('ptokens-node')
 
 describe('pTokensSwapBuilder', () => {
-  it('Should build a swap', () => {
+  test('Should build a swap', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)
     const originatingToken = new pTokensEvmAsset({
@@ -44,7 +44,7 @@ describe('pTokensSwapBuilder', () => {
     expect(swap.destinationAssets).toStrictEqual([destinationToken])
   })
 
-  it('Should not build a swap for uncorrelated tokens', () => {
+  test('Should not build a swap for uncorrelated tokens', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)
     const originatingToken = new pTokensEvmAsset({
@@ -80,7 +80,7 @@ describe('pTokensSwapBuilder', () => {
     }
   })
 
-  it('Should not build a swap if source asset is missing', () => {
+  test('Should not build a swap if source asset is missing', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)
     const destinationToken = new pTokensEvmAsset({
@@ -104,7 +104,7 @@ describe('pTokensSwapBuilder', () => {
     }
   })
 
-  it('Should not build a swap if amount is missing', () => {
+  test('Should not build a swap if amount is missing', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)
     const originatingToken = new pTokensEvmAsset({
@@ -139,7 +139,7 @@ describe('pTokensSwapBuilder', () => {
     }
   })
 
-  it('Should not build a swap if there are no destination assets', () => {
+  test('Should not build a swap if there are no destination assets', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)
     const originatingToken = new pTokensEvmAsset({

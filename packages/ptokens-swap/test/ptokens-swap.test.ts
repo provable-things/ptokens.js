@@ -12,7 +12,7 @@ describe('pTokensSwap', () => {
     jest.resetAllMocks()
   })
 
-  it('Should swap native asset without user data ', async () => {
+  test('Should swap native asset without user data ', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
@@ -124,7 +124,7 @@ describe('pTokensSwap', () => {
     ])
   })
 
-  it('Should swap native asset with user data ', async () => {
+  test('Should swap native asset with user data ', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
@@ -243,7 +243,7 @@ describe('pTokensSwap', () => {
     ])
   })
 
-  it('Should swap host asset without user data ', async () => {
+  test('Should swap host asset without user data ', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
@@ -349,7 +349,7 @@ describe('pTokensSwap', () => {
     ])
   })
 
-  it('Should swap host asset with user data ', async () => {
+  test('Should swap host asset with user data ', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
@@ -462,7 +462,7 @@ describe('pTokensSwap', () => {
   // // This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks.
   // // Active timers can also cause this, ensure that .unref() was called on them.'
   // // This is because the polling function withing the transactions monitoring does not exit when abort is sent
-  // it('Should abort a running swap', async () => {
+  // test('Should abort a running swap', async () => {
   //   const node = new pTokensNode(new pTokensNodeProvider('test-url'))
   //   jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
   //     return Promise.resolve([
