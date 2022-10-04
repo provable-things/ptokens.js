@@ -9,7 +9,6 @@ describe('EOSIO asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenInternalAddress: 'token-internal-address',
-      isSystemToken: false,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
@@ -30,7 +29,6 @@ describe('EOSIO asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenInternalAddress: 'token-internal-address',
-      isSystemToken: false,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')

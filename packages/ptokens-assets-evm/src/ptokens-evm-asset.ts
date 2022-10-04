@@ -35,16 +35,16 @@ export class pTokensEvmAsset extends pTokensAsset {
             const txHash: string = await this.provider
               .makeContractSend(
                 {
-                  method: this.assetInfo.isSystemToken ? SYSTEM_TOKEN_PEG_IN_METHOD : ERC20_TOKEN_PEG_IN_METHOD,
+                  method: !this.assetInfo.tokenAddress ? SYSTEM_TOKEN_PEG_IN_METHOD : ERC20_TOKEN_PEG_IN_METHOD,
                   abi: pERC20VaultContractAbi as unknown as AbiItem,
                   contractAddress: this.assetInfo.vaultAddress,
-                  value: this.assetInfo.isSystemToken ? amount : 0,
+                  value: !this.assetInfo.tokenAddress ? amount : 0,
                 },
                 userData
-                  ? this.assetInfo.isSystemToken
+                  ? !this.assetInfo.tokenAddress
                     ? [destinationAddress, destinationChainId, userData]
                     : [amount, this.assetInfo.tokenAddress, destinationAddress, userData, destinationChainId]
-                  : this.assetInfo.isSystemToken
+                  : !this.assetInfo.tokenAddress
                   ? [destinationAddress, destinationChainId]
                   : [amount, this.assetInfo.tokenAddress, destinationAddress, destinationChainId]
               )

@@ -19,7 +19,6 @@ describe('EOSIO asset', () => {
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -43,7 +42,6 @@ describe('EOSIO asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -78,7 +76,6 @@ describe('EOSIO asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -105,7 +102,6 @@ describe('EOSIO asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -119,57 +115,7 @@ describe('EOSIO asset', () => {
       }
     })
 
-    test('Should call makeContractSend with pegIn for native token', async () => {
-      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEosioProvider('eos-rpc-endpoint')
-      provider.setActor('tokenOwner')
-      const transactSpy = jest.spyOn(provider, 'transact').mockImplementation(() => {
-        const promi = new PromiEvent<string>((resolve) =>
-          setImmediate(() => {
-            promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
-            return resolve('tx-hash')
-          })
-        )
-        return promi
-      })
-      const asset = new pTokensEosioAsset({
-        node,
-        symbol: 'SYM',
-        assetInfo: {
-          chainId: ChainId.EosMainnet,
-          isNative: true,
-          tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
-          vaultAddress: 'vault-contract-address',
-        },
-        provider: provider,
-      })
-      let txHash = ''
-      const ret = await asset
-        .nativeToInterim(1, 'destination-address', 'destination-chain-id')
-        .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
-        })
-      expect(txHash).toEqual('tx-hash')
-      expect(ret).toEqual('tx-hash')
-      expect(transactSpy).toHaveBeenNthCalledWith(1, [
-        {
-          abi: tokenAbi,
-          contractAddress: 'token-contract-address',
-          method: 'transfer',
-          arguments: {
-            from: 'tokenOwner',
-            to: 'vault-contract-address',
-            quantity: '1.00000000 SYM',
-            memo: 'destination-address,destination-chain-id',
-          },
-        },
-      ])
-    })
-
-    test('Should call makeContractSend with pegIn for native token and user data', async () => {
+    test('Should call transact with transfer', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
       provider.setActor('tokenOwner')
@@ -192,63 +138,6 @@ describe('EOSIO asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
-          vaultAddress: 'vault-contract-address',
-        },
-      })
-      let txHash = ''
-      const ret = await asset
-        .nativeToInterim(1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
-        .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
-        })
-      expect(txHash).toEqual('tx-hash')
-      expect(ret).toEqual('tx-hash')
-      expect(transactSpy).toHaveBeenNthCalledWith(1, [
-        {
-          abi: tokenAbi,
-          contractAddress: 'token-contract-address',
-          method: 'transfer',
-          arguments: {
-            from: 'tokenOwner',
-            to: 'vault-contract-address',
-            quantity: '1.00000000 SYM',
-            memo: 'destination-address,destination-chain-id,1',
-          },
-        },
-        {
-          abi: vaultAbi,
-          contractAddress: 'vault-contract-address',
-          method: 'adduserdata',
-          arguments: { user_data: Buffer.from('user-data') },
-        },
-      ])
-    })
-
-    test('Should call makeContractSend with pegInEth for system token', async () => {
-      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEosioProvider('eos-rpc-endpoint')
-      provider.setActor('tokenOwner')
-      const transactSpy = jest.spyOn(provider, 'transact').mockImplementation(() => {
-        const promi = new PromiEvent<string>((resolve) =>
-          setImmediate(() => {
-            promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
-            return resolve('tx-hash')
-          })
-        )
-        return promi
-      })
-      const asset = new pTokensEosioAsset({
-        node,
-        symbol: 'SYM',
-        provider: provider,
-        assetInfo: {
-          chainId: ChainId.EosMainnet,
-          isNative: true,
-          tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
-          isSystemToken: true,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -275,7 +164,7 @@ describe('EOSIO asset', () => {
       ])
     })
 
-    test('Should call transact with transfer and adduserdata for system token with user data', async () => {
+    test('Should call transact with transfer and adduserdata with user data', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
       provider.setActor('tokenOwner')
@@ -298,7 +187,6 @@ describe('EOSIO asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: true,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -354,7 +242,6 @@ describe('EOSIO asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -382,7 +269,6 @@ describe('EOSIO asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -417,7 +303,6 @@ describe('EOSIO asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -443,7 +328,6 @@ describe('EOSIO asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -479,7 +363,6 @@ describe('EOSIO asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
         },
       })
       let txHashBroadcasted = ''
@@ -534,7 +417,6 @@ describe('EOSIO asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
         },
       })
       let txHashBroadcasted = ''

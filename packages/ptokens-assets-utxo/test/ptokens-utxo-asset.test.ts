@@ -42,7 +42,6 @@ describe('UTXO asset', () => {
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -63,7 +62,6 @@ describe('UTXO asset', () => {
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -87,7 +85,6 @@ describe('UTXO asset', () => {
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -111,7 +108,6 @@ describe('UTXO asset', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -154,7 +150,6 @@ describe('UTXO asset', () => {
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -176,7 +171,6 @@ describe('UTXO asset', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -203,7 +197,6 @@ describe('UTXO asset', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -233,7 +226,6 @@ describe('UTXO asset', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })

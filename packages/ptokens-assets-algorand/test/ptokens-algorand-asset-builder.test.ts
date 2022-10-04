@@ -9,15 +9,14 @@ describe('Algorand asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenInternalAddress: 'token-internal-address',
-      isSystemToken: false,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))
     const builder = new pTokensAlgorandAssetBuilder(node)
     builder.setBlockchain(ChainId.AlgorandMainnet)
-    builder.setSymbol('SYM')
+    builder.setSymbol('TET')
     const asset = await builder.build()
-    expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.AlgorandMainnet)
+    expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'TET', ChainId.AlgorandMainnet)
     expect(asset.blockchain).toStrictEqual(Blockchain.Algorand)
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.chainId).toStrictEqual(ChainId.AlgorandMainnet)

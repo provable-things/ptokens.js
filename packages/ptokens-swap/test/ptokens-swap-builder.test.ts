@@ -17,7 +17,6 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -29,7 +28,6 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -57,7 +55,6 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -82,7 +79,6 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -94,7 +90,6 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -119,7 +114,6 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })

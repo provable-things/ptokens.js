@@ -21,7 +21,6 @@ describe('Algorand asset', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenInternalAddress: 'token-internal-address',
-        isSystemToken: false,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -46,7 +45,6 @@ describe('Algorand asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -84,7 +82,6 @@ describe('Algorand asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -113,7 +110,6 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
@@ -161,7 +157,6 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
@@ -234,7 +229,6 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenInternalAddress: 'token-internal-address',
-          isSystemToken: false,
           hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })

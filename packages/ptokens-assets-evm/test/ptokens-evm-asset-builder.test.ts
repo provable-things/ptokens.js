@@ -12,7 +12,6 @@ describe('EVM asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenInternalAddress: 'token-internal-address',
-      isSystemToken: false,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))
@@ -33,7 +32,6 @@ describe('EVM asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenInternalAddress: 'token-internal-address',
-      isSystemToken: false,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const provider = new pTokensEvmProvider(new Web3())
