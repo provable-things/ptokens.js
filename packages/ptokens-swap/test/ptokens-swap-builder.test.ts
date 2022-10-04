@@ -44,6 +44,42 @@ describe('pTokensSwapBuilder', () => {
     expect(swap.destinationAssets).toStrictEqual([destinationToken])
   })
 
+  it('Should not build a swap for uncorrelated tokens', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
+    const builder = new pTokensSwapBuilder(node)
+    const originatingToken = new pTokensEvmAsset({
+      node,
+      symbol: 'A',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address-a',
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    const destinationToken = new pTokensEvmAsset({
+      node,
+      symbol: 'B',
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenInternalAddress: 'token-internal-address-b',
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    builder.setSourceAsset(originatingToken)
+    builder.addDestinationAsset(destinationToken, 'destination-address', Buffer.from('user-data'))
+    builder.setAmount(1)
+    try {
+      builder.build()
+      fail()
+    } catch (err) {
+      expect(err.message).toBe('Invalid swap')
+    }
+  })
+
   it('Should not build a swap if source asset is missing', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)
