@@ -32,6 +32,7 @@ export class pTokensEvmAsset extends pTokensAsset {
             if (!this.provider) return reject(new Error('Missing provider'))
             if (!this.assetInfo.isNative)
               return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
+            if (!this.assetInfo.vaultAddress) return reject(new Error('Missing vault address'))
             const txHash: string = await this.provider
               .makeContractSend(
                 {

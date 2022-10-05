@@ -39,6 +39,7 @@ export class pTokensEosioAsset extends pTokensAsset {
             if (!this.provider.actor) return reject(new Error('Missing actor'))
             if (!this.assetInfo.isNative)
               return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
+            if (!this.assetInfo.vaultAddress) return reject(new Error('Missing vault address'))
             const actions: Action[] = [
               {
                 contractAddress: this.assetInfo.tokenAddress,
