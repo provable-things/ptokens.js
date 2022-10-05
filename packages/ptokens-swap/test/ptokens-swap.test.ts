@@ -464,7 +464,7 @@ describe('pTokensSwap', () => {
   // // This is because the polling function withing the transactions monitoring does not exit when abort is sent
   // test('Should abort a running swap', async () => {
   //   const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-  //   jest.spyOn(pTokensNode.prototype, 'getAssetInfo').mockImplementation(() => {
+  //   jest.spyOn(pTokensNode.prototype, 'getSupportedChainsByAsset').mockImplementation(() => {
   //     return Promise.resolve([
   //       {
   //         chainId: ChainId.BitcoinMainnet,

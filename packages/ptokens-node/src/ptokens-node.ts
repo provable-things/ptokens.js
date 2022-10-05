@@ -46,12 +46,12 @@ export class pTokensNode {
     return await this.provider.sendRpcRequest(1, 'node_getTransactionStatus', [txHash, originatingChainId])
   }
 
-  async getAssetInfo(tokenSymbol: string): Promise<AssetInfo[]> {
-    return await this.provider.sendRpcRequest(1, 'node_getAssetInfo', [tokenSymbol])
+  async getSupportedChainsByAsset(tokenSymbol: string): Promise<AssetInfo[]> {
+    return await this.provider.sendRpcRequest(1, 'node_getSupportedChainsByAsset', [tokenSymbol])
   }
 
   async getAssetInfoByChainId(tokenSymbol: string, chainId: string): Promise<AssetInfo> {
-    const info = (await this.getAssetInfo(tokenSymbol)).filter((p) => p.chainId == chainId)
+    const info = (await this.getSupportedChainsByAsset(tokenSymbol)).filter((p) => p.chainId == chainId)
     return info.length ? info.at(0) : null
   }
 
