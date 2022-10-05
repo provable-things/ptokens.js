@@ -8,7 +8,7 @@ describe('Algorand asset', () => {
       chainId: ChainId.AlgorandMainnet,
       isNative: false,
       tokenAddress: '123456789',
-      tokenInternalAddress: 'token-internal-address',
+      tokenReference: 'token-internal-address',
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))

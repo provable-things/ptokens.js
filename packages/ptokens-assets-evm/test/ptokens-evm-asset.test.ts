@@ -20,7 +20,7 @@ describe('EVM asset', () => {
         chainId: ChainId.EthereumMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
+        tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -40,7 +40,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -74,7 +74,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -109,7 +109,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -160,7 +160,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -211,7 +211,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: '',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -262,7 +262,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: '',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -313,7 +313,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -337,7 +337,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -371,7 +371,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -406,7 +406,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
         },
       })
       let txHashBroadcasted = ''
@@ -456,7 +456,7 @@ describe('EVM asset', () => {
           chainId: ChainId.EthereumMainnet,
           isNative: false,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
         },
       })
       let txHashBroadcasted = ''

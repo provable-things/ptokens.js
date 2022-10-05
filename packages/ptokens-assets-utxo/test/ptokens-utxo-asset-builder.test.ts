@@ -8,7 +8,7 @@ describe('UTXO asset', () => {
       chainId: ChainId.BitcoinMainnet,
       isNative: false,
       tokenAddress: '123456789',
-      tokenInternalAddress: 'token-internal-address',
+      tokenReference: 'token-internal-address',
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
@@ -28,7 +28,7 @@ describe('UTXO asset', () => {
       chainId: ChainId.BitcoinMainnet,
       isNative: false,
       tokenAddress: '123456789',
-      tokenInternalAddress: 'token-internal-address',
+      tokenReference: 'token-internal-address',
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const provider = new pTokensBlockstreamUtxoProvider('blockstream-provider')

@@ -21,7 +21,7 @@ export type AssetInfo = {
   chainId: string
   isNative: boolean
   tokenAddress: string
-  tokenInternalAddress: string
+  tokenReference: string
   vaultAddress?: string
   hostIdentity?: string
   nativeIdentity?: string

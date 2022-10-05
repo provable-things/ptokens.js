@@ -41,7 +41,7 @@ describe('UTXO asset', () => {
         chainId: ChainId.BitcoinMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
+        tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -61,7 +61,7 @@ describe('UTXO asset', () => {
         chainId: ChainId.BitcoinMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
+        tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -84,7 +84,7 @@ describe('UTXO asset', () => {
         chainId: ChainId.BitcoinMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
+        tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -107,7 +107,7 @@ describe('UTXO asset', () => {
         chainId: ChainId.BitcoinMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
+        tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -149,7 +149,7 @@ describe('UTXO asset', () => {
         chainId: ChainId.BitcoinMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
+        tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -170,7 +170,7 @@ describe('UTXO asset', () => {
         chainId: ChainId.BitcoinMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
+        tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -196,7 +196,7 @@ describe('UTXO asset', () => {
         chainId: ChainId.BitcoinMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
+        tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -225,7 +225,7 @@ describe('UTXO asset', () => {
         chainId: ChainId.BitcoinMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
+        tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
       },
     })

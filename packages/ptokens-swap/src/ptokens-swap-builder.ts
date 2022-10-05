@@ -49,7 +49,7 @@ export class pTokensSwapBuilder {
     if (this._destinationAssets.length === 0) throw new Error('Missing destination assets')
     if (
       !this.destinationAssets.every(
-        (_asset) => _asset.assetInfo.tokenInternalAddress === this.sourceAsset.assetInfo.tokenInternalAddress
+        (_asset) => _asset.assetInfo.tokenReference === this.sourceAsset.assetInfo.tokenReference
       )
     )
       throw new Error('Invalid swap')

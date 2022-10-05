@@ -20,7 +20,7 @@ describe('Algorand asset', () => {
         chainId: ChainId.AlgorandMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
-        tokenInternalAddress: 'token-internal-address',
+        tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -44,7 +44,7 @@ describe('Algorand asset', () => {
           chainId: ChainId.AlgorandMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -81,7 +81,7 @@ describe('Algorand asset', () => {
           chainId: ChainId.AlgorandMainnet,
           isNative: true,
           tokenAddress: 'token-contract-address',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -109,7 +109,7 @@ describe('Algorand asset', () => {
           chainId: ChainId.AlgorandMainnet,
           isNative: false,
           tokenAddress: '123456789',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
@@ -156,7 +156,7 @@ describe('Algorand asset', () => {
           chainId: ChainId.AlgorandMainnet,
           isNative: false,
           tokenAddress: '123456789',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
@@ -228,7 +228,7 @@ describe('Algorand asset', () => {
           chainId: ChainId.AlgorandMainnet,
           isNative: false,
           tokenAddress: '123456789',
-          tokenInternalAddress: 'token-internal-address',
+          tokenReference: 'token-internal-address',
           hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
