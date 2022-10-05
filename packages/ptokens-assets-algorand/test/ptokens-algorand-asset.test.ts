@@ -110,7 +110,7 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenReference: 'token-internal-address',
-          hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+          identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
       try {
@@ -157,7 +157,7 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenReference: 'token-internal-address',
-          hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+          identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
       let txHashBroadcasted = ''
@@ -229,7 +229,7 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenReference: 'token-internal-address',
-          hostIdentity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+          identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
       let txHashBroadcasted = ''

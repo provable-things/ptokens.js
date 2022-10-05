@@ -23,8 +23,7 @@ export type AssetInfo = {
   tokenAddress: string
   tokenReference: string
   vaultAddress?: string
-  hostIdentity?: string
-  nativeIdentity?: string
+  identity?: string
 }
 
 export type NativeDepositAddress = {

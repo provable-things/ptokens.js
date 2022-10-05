@@ -25,26 +25,14 @@ export type pTokenAlgorandAssetConfig = pTokenAssetConfig & {
 export class pTokensAlgorandAsset extends pTokensAsset {
   private _provider: pTokensAlgorandProvider
   private _customHostToInterimTransactions: algosdk.Transaction[]
-  private _hostIdentity: string
-  private _nativeIdentity: string
 
   constructor(config: pTokenAlgorandAssetConfig) {
     super(config, BlockchainType.ALGORAND)
     this._provider = config.provider
   }
 
-  async getAssetInfo(node: pTokensNode) {
-    const assetInfo = await node.getAssetInfoByChainId(this.symbol, this.chainId)
-    if (assetInfo.nativeIdentity) this._nativeIdentity = assetInfo.nativeIdentity
-    if (assetInfo.hostIdentity) this._hostIdentity = assetInfo.hostIdentity
-  }
-
-  public get hostIdentity() {
-    if (this._hostIdentity) return this._hostIdentity
-  }
-
-  public get nativeIdentity() {
-    if (this._nativeIdentity) return this._nativeIdentity
+  public get identity() {
+    if (this.assetInfo.identity) return this.assetInfo.identity
   }
 
   nativeToInterim(): PromiEvent<string> {
@@ -61,14 +49,15 @@ export class pTokensAlgorandAsset extends pTokensAsset {
         (async () => {
           try {
             if (!this._provider) return reject(new Error('Missing provider'))
-            if (!this._provider.account) return reject(new Error('Missing account'))
             if (this.assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
+            if (!this._provider.account) return reject(new Error('Missing account'))
+            if (!this.assetInfo.identity) return reject(new Error('Missing identity'))
             const transactions = this._customHostToInterimTransactions
               ? this._customHostToInterimTransactions
               : [
                   algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
                     from: this._provider.account,
-                    to: this.assetInfo.hostIdentity,
+                    to: this.assetInfo.identity,
                     assetIndex: parseInt(this.assetInfo.tokenAddress),
                     amount,
                     suggestedParams: await this._provider.getTransactionParams(),
