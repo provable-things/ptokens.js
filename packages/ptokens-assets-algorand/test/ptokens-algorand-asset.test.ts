@@ -304,6 +304,69 @@ describe('Algorand asset', () => {
       ])
     })
 
+    test('Should call transact with custom transactions', async () => {
+      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+      const client = new algosdk.Algodv2('algorand-endpoint')
+      const signatureProvider = new BasicSignatureProvider(TEST_MNEMONIC)
+      const provider = new pTokensAlgorandProvider(client, signatureProvider)
+      const account = algosdk.mnemonicToSecretKey(TEST_MNEMONIC)
+      provider.setAccount(account.addr)
+      const suggestedParams = {
+        fee: 100,
+        lastRound: 10000,
+        firstRound: 9000,
+        genesisID: 'mainnet-v1.0',
+        genesisHash: 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=',
+      }
+      const getTransactionParamsSpy = jest.spyOn(provider, 'getTransactionParams').mockResolvedValue(suggestedParams)
+      const transactSpy = jest.spyOn(provider, 'transactInGroup').mockImplementation(() => {
+        const promi = new PromiEvent<string>((resolve) =>
+          setImmediate(() => {
+            promi.emit('txBroadcasted', 'tx-hash')
+            promi.emit('txConfirmed', 'tx-hash')
+            return resolve('tx-hash')
+          })
+        )
+        return promi
+      })
+      const customTx = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+        from: account.addr,
+        to: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+        amount: 1,
+        suggestedParams,
+        assetIndex: 1,
+        note: Uint8Array.from(Buffer.from('c0ffee', 'hex')),
+      })
+      const asset = new pTokensAlgorandAsset({
+        node,
+        symbol: 'SYM',
+        provider: provider,
+        assetInfo: {
+          chainId: ChainId.AlgorandMainnet,
+          isNative: false,
+          tokenAddress: '123456789',
+          tokenReference: 'token-internal-address',
+          identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+        },
+        customTransactions: [customTx],
+      })
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
+      const ret = await asset
+        .hostToInterim(1, 'destination-address', ChainId.BitcoinMainnet, Uint8Array.from(Buffer.from('c0ffee', 'hex')))
+        .on('txBroadcasted', (_txHash) => {
+          txHashBroadcasted = _txHash
+        })
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
+      expect(ret).toEqual('tx-hash')
+      expect(getTransactionParamsSpy).toHaveBeenCalledTimes(0)
+      expect(transactSpy).toHaveBeenNthCalledWith(1, [customTx])
+    })
+
     test('Should reject if transact throws', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const client = new algosdk.Algodv2('algorand-endpoint')

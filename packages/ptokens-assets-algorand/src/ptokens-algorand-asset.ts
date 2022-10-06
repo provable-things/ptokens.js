@@ -6,6 +6,7 @@ import { encode } from '@msgpack/msgpack'
 
 export type pTokenAlgorandAssetConfig = pTokenAssetConfig & {
   provider?: pTokensAlgorandProvider
+  customTransactions?: algosdk.Transaction[]
 }
 
 const hexStringToBuffer = (_string: string) => Buffer.from(_string.toLocaleLowerCase().replace('0x', ''), 'hex')
@@ -21,6 +22,7 @@ export class pTokensAlgorandAsset extends pTokensAsset {
   constructor(config: pTokenAlgorandAssetConfig) {
     super(config, BlockchainType.ALGORAND)
     this._provider = config.provider
+    this._customTransactions = config.customTransactions
   }
 
   public get identity() {
