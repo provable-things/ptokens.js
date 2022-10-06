@@ -34,10 +34,22 @@ test('Should return true since 0xhello is 0x prefixed', () => {
   expect(result).toBe(true)
 })
 
+test('Should return true since 0XC0FFEE is 0x prefixed', () => {
+  const string0xPrefixed = '0XC0FFEE'
+  const result = stringUtils.isHexPrefixed(string0xPrefixed)
+  expect(result).toBe(true)
+})
+
 test('Should return false since hello is not 0x prefixed', () => {
   const string0xNotPrefixed = 'hello0x'
   const result = stringUtils.isHexPrefixed(string0xNotPrefixed)
   expect(result).toBe(false)
+})
+
+test('Should return a buffer from hex string', () => {
+  const hexString = '0xc0ffee'
+  const result = stringUtils.hexStringToBuffer(hexString)
+  expect(result).toStrictEqual(Buffer.from([0xc0, 0xff, 0xee]))
 })
 
 describe('splitCamelCase', () => {

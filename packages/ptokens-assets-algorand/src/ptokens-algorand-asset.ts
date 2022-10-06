@@ -1,4 +1,5 @@
 import { pTokensAsset, pTokenAssetConfig, BlockchainType } from 'ptokens-entities'
+import { stringUtils } from 'ptokens-helpers'
 import { pTokensAlgorandProvider } from './ptokens-algorand-provider'
 import PromiEvent from 'promievent'
 import algosdk from 'algosdk'
@@ -9,12 +10,16 @@ export type pTokenAlgorandAssetConfig = pTokenAssetConfig & {
   customTransactions?: algosdk.Transaction[]
 }
 
-const hexStringToBuffer = (_string: string) => Buffer.from(_string.toLocaleLowerCase().replace('0x', ''), 'hex')
-
 const encodeNote = (destinationChainId: string, destinationAddress: string, userData: Uint8Array = undefined) =>
   userData
-    ? encode([0, Array.from(hexStringToBuffer(destinationChainId)), destinationAddress, Array.from(userData)])
-    : encode([0, Array.from(hexStringToBuffer(destinationChainId)), destinationAddress])
+    ? encode([
+        0,
+        Array.from(stringUtils.hexStringToBuffer(destinationChainId)),
+        destinationAddress,
+        Array.from(userData),
+      ])
+    : encode([0, Array.from(stringUtils.hexStringToBuffer(destinationChainId)), destinationAddress])
+
 export class pTokensAlgorandAsset extends pTokensAsset {
   private _provider: pTokensAlgorandProvider
   private _customTransactions: algosdk.Transaction[]
