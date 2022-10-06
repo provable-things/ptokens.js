@@ -24,7 +24,7 @@ export type pTokenAlgorandAssetConfig = pTokenAssetConfig & {
 // }
 export class pTokensAlgorandAsset extends pTokensAsset {
   private _provider: pTokensAlgorandProvider
-  private _customHostToInterimTransactions: algosdk.Transaction[]
+  private _customTransactions: algosdk.Transaction[]
 
   constructor(config: pTokenAlgorandAssetConfig) {
     super(config, BlockchainType.ALGORAND)
@@ -38,6 +38,7 @@ export class pTokensAlgorandAsset extends pTokensAsset {
   nativeToInterim(): PromiEvent<string> {
     throw new Error('Method not implemented.')
   }
+
   hostToInterim(
     amount: number,
     destinationAddress: string,
@@ -52,8 +53,8 @@ export class pTokensAlgorandAsset extends pTokensAsset {
             if (this.assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
             if (!this._provider.account) return reject(new Error('Missing account'))
             if (!this.assetInfo.identity) return reject(new Error('Missing identity'))
-            const transactions = this._customHostToInterimTransactions
-              ? this._customHostToInterimTransactions
+            const transactions = this._customTransactions
+              ? this._customTransactions
               : [
                   algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
                     from: this._provider.account,

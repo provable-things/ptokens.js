@@ -10,7 +10,7 @@ export class pTokensAlgorandAssetBuilder extends pTokensAssetBuilder {
     super(node, BlockchainType.ALGORAND)
   }
 
-  setProvider(provider: pTokensAlgorandProvider): this {
+  setProvider(provider: pTokensAlgorandProvider) {
     this.provider = provider
     return this
   }

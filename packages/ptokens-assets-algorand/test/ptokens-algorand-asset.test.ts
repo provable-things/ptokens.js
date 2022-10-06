@@ -1,14 +1,11 @@
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
-import { pTokensAlgorandAsset, pTokensAlgorandProvider } from '../src'
+import { pTokensAlgorandAsset, pTokensAlgorandProvider, BasicSignatureProvider } from '../src'
 import PromiEvent from 'promievent'
 import { Blockchain, ChainId, Network } from 'ptokens-entities'
 import algosdk from 'algosdk'
-import { BasicSignatureProvider } from '../src/ptokens-algorand-provider'
 
 const TEST_MNEMONIC =
   'remind hat sibling sock multiply heart tuition magic bounce option yard rely daring raven basket wood bike educate ensure museum gorilla oyster tower ability claim'
-
-jest.mock('ptokens-node')
 
 describe('Algorand asset', () => {
   test('Should create an Algorand asset from constructor', () => {
@@ -22,6 +19,7 @@ describe('Algorand asset', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
       },
     })
     expect(asset.symbol).toStrictEqual('SYM')
@@ -29,12 +27,41 @@ describe('Algorand asset', () => {
     expect(asset.blockchain).toStrictEqual(Blockchain.Algorand)
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.weight).toEqual(1)
+    expect(asset.identity).toEqual('HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA')
+  })
+
+  describe('nativeToInterim', () => {
+    beforeEach(() => {
+      jest.resetAllMocks()
+    })
+
+    test('Should reject calling nativeToInterim', async () => {
+      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+      const asset = new pTokensAlgorandAsset({
+        node,
+        symbol: 'SYM',
+        assetInfo: {
+          chainId: ChainId.AlgorandMainnet,
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenReference: 'token-internal-address',
+          vaultAddress: 'vault-contract-address',
+        },
+      })
+      try {
+        await asset.nativeToInterim()
+        fail()
+      } catch (err) {
+        expect(err.message).toEqual('Method not implemented.')
+      }
+    })
   })
 
   describe('hostToInterim', () => {
     beforeEach(() => {
       jest.resetAllMocks()
     })
+
     test('Should not call hostToInterim if provider is missing', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const asset = new pTokensAlgorandAsset({
@@ -99,7 +126,6 @@ describe('Algorand asset', () => {
       const client = new algosdk.Algodv2('algorand-endpoint')
       const signatureProvider = new BasicSignatureProvider(TEST_MNEMONIC)
       const provider = new pTokensAlgorandProvider(client, signatureProvider)
-      const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId')
       const transactSpy = jest.spyOn(provider, 'transactInGroup')
       const asset = new pTokensAlgorandAsset({
         node,
@@ -118,7 +144,34 @@ describe('Algorand asset', () => {
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing account')
-        expect(getAssetInfoSpy).toHaveBeenCalledTimes(0)
+        expect(transactSpy).toHaveBeenCalledTimes(0)
+      }
+    })
+
+    test('Should not call hostToInterim if identityis missing', async () => {
+      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+      const client = new algosdk.Algodv2('algorand-endpoint')
+      const signatureProvider = new BasicSignatureProvider(TEST_MNEMONIC)
+      const provider = new pTokensAlgorandProvider(client, signatureProvider)
+      const account = algosdk.mnemonicToSecretKey(TEST_MNEMONIC)
+      provider.setAccount(account.addr)
+      const transactSpy = jest.spyOn(provider, 'transactInGroup')
+      const asset = new pTokensAlgorandAsset({
+        node,
+        symbol: 'SYM',
+        provider: provider,
+        assetInfo: {
+          chainId: ChainId.AlgorandMainnet,
+          isNative: false,
+          tokenAddress: '123456789',
+          tokenReference: 'token-internal-address',
+        },
+      })
+      try {
+        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
+        fail()
+      } catch (err) {
+        expect(err.message).toEqual('Missing identity')
         expect(transactSpy).toHaveBeenCalledTimes(0)
       }
     })
@@ -189,7 +242,7 @@ describe('Algorand asset', () => {
       ])
     })
 
-    test('Should call makeContractSend with redeem for non-native token with user data', async () => {
+    test('Should call transact non-native token with user data', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const client = new algosdk.Algodv2('algorand-endpoint')
       const signatureProvider = new BasicSignatureProvider(TEST_MNEMONIC)
@@ -203,13 +256,7 @@ describe('Algorand asset', () => {
         genesisID: 'mainnet-v1.0',
         genesisHash: 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=',
       }
-      const getTransactionParamsSpy = jest.spyOn(provider, 'getTransactionParams').mockResolvedValue({
-        fee: 100,
-        lastRound: 10000,
-        firstRound: 9000,
-        genesisID: 'mainnet-v1.0',
-        genesisHash: 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=',
-      })
+      const getTransactionParamsSpy = jest.spyOn(provider, 'getTransactionParams').mockResolvedValue(suggestedParams)
       const transactSpy = jest.spyOn(provider, 'transactInGroup').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -260,6 +307,48 @@ describe('Algorand asset', () => {
         }),
         ,
       ])
+    })
+
+    test('Should reject if transact throws', async () => {
+      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+      const client = new algosdk.Algodv2('algorand-endpoint')
+      const signatureProvider = new BasicSignatureProvider(TEST_MNEMONIC)
+      const provider = new pTokensAlgorandProvider(client, signatureProvider)
+      const account = algosdk.mnemonicToSecretKey(TEST_MNEMONIC)
+      provider.setAccount(account.addr)
+      jest.spyOn(provider, 'getTransactionParams').mockResolvedValue({
+        fee: 100,
+        lastRound: 10000,
+        firstRound: 9000,
+        genesisID: 'mainnet-v1.0',
+        genesisHash: 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=',
+      })
+      jest.spyOn(provider, 'transactInGroup').mockImplementation(() => {
+        const promi = new PromiEvent<string>((resolve, reject) =>
+          setImmediate(() => {
+            return reject(new Error('Transact exception'))
+          })
+        )
+        return promi
+      })
+      const asset = new pTokensAlgorandAsset({
+        node,
+        symbol: 'SYM',
+        provider: provider,
+        assetInfo: {
+          chainId: ChainId.AlgorandMainnet,
+          isNative: false,
+          tokenAddress: '123456789',
+          tokenReference: 'token-internal-address',
+          identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+        },
+      })
+      try {
+        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
+        fail()
+      } catch (err) {
+        expect(err.message).toEqual('Transact exception')
+      }
     })
   })
 })
