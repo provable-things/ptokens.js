@@ -176,7 +176,7 @@ describe('Algorand asset', () => {
       }
     })
 
-    test('Should call makeContractSend with redeem for non-native token', async () => {
+    test('Should call transact non-native token without userdata', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const client = new algosdk.Algodv2('algorand-endpoint')
       const signatureProvider = new BasicSignatureProvider(TEST_MNEMONIC)
@@ -216,7 +216,7 @@ describe('Algorand asset', () => {
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(1, 'destination-address', 'destination-chain-id')
+        .hostToInterim(1, 'destination-address', ChainId.BitcoinMainnet)
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -234,10 +234,7 @@ describe('Algorand asset', () => {
           amount: 1,
           suggestedParams,
           assetIndex: 123456789,
-          note: Uint8Array.from([
-            148, 0, 180, 100, 101, 115, 116, 105, 110, 97, 116, 105, 111, 110, 45, 99, 104, 97, 105, 110, 45, 105, 100,
-            179, 100, 101, 115, 116, 105, 110, 97, 116, 105, 111, 110, 45, 97, 100, 100, 114, 101, 115, 115, 144,
-          ]),
+          note: Uint8Array.from(Buffer.from('93009401cceccc97ccdeb364657374696e6174696f6e2d61646472657373', 'hex')),
         }),
       ])
     })
@@ -282,7 +279,7 @@ describe('Algorand asset', () => {
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
+        .hostToInterim(1, 'destination-address', ChainId.BitcoinMainnet, Uint8Array.from(Buffer.from('c0ffee', 'hex')))
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -300,12 +297,10 @@ describe('Algorand asset', () => {
           amount: 1,
           suggestedParams,
           assetIndex: 123456789,
-          note: Uint8Array.from([
-            148, 0, 180, 100, 101, 115, 116, 105, 110, 97, 116, 105, 111, 110, 45, 99, 104, 97, 105, 110, 45, 105, 100,
-            179, 100, 101, 115, 116, 105, 110, 97, 116, 105, 111, 110, 45, 97, 100, 100, 114, 101, 115, 115, 144,
-          ]),
+          note: Uint8Array.from(
+            Buffer.from('94009401cceccc97ccdeb364657374696e6174696f6e2d6164647265737393ccc0ccffccee', 'hex')
+          ),
         }),
-        ,
       ])
     })
 
