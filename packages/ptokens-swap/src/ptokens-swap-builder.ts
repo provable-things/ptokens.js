@@ -33,7 +33,7 @@ export class pTokensSwapBuilder {
     return this
   }
 
-  addDestinationAsset(asset: pTokensAsset, destinationAddress: string, userData: BinaryData = undefined) {
+  addDestinationAsset(asset: pTokensAsset, destinationAddress: string, userData: Uint8Array = undefined) {
     this._destinationAssets.push({ asset, destinationAddress, userData })
     return this
   }

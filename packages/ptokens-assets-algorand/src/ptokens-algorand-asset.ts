@@ -43,7 +43,7 @@ export class pTokensAlgorandAsset extends pTokensAsset {
     amount: number,
     destinationAddress: string,
     destinationChainId: string,
-    userData?: BinaryData
+    userData?: Uint8Array
   ): PromiEvent<string> {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>

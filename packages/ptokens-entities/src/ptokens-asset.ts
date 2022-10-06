@@ -63,13 +63,13 @@ export abstract class pTokensAsset {
     amount: number,
     destinationAddress: string,
     destinationChainId: string,
-    userData?: BinaryData
+    userData?: Uint8Array
   ): PromiEvent<string>
 
   abstract hostToInterim(
     amount: number,
     destinationAddress: string,
     destinationChainId: string,
-    userData?: BinaryData
+    userData?: Uint8Array
   ): PromiEvent<string>
 }

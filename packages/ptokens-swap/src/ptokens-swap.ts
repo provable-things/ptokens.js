@@ -6,7 +6,7 @@ import polling from 'light-async-polling'
 export type DestinationInfo = {
   asset: pTokensAsset
   destinationAddress: string
-  userData?: BinaryData
+  userData?: Uint8Array
 }
 
 export class pTokensSwap {
