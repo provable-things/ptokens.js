@@ -8,7 +8,7 @@ const abi = require('./utils/exampleContractABI.json')
 
 const TEST_CONTRACT_ADDRESS = '0x15FA11dFB23eae46Fda69fB6A148f41677B4a090'
 const TEST_ETH_PRIVATE_KEY = '422c874bed50b69add046296530dc580f8e2e253879d98d66023b7897ab15742'
-const TEST_ETH_PROVIDER = 'https://kovan.infura.io/v3/4762c881ac0c4938be76386339358ed6'
+const TEST_ETH_PROVIDER = 'https://goerli.infura.io/v3/4762c881ac0c4938be76386339358ed6'
 
 describe('ethereum utilities', () => {
   test('Should return the correct Ethereum offchain format', () => {
