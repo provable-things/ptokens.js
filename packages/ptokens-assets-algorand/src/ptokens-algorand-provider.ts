@@ -6,7 +6,7 @@ export interface SignerResult {
   blob: string
 }
 export interface SignatureProvider {
-  signTxn(_transactions: Transaction[]): string[] | SignerResult[]
+  signTxn(_transactions: Transaction[]): Promise<string[] | SignerResult[]>
 }
 
 const decodeBlob = (_blob: string) =>
@@ -23,9 +23,11 @@ export class BasicSignatureProvider implements SignatureProvider {
     this._secretKey = algosdk.mnemonicToSecretKey(_mnemonic)
   }
   signTxn(_transactions: algosdk.Transaction[]) {
-    return _transactions
-      .map((_txn) => algosdk.signTransaction(_txn, this._secretKey.sk))
-      .map((_signedTxn) => Buffer.from(_signedTxn.blob).toString('base64'))
+    return Promise.resolve(
+      _transactions
+        .map((_txn) => algosdk.signTransaction(_txn, this._secretKey.sk))
+        .map((_signedTxn) => Buffer.from(_signedTxn.blob).toString('base64'))
+    )
   }
 }
 
@@ -48,7 +50,7 @@ export class pTokensAlgorandProvider {
           try {
             algosdk.assignGroupID(txns)
             const groupId = txns[0].group.toString('base64')
-            const signedTxs = this._signer.signTxn(txns)
+            const signedTxs = await this._signer.signTxn(txns)
             await this._client
               .sendRawTransaction(
                 signedTxs.map((_txn: SignerResult | string) => {

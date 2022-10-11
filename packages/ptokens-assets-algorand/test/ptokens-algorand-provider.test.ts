@@ -156,11 +156,13 @@ describe('Algorand provider', () => {
     const account = algosdk.mnemonicToSecretKey(TEST_MNEMONIC)
     const signatureProvider = {
       signTxn: (_transactions: algosdk.Transaction[]) =>
-        _transactions
-          .map((_txn) => algosdk.signTransaction(_txn, account.sk))
-          .map((_signedTxn) => ({
-            blob: Buffer.from(_signedTxn.blob).toString('base64'),
-          })),
+        Promise.resolve(
+          _transactions
+            .map((_txn) => algosdk.signTransaction(_txn, account.sk))
+            .map((_signedTxn) => ({
+              blob: Buffer.from(_signedTxn.blob).toString('base64'),
+            }))
+        ),
     }
     const client = new algosdk.Algodv2('http://algoclient.p.network')
     const provider = new pTokensAlgorandProvider(client, signatureProvider)
@@ -245,14 +247,7 @@ describe('Algorand provider', () => {
 
   test('Should reject when something rejects', async () => {
     const account = algosdk.mnemonicToSecretKey(TEST_MNEMONIC)
-    const signatureProvider = {
-      signTxn: (_transactions: algosdk.Transaction[]) =>
-        _transactions
-          .map((_txn) => algosdk.signTransaction(_txn, account.sk))
-          .map((_signedTxn) => ({
-            blob: Buffer.from(_signedTxn.blob).toString('base64'),
-          })),
-    }
+    const signatureProvider = new BasicSignatureProvider(TEST_MNEMONIC)
     const client = new algosdk.Algodv2('http://algoclient.p.network')
     const provider = new pTokensAlgorandProvider(client, signatureProvider)
     const doSpy = jest.spyOn(SendRawTransaction.prototype, 'do').mockRejectedValue(new Error('do error'))
