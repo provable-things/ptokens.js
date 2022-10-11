@@ -1,4 +1,5 @@
-import { BlockchainType, pTokensAssetBuilder } from 'ptokens-entities'
+import { BlockchainType } from 'ptokens-constants'
+import { pTokensAssetBuilder } from 'ptokens-entities'
 import { pTokensNode } from 'ptokens-node'
 import { pTokensEosioAsset } from './ptokens-eosio-asset'
 import { pTokensEosioProvider } from './ptokens-eosio-provider'

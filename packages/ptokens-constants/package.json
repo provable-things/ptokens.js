@@ -1,8 +1,9 @@
 {
-  "name": "ptokens-assets-utxo",
+  "name": "ptokens-constants",
   "version": "0.1.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
+  "browser": "dist/bundle.umd.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c ../../rollup.config.js",
@@ -10,13 +11,5 @@
     "lint": "eslint ./src/",
     "test": "jest",
     "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "axios": "^0.21.1",
-    "ptokens-constants": "^0.1.0",
-    "ptokens-entities": "^0.1.0",
-    "ptokens-node": "^0.1.0",
-    "promievent": "^0.1.5",
-    "light-async-polling": "^1.0.2"
   }
 }

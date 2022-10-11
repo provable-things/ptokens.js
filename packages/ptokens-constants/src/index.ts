@@ -1,5 +1,3 @@
-import { stringUtils } from 'ptokens-helpers'
-
 export enum ChainId {
   EthereumMainnet = '0x005fe7f9',
   EthereumRopsten = '0x0069c322',
@@ -77,13 +75,3 @@ export enum Network {
   Rinkeby,
   Jungle,
 }
-
-function parseChainIdKey(chainId: ChainId): { blockchain: Blockchain; network: Network } {
-  const chainIdKey = Object.keys(ChainId)[Object.values(ChainId).indexOf(chainId)]
-  const tokens = stringUtils.splitCamelCase(chainIdKey)
-  return { blockchain: Blockchain[tokens[0]], network: Network[tokens[1]] }
-}
-
-export const chainIdToBlockchain: Map<string, { blockchain: Blockchain; network: Network }> = new Map(
-  Object.values(ChainId).map((_value) => [_value, parseChainIdKey(_value)])
-)

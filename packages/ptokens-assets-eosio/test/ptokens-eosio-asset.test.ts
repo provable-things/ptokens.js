@@ -1,7 +1,7 @@
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensEosioAsset, pTokensEosioProvider } from '../src'
 import PromiEvent from 'promievent'
-import { Blockchain, ChainId, Network } from 'ptokens-entities'
+import { Blockchain, ChainId, Network } from 'ptokens-constants'
 
 const tokenAbi = require('../src/abi/pTokenOnEOSContractAbiV2.json')
 const vaultAbi = require('../src/abi/pTokenVaultOnEOSContractAbiV2.json')

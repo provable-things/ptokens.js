@@ -2,7 +2,7 @@ import Web3 from 'web3'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensEvmAsset, pTokensEvmProvider } from '../src'
 import PromiEvent from 'promievent'
-import { Blockchain, ChainId, Network } from 'ptokens-entities'
+import { Blockchain, ChainId, Network } from 'ptokens-constants'
 
 const vaultAbi = require('../src/abi/pERC20VaultContractAbi.json')
 const tokenAbi = require('../src/abi/pTokenOnETHV2ContractAbi.json')

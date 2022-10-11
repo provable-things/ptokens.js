@@ -2,7 +2,7 @@ import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensUtxoAsset, pTokensBlockstreamUtxoProvider } from '../src'
 import { pTokensDepositAddress } from '../src/ptokens-deposit-address'
 import PromiEvent from 'promievent'
-import { Blockchain, ChainId, Network } from 'ptokens-entities'
+import { Blockchain, ChainId, Network } from 'ptokens-constants'
 
 jest.mock('ptokens-node')
 

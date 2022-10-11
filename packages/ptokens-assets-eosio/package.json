@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "promievent": "^0.1.5",
+    "ptokens-constants": "^0.1.0",
     "ptokens-entities": "^0.1.0",
     "ptokens-helpers": "^0.1.0",
     "ptokens-node": "^0.1.0",

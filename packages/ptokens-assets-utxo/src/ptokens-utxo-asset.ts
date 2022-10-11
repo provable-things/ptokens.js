@@ -1,6 +1,7 @@
-import { pTokensAsset, pTokenAssetConfig, ChainId, BlockchainType } from 'ptokens-entities'
-import { pTokensDepositAddress } from './ptokens-deposit-address'
+import { ChainId, BlockchainType } from 'ptokens-constants'
+import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
 import { pTokensUtxoProvider } from './ptokens-utxo-provider'
+import { pTokensDepositAddress } from './ptokens-deposit-address'
 
 import PromiEvent from 'promievent'
 

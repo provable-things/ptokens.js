@@ -1,7 +1,7 @@
 import { pTokensSwapBuilder } from '../src/index'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensEvmAsset } from 'ptokens-assets-evm'
-import { ChainId } from 'ptokens-entities'
+import { ChainId } from 'ptokens-constants'
 
 jest.mock('ptokens-node')
 

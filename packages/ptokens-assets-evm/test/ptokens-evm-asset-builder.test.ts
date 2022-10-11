@@ -1,6 +1,6 @@
 import Web3 from 'web3'
 import { pTokensEvmAssetBuilder, pTokensEvmProvider } from '../src'
-import { Blockchain, ChainId, Network } from 'ptokens-entities'
+import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 
 jest.mock('web3')

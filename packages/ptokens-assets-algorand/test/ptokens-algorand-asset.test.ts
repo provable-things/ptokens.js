@@ -1,7 +1,7 @@
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensAlgorandAsset, pTokensAlgorandProvider, BasicSignatureProvider } from '../src'
 import PromiEvent from 'promievent'
-import { Blockchain, ChainId, Network } from 'ptokens-entities'
+import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import algosdk from 'algosdk'
 
 const TEST_MNEMONIC =

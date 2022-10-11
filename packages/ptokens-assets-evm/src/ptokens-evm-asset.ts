@@ -1,4 +1,5 @@
-import { pTokensAsset, pTokenAssetConfig, BlockchainType } from 'ptokens-entities'
+import { BlockchainType } from 'ptokens-constants'
+import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
 import PromiEvent from 'promievent'
 import { pTokensEvmProvider } from './ptokens-evm-provider'
 import { AbiItem } from 'web3-utils'

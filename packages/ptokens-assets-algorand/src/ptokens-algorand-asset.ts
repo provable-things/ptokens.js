@@ -1,4 +1,5 @@
-import { pTokensAsset, pTokenAssetConfig, BlockchainType } from 'ptokens-entities'
+import { BlockchainType } from 'ptokens-constants'
+import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
 import { stringUtils } from 'ptokens-helpers'
 import { pTokensAlgorandProvider } from './ptokens-algorand-provider'
 import PromiEvent from 'promievent'

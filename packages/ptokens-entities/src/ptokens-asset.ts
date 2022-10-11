@@ -1,6 +1,7 @@
 import { pTokensNode, AssetInfo } from 'ptokens-node'
 import PromiEvent from 'promievent'
-import { Blockchain, BlockchainType, ChainId, chainIdToBlockchain, chainIdToTypeMap, Network } from './constants'
+import { Blockchain, BlockchainType, ChainId, chainIdToTypeMap, Network } from 'ptokens-constants'
+import { maps } from 'ptokens-helpers'
 
 export type pTokenAssetConfig = {
   node: pTokensNode
@@ -40,11 +41,11 @@ export abstract class pTokensAsset {
   }
 
   public get blockchain(): Blockchain {
-    return chainIdToBlockchain.get(this._assetInfo.chainId).blockchain
+    return maps.chainIdToBlockchainMap.get(this._assetInfo.chainId).blockchain
   }
 
   public get network(): Network {
-    return chainIdToBlockchain.get(this._assetInfo.chainId).network
+    return maps.chainIdToBlockchainMap.get(this._assetInfo.chainId).network
   }
 
   public get destinationAddress(): string {

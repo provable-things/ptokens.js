@@ -1,4 +1,4 @@
-import { BlockchainType, ChainId } from 'ptokens-entities'
+import { BlockchainType, ChainId } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider, Status } from 'ptokens-node'
 import { pTokensSwap, pTokensSwapBuilder } from '../src/index'
 import { pTokenAssetMock } from './mocks/ptoken-asset'

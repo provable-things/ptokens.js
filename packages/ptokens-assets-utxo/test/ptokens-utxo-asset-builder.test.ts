@@ -1,5 +1,5 @@
 import { pTokensUtxoAssetBuilder, pTokensBlockstreamUtxoProvider } from '../src'
-import { Blockchain, ChainId, Network } from 'ptokens-entities'
+import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 
 describe('UTXO asset', () => {
