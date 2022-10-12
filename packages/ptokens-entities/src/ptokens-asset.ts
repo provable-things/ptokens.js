@@ -16,7 +16,6 @@ export abstract class pTokensAsset {
   private _symbol: string
   private _assetInfo: AssetInfo
   private _weight: number
-  private _destinationAddress: string
   private _type: BlockchainType
 
   constructor(_config: pTokenAssetConfig, _type: BlockchainType) {
@@ -29,7 +28,6 @@ export abstract class pTokensAsset {
     this._symbol = _config.symbol
     this._assetInfo = _config.assetInfo
     this._weight = _config.weight || 1
-    this._destinationAddress = _config.destinationAddress || undefined
   }
 
   public get symbol(): string {
@@ -48,8 +46,16 @@ export abstract class pTokensAsset {
     return maps.chainIdToBlockchainMap.get(this._assetInfo.chainId).network
   }
 
-  public get destinationAddress(): string {
-    return this._destinationAddress
+  public get vaultAddress(): string {
+    return this.assetInfo.vaultAddress ? this.assetInfo.vaultAddress : null
+  }
+
+  public get tokenAddress(): string {
+    return this.assetInfo.tokenAddress ? this.assetInfo.tokenAddress : null
+  }
+
+  public get identity() {
+    return this.assetInfo.identity ? this.assetInfo.identity : null
   }
 
   public get weight(): number {

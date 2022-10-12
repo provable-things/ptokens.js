@@ -31,10 +31,6 @@ export class pTokensAlgorandAsset extends pTokensAsset {
     this._customTransactions = config.customTransactions
   }
 
-  public get identity() {
-    if (this.assetInfo.identity) return this.assetInfo.identity
-  }
-
   nativeToInterim(): PromiEvent<string> {
     throw new Error('Method not implemented.')
   }
