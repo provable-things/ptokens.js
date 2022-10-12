@@ -178,7 +178,7 @@ describe('pTokensSwap', () => {
     builder
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
-      .addDestinationAsset(destinationAsset, 'destination-address', Buffer.from('user-data'))
+      .addDestinationAsset(destinationAsset, '0x28B2A40b6046850a569843cF740f15CF29792Ac2', Buffer.from('user-data'))
     const swap = builder.build()
     const promi = swap.execute()
     let inputTxBroadcasted = false,
@@ -219,7 +219,7 @@ describe('pTokensSwap', () => {
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
       123.456,
-      'destination-address',
+      '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
       ChainId.EthereumMainnet,
       Buffer.from('user-data')
     )
@@ -293,7 +293,10 @@ describe('pTokensSwap', () => {
     )
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
-    builder.setAmount(123.456).setSourceAsset(sourceAsset).addDestinationAsset(destinationAsset, 'destination-address')
+    builder
+      .setAmount(123.456)
+      .setSourceAsset(sourceAsset)
+      .addDestinationAsset(destinationAsset, '0x28B2A40b6046850a569843cF740f15CF29792Ac2')
     const swap = builder.build()
     const promi = swap.execute()
     let inputTxBroadcasted = false,
@@ -326,7 +329,7 @@ describe('pTokensSwap', () => {
     expect(hostToInterimSpy).toHaveBeenNthCalledWith(
       1,
       123.456,
-      'destination-address',
+      '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
       ChainId.EthereumMainnet,
       undefined
     )
@@ -402,7 +405,7 @@ describe('pTokensSwap', () => {
     builder
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
-      .addDestinationAsset(destinationAsset, 'destination-address', Buffer.from('user-data'))
+      .addDestinationAsset(destinationAsset, 'bc1q2nd4p07tfezv9afr3kcn0l35m7sra5kgufcyzg', Buffer.from('user-data'))
     const swap = builder.build()
     const promi = swap.execute()
     let inputTxBroadcasted = false,
@@ -435,7 +438,7 @@ describe('pTokensSwap', () => {
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
       123.456,
-      'destination-address',
+      'bc1q2nd4p07tfezv9afr3kcn0l35m7sra5kgufcyzg',
       ChainId.BitcoinMainnet,
       Buffer.from('user-data')
     )

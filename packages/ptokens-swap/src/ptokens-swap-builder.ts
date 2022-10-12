@@ -1,6 +1,7 @@
 import { pTokensSwap, DestinationInfo } from './ptokens-swap'
 import { pTokensAsset } from 'ptokens-entities'
 import { pTokensNode } from 'ptokens-node'
+import { validators } from 'ptokens-helpers'
 
 export class pTokensSwapBuilder {
   private _sourceAsset: pTokensAsset
@@ -34,6 +35,8 @@ export class pTokensSwapBuilder {
   }
 
   addDestinationAsset(asset: pTokensAsset, destinationAddress: string, userData: Uint8Array = undefined) {
+    const isValidAddressFunction = validators.chainIdToAddressValidatorMap.get(asset.chainId)
+    if (!isValidAddressFunction(destinationAddress)) throw new Error('Invalid destination address')
     this._destinationAssets.push({ asset, destinationAddress, userData })
     return this
   }

@@ -32,7 +32,11 @@ describe('pTokensSwapBuilder', () => {
       },
     })
     builder.setSourceAsset(originatingToken)
-    builder.addDestinationAsset(destinationToken, 'destination-address', Buffer.from('user-data'))
+    builder.addDestinationAsset(
+      destinationToken,
+      '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
+      Buffer.from('user-data')
+    )
     builder.setAmount(1)
     const swap = builder.build()
     expect(builder.destinationAssets).toEqual([destinationToken])
@@ -70,13 +74,51 @@ describe('pTokensSwapBuilder', () => {
       },
     })
     builder.setSourceAsset(originatingToken)
-    builder.addDestinationAsset(destinationToken, 'destination-address', Buffer.from('user-data'))
+    builder.addDestinationAsset(
+      destinationToken,
+      '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
+      Buffer.from('user-data')
+    )
     builder.setAmount(1)
     try {
       builder.build()
       fail()
     } catch (err) {
       expect(err.message).toBe('Invalid swap')
+    }
+  })
+
+  test('Should not build a swap if destination address is not valid', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
+    const builder = new pTokensSwapBuilder(node)
+    const originatingToken = new pTokensEvmAsset({
+      node,
+      symbol: 'A',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    const destinationToken = new pTokensEvmAsset({
+      node,
+      symbol: 'B',
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    builder.setSourceAsset(originatingToken)
+    try {
+      builder.addDestinationAsset(destinationToken, 'invalid-eth-address', Buffer.from('user-data'))
+      fail()
+    } catch (err) {
+      expect(err.message).toBe('Invalid destination address')
     }
   })
 
@@ -94,7 +136,7 @@ describe('pTokensSwapBuilder', () => {
         vaultAddress: 'vault-contract-address',
       },
     })
-    builder.addDestinationAsset(destinationToken, 'destination-address')
+    builder.addDestinationAsset(destinationToken, '0x28B2A40b6046850a569843cF740f15CF29792Ac2')
     builder.setAmount(1)
     try {
       builder.build()
@@ -130,7 +172,7 @@ describe('pTokensSwapBuilder', () => {
       },
     })
     builder.setSourceAsset(originatingToken)
-    builder.addDestinationAsset(destinationToken, 'destination-address')
+    builder.addDestinationAsset(destinationToken, '0x28B2A40b6046850a569843cF740f15CF29792Ac2')
     try {
       builder.build()
       fail()
