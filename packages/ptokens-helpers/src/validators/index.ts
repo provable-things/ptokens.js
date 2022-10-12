@@ -6,8 +6,11 @@ const validatorFunction =
   (_address: string) =>
     validate(_address, _blockchain, _network)
 
+// pNetwork also supports appIds as Algorand destination
+const algorandAddressValidator = (_address: string) => validatorFunction('algo')(_address) || /^\d+$/.test(_address)
+
 export const chainIdToAddressValidatorMap: Map<ChainId, (_address: string) => boolean> = new Map([
-  [ChainId.AlgorandMainnet, validatorFunction('algo')],
+  [ChainId.AlgorandMainnet, algorandAddressValidator],
   [ChainId.ArbitrumMainnet, validatorFunction('eth')],
   [ChainId.BitcoinMainnet, validatorFunction('btc')],
   [ChainId.BitcoinTestnet, validatorFunction('btc', 'testnet')],

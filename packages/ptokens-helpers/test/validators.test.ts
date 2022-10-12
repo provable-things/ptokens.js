@@ -42,6 +42,8 @@ describe('isValidAddressByChainId', () => {
         { address: 'LCRDY3LYAANTVS3XRHEHWHGXRTKZYVTX55P5IA2AT5ZDJ4CWZFFZIKVHLI', expected: true },
         { address: 'SP745JJR4KPRQEXJZHVIEN736LYTL2T2DFMG3OIIFJBV66K73PHNMDCZVM', expected: true },
         { address: 'AKHSHWO2TUWE53RMVG6ZUBNAEX6MTYPT76TCIDCDWYUUTK6HCJTZS2HDQU', expected: true },
+        { address: '123455', expected: true },
+        { address: '123455e4', expected: false },
       ],
     ],
     [ChainId.ArbitrumMainnet, evmAddresses],
