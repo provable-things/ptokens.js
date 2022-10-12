@@ -2,6 +2,7 @@ import { pTokensAsset } from 'ptokens-entities'
 import { pTokensNode, Status, InnerTransactionStatus } from 'ptokens-node'
 import PromiEvent from 'promievent'
 import polling from 'light-async-polling'
+import BigNumber from 'bignumber.js'
 
 export type DestinationInfo = {
   asset: pTokensAsset
@@ -13,10 +14,15 @@ export class pTokensSwap {
   private _node: pTokensNode
   private _sourceAsset: pTokensAsset
   private _destinationAssets: Array<DestinationInfo>
-  private _amount: number
+  private _amount: BigNumber
   private controller: AbortController
 
-  constructor(node: pTokensNode, sourceAsset: pTokensAsset, destinationAssets: Array<DestinationInfo>, amount: number) {
+  constructor(
+    node: pTokensNode,
+    sourceAsset: pTokensAsset,
+    destinationAssets: Array<DestinationInfo>,
+    amount: BigNumber
+  ) {
     this._node = node
     this._sourceAsset = sourceAsset
     this._destinationAssets = destinationAssets
@@ -32,8 +38,8 @@ export class pTokensSwap {
     return this._destinationAssets.map((_el) => _el.asset)
   }
 
-  public get amount(): number {
-    return this._amount
+  public get amount(): string {
+    return this._amount.toFixed()
   }
 
   public get node(): pTokensNode {
@@ -111,14 +117,14 @@ export class pTokensSwap {
             let swapPromiEvent: PromiEvent<string>
             if (this.sourceAsset.assetInfo.isNative) {
               swapPromiEvent = this.sourceAsset.nativeToInterim(
-                this.amount,
+                this._amount,
                 this._destinationAssets[0].destinationAddress,
                 this._destinationAssets[0].asset.chainId,
                 this._destinationAssets[0].userData
               )
             } else {
               swapPromiEvent = this.sourceAsset.hostToInterim(
-                this.amount,
+                this._amount,
                 this._destinationAssets[0].destinationAddress,
                 this._destinationAssets[0].asset.chainId,
                 this._destinationAssets[0].userData

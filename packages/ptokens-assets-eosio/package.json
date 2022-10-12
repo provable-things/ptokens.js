@@ -19,7 +19,8 @@
     "ptokens-node": "^0.1.0",
     "eosjs": "^22.1.0",
     "node-fetch": "^2.6.7",
-    "light-async-polling": "^1.0.2"
+    "light-async-polling": "^1.0.2",
+    "bignumber.js": "^9.1.0"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.1"

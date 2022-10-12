@@ -1,7 +1,9 @@
 import { BlockchainType } from 'ptokens-constants'
 import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
-import PromiEvent from 'promievent'
 import { Action, pTokensEosioProvider } from './ptokens-eosio-provider'
+
+import PromiEvent from 'promievent'
+import BigNumber from 'bignumber.js'
 
 import pTokenOnEOSIOContractAbi from './abi/pTokenOnEOSContractAbiV2.json'
 import ptokenOnEOSIOVaultAbi from './abi/pTokenVaultOnEOSContractAbiV2.json'
@@ -14,20 +16,21 @@ export type pTokenEosioAssetConfig = pTokenAssetConfig & {
   provider?: pTokensEosioProvider
 }
 
-const getAmountInEosFormat = (_amount: number, _decimals: number, symbol: string) => {
-  return `${_amount.toFixed(_decimals)} ${symbol}`
+const getAmountInEosFormat = (_amount: BigNumber, _decimals: number, symbol: string) => {
+  return `${_amount.toFixed(_decimals)} ${symbol.toUpperCase()}`
 }
 
 export class pTokensEosioAsset extends pTokensAsset {
   private provider: pTokensEosioProvider
 
   constructor(config: pTokenEosioAssetConfig) {
+    if (config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
     super(config, BlockchainType.EOSIO)
     this.provider = config.provider
   }
 
   nativeToInterim(
-    amount: number,
+    amount: BigNumber,
     destinationAddress: string,
     destinationChainId: string,
     userData?: Uint8Array
@@ -49,7 +52,7 @@ export class pTokensEosioAsset extends pTokensAsset {
                 arguments: {
                   from: this.provider.actor,
                   to: this.assetInfo.vaultAddress,
-                  quantity: getAmountInEosFormat(amount, 8, this.symbol.toUpperCase()),
+                  quantity: getAmountInEosFormat(amount, this.assetInfo.decimals, this.symbol),
                   memo: `${destinationAddress},${destinationChainId}${userData ? ',1' : ''}`,
                 },
               },
@@ -78,7 +81,7 @@ export class pTokensEosioAsset extends pTokensAsset {
   }
 
   hostToInterim(
-    amount: number,
+    amount: BigNumber,
     destinationAddress: string,
     destinationChainId: string,
     userData?: Uint8Array
@@ -92,7 +95,7 @@ export class pTokensEosioAsset extends pTokensAsset {
             if (this.assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
             const callArguments = {
               sender: this.provider.actor,
-              quantity: getAmountInEosFormat(amount, 8, this.symbol.toUpperCase()),
+              quantity: getAmountInEosFormat(amount, this.assetInfo.decimals, this.symbol.toUpperCase()),
               memo: destinationAddress,
               user_data: userData || '',
               chain_id: destinationChainId.substring(2),

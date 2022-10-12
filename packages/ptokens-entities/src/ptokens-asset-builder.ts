@@ -4,6 +4,7 @@ import { pTokensNode, AssetInfo } from 'ptokens-node'
 
 export abstract class pTokensAssetBuilder {
   protected _symbol: string
+  protected _decimals: number
   protected _weight: number
   protected _network: Network
   protected _blockchain: Blockchain
@@ -33,6 +34,11 @@ export abstract class pTokensAssetBuilder {
     return this
   }
 
+  setDecimals(decimals: number) {
+    this._decimals = decimals
+    return this
+  }
+
   // eslint-disable-next-line @typescript-eslint/require-await
   protected async _build(): Promise<pTokensAsset> {
     throw new Error('_build() is not implemented')
@@ -43,6 +49,7 @@ export abstract class pTokensAssetBuilder {
     if (!this._symbol) throw new Error('Missing symbol')
     const assetInfo = await this._node.getAssetInfoByChainId(this._symbol, this._chainId)
     if (!assetInfo) throw new Error(`Unsupported token for chain ID ${this._chainId}`)
+    if (this._decimals !== undefined) assetInfo.decimals = this._decimals
     this._assetInfo = assetInfo
   }
 

@@ -5,6 +5,7 @@ import { pTokensAlgorandProvider } from './ptokens-algorand-provider'
 import PromiEvent from 'promievent'
 import algosdk from 'algosdk'
 import { encode } from '@msgpack/msgpack'
+import BigNumber from 'bignumber.js'
 
 export type pTokenAlgorandAssetConfig = pTokenAssetConfig & {
   provider?: pTokensAlgorandProvider
@@ -26,6 +27,7 @@ export class pTokensAlgorandAsset extends pTokensAsset {
   private _customTransactions: algosdk.Transaction[]
 
   constructor(config: pTokenAlgorandAssetConfig) {
+    if (config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
     super(config, BlockchainType.ALGORAND)
     this._provider = config.provider
     this._customTransactions = config.customTransactions
@@ -36,7 +38,7 @@ export class pTokensAlgorandAsset extends pTokensAsset {
   }
 
   hostToInterim(
-    amount: number,
+    amount: BigNumber,
     destinationAddress: string,
     destinationChainId: string,
     userData?: Uint8Array
@@ -56,7 +58,7 @@ export class pTokensAlgorandAsset extends pTokensAsset {
                     from: this._provider.account,
                     to: this.assetInfo.identity,
                     assetIndex: parseInt(this.assetInfo.tokenAddress),
-                    amount,
+                    amount: +amount.multipliedBy(BigNumber(10).pow(this.assetInfo.decimals)),
                     suggestedParams: await this._provider.getTransactionParams(),
                     note: encodeNote(destinationChainId, destinationAddress, userData),
                   }),

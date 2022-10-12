@@ -1,8 +1,10 @@
-import Web3 from 'web3'
+import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensEvmAsset, pTokensEvmProvider } from '../src'
+
+import Web3 from 'web3'
 import PromiEvent from 'promievent'
-import { Blockchain, ChainId, Network } from 'ptokens-constants'
+import BigNumber from 'bignumber.js'
 
 const vaultAbi = require('../src/abi/pERC20VaultContractAbi.json')
 const tokenAbi = require('../src/abi/pTokenOnETHV2ContractAbi.json')
@@ -21,6 +23,7 @@ describe('EVM asset', () => {
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -41,11 +44,12 @@ describe('EVM asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 18,
           vaultAddress: 'vault-contract-address',
         },
       })
       try {
-        await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
+        await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing provider')
@@ -75,11 +79,12 @@ describe('EVM asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 18,
           vaultAddress: 'vault-contract-address',
         },
       })
       try {
-        await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
+        await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
@@ -110,13 +115,14 @@ describe('EVM asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 18,
           vaultAddress: 'vault-contract-address',
         },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .nativeToInterim(1, 'destination-address', 'destination-chain-id')
+        .nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -134,7 +140,7 @@ describe('EVM asset', () => {
           method: 'pegIn',
           value: 0,
         },
-        ['1', 'token-contract-address', 'destination-address', 'destination-chain-id']
+        ['123456789000000000000', 'token-contract-address', 'destination-address', 'destination-chain-id']
       )
     })
 
@@ -161,13 +167,14 @@ describe('EVM asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 18,
           vaultAddress: 'vault-contract-address',
         },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .nativeToInterim(1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
+        .nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -185,7 +192,13 @@ describe('EVM asset', () => {
           method: 'pegIn',
           value: 0,
         },
-        ['1', 'token-contract-address', 'destination-address', Buffer.from('user-data'), 'destination-chain-id']
+        [
+          '123456789000000000000',
+          'token-contract-address',
+          'destination-address',
+          Buffer.from('user-data'),
+          'destination-chain-id',
+        ]
       )
     })
 
@@ -212,13 +225,14 @@ describe('EVM asset', () => {
           isNative: true,
           tokenAddress: '',
           tokenReference: 'token-internal-address',
+          decimals: 18,
           vaultAddress: 'vault-contract-address',
         },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .nativeToInterim(1, 'destination-address', 'destination-chain-id')
+        .nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -234,7 +248,7 @@ describe('EVM asset', () => {
           abi: vaultAbi,
           contractAddress: 'vault-contract-address',
           method: 'pegInEth',
-          value: 1,
+          value: 123456789000000000000,
         },
         ['destination-address', 'destination-chain-id']
       )
@@ -263,13 +277,14 @@ describe('EVM asset', () => {
           isNative: true,
           tokenAddress: '',
           tokenReference: 'token-internal-address',
+          decimals: 18,
           vaultAddress: 'vault-contract-address',
         },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .nativeToInterim(1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
+        .nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -285,7 +300,7 @@ describe('EVM asset', () => {
           abi: vaultAbi,
           contractAddress: 'vault-contract-address',
           method: 'pegInEth',
-          value: 1,
+          value: 123456789000000000000,
         },
         ['destination-address', 'destination-chain-id', Buffer.from('user-data')]
       )
@@ -314,11 +329,12 @@ describe('EVM asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 18,
           vaultAddress: 'vault-contract-address',
         },
       })
       try {
-        await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
+        await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
@@ -338,11 +354,12 @@ describe('EVM asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 18,
           vaultAddress: 'vault-contract-address',
         },
       })
       try {
-        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing provider')
@@ -372,11 +389,12 @@ describe('EVM asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 18,
           vaultAddress: 'vault-contract-address',
         },
       })
       try {
-        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to hostToInterim() for native token')
@@ -407,12 +425,13 @@ describe('EVM asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 18,
         },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(1, 'destination-address', 'destination-chain-id')
+        .hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -430,7 +449,7 @@ describe('EVM asset', () => {
           method: 'redeem',
           value: 0,
         },
-        ['1', 'destination-address', 'destination-chain-id']
+        ['123456789000000000000', 'destination-address', 'destination-chain-id']
       )
     })
 
@@ -457,12 +476,13 @@ describe('EVM asset', () => {
           isNative: false,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 18,
         },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(1, 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
+        .hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -480,7 +500,7 @@ describe('EVM asset', () => {
           method: 'redeem',
           value: 0,
         },
-        ['1', Buffer.from('user-data'), 'destination-address', 'destination-chain-id']
+        ['123456789000000000000', Buffer.from('user-data'), 'destination-address', 'destination-chain-id']
       )
     })
   })

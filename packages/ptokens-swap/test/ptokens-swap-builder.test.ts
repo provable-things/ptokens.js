@@ -17,6 +17,7 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -28,6 +29,7 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -40,9 +42,9 @@ describe('pTokensSwapBuilder', () => {
     builder.setAmount(1)
     const swap = builder.build()
     expect(builder.destinationAssets).toEqual([destinationToken])
-    expect(builder.amount).toEqual(1)
+    expect(builder.amount).toEqual('1')
     expect(builder.node).toStrictEqual(node)
-    expect(swap.amount).toBe(1)
+    expect(swap.amount).toBe('1')
     expect(swap.node).toStrictEqual(node)
     expect(swap.sourceAsset).toStrictEqual(originatingToken)
     expect(swap.destinationAssets).toStrictEqual([destinationToken])
@@ -59,6 +61,7 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address-a',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -70,6 +73,7 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address-b',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -99,6 +103,7 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -110,6 +115,7 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -133,6 +139,7 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -157,6 +164,7 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -168,6 +176,7 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })
@@ -192,6 +201,7 @@ describe('pTokensSwapBuilder', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
+        decimals: 18,
         vaultAddress: 'vault-contract-address',
       },
     })

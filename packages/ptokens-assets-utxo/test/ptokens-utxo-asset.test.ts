@@ -1,8 +1,10 @@
-import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
-import { pTokensUtxoAsset, pTokensBlockstreamUtxoProvider } from '../src'
-import { pTokensDepositAddress } from '../src/ptokens-deposit-address'
-import PromiEvent from 'promievent'
 import { Blockchain, ChainId, Network } from 'ptokens-constants'
+import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
+import { pTokensDepositAddress } from '../src/ptokens-deposit-address'
+import { pTokensUtxoAsset, pTokensBlockstreamUtxoProvider } from '../src'
+
+import PromiEvent from 'promievent'
+import BigNumber from 'bignumber.js'
 
 jest.mock('ptokens-node')
 
@@ -66,7 +68,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
+      await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
       fail()
     } catch (err) {
       expect(err.message).toEqual('Missing provider')
@@ -89,7 +91,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
+      await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
       fail()
     } catch (err) {
       expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
@@ -115,7 +117,7 @@ describe('UTXO asset', () => {
     let txHashConfirmed = ''
     let depositAddress
     const ret = await asset
-      .nativeToInterim(1, 'destination-address', 'destination-chain-id')
+      .nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
       .on('depositAddress', (_address) => {
         depositAddress = _address
       })
@@ -154,7 +156,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
+      await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
       fail()
     } catch (err) {
       expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
@@ -201,7 +203,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.nativeToInterim(1, 'destination-address', 'destination-chain-id')
+      await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
     } catch (err) {
       expect(err.message).toStrictEqual('Address generation error')
       expect(monitorUtxoByAddressSpy).toHaveBeenCalledTimes(0)
@@ -230,7 +232,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.nativeToInterim(1, 'destination-address', undefined)
+      await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', undefined)
     } catch (err) {
       expect(err.message).toStrictEqual('Undefined chain ID')
       expect(monitorUtxoByAddressSpy).toHaveBeenCalledTimes(0)

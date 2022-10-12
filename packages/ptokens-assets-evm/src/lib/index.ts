@@ -3,11 +3,11 @@ import Web3 from 'web3'
 import { AbiItem } from 'web3-utils'
 
 export function onChainFormat(_amount: BigNumber, _decimals: number): BigNumber {
-  return _amount.multipliedBy(new BigNumber(Math.pow(10, _decimals)))
+  return _amount.multipliedBy(BigNumber(10).pow(_decimals))
 }
 
 export function offChainFormat(_amount: BigNumber, _decimals: number) {
-  return _amount.dividedBy(new BigNumber(Math.pow(10, _decimals)))
+  return _amount.dividedBy(BigNumber(10).pow(_decimals))
 }
 
 export async function getAccount(_web3: Web3): Promise<string> {

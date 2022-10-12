@@ -23,6 +23,7 @@ describe('Algorand asset', () => {
     const builder = new pTokensAlgorandAssetBuilder(node)
     builder.setBlockchain(ChainId.AlgorandMainnet)
     builder.setSymbol('TET')
+    builder.setDecimals(6)
     const asset = await builder.build()
     expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'TET', ChainId.AlgorandMainnet)
     expect(asset.blockchain).toStrictEqual(Blockchain.Algorand)
@@ -40,6 +41,7 @@ describe('Algorand asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
+      decimals: 6,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))
@@ -73,6 +75,7 @@ describe('Algorand asset', () => {
     const builder = new pTokensAlgorandAssetBuilder(node)
     builder.setBlockchain(ChainId.AlgorandMainnet)
     builder.setSymbol('SYM')
+    builder.setDecimals(6)
     const suggestedParams = {
       fee: 100,
       lastRound: 10000,

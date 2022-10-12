@@ -4,6 +4,7 @@ import { pTokensUtxoProvider } from './ptokens-utxo-provider'
 import { pTokensDepositAddress } from './ptokens-deposit-address'
 
 import PromiEvent from 'promievent'
+import BigNumber from 'bignumber.js'
 
 const confirmations: Map<ChainId, number> = new Map([[ChainId.BitcoinMainnet, 1]])
 const POLLING_TIME = 3000
@@ -31,7 +32,7 @@ export class pTokensUtxoAsset extends pTokensAsset {
     return promi
   }
 
-  nativeToInterim(amount: number, destinationAddress: string, destinationChainId: string): PromiEvent<string> {
+  nativeToInterim(amount: BigNumber, destinationAddress: string, destinationChainId: string): PromiEvent<string> {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {

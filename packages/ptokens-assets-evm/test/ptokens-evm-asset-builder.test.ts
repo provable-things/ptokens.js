@@ -18,6 +18,7 @@ describe('EVM asset', () => {
     const builder = new pTokensEvmAssetBuilder(node)
     builder.setBlockchain(ChainId.EthereumMainnet)
     builder.setSymbol('SYM')
+    builder.setDecimals(18)
     const asset = await builder.build()
     expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EthereumMainnet)
     expect(asset.blockchain).toStrictEqual(Blockchain.Ethereum)
@@ -32,6 +33,7 @@ describe('EVM asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
+      decimals: 18,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const provider = new pTokensEvmProvider(new Web3())

@@ -12,7 +12,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "bignumber.js": "^9.0.2",
+    "bignumber.js": "^9.1.0",
     "promievent": "^0.1.5",
     "web3": "^1.7.3",
     "light-async-polling": "^1.0.2",

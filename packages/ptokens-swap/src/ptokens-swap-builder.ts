@@ -2,11 +2,12 @@ import { pTokensSwap, DestinationInfo } from './ptokens-swap'
 import { pTokensAsset } from 'ptokens-entities'
 import { pTokensNode } from 'ptokens-node'
 import { validators } from 'ptokens-helpers'
+import BigNumber from 'bignumber.js'
 
 export class pTokensSwapBuilder {
   private _sourceAsset: pTokensAsset
   private _destinationAssets: Array<DestinationInfo> = []
-  private _amount: number
+  private _amount: BigNumber
   private _node: pTokensNode
 
   constructor(node: pTokensNode) {
@@ -21,8 +22,8 @@ export class pTokensSwapBuilder {
     return this._destinationAssets.map((_el) => _el.asset)
   }
 
-  public get amount(): number {
-    return this._amount
+  public get amount(): string {
+    return this._amount.toFixed()
   }
 
   public get node(): pTokensNode {
@@ -41,8 +42,8 @@ export class pTokensSwapBuilder {
     return this
   }
 
-  setAmount(amount: number) {
-    this._amount = amount
+  setAmount(amount: number | string) {
+    this._amount = BigNumber(amount)
     return this
   }
 

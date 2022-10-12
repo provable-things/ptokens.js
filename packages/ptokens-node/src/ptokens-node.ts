@@ -22,6 +22,7 @@ export type AssetInfo = {
   isNative: boolean
   tokenAddress: string
   tokenReference: string
+  decimals?: number
   vaultAddress?: string
   identity?: string
 }

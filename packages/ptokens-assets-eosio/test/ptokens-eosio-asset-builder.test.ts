@@ -15,6 +15,7 @@ describe('EOSIO asset', () => {
     const builder = new pTokensEosioAssetBuilder(node)
     builder.setBlockchain(ChainId.EosMainnet)
     builder.setSymbol('SYM')
+    builder.setDecimals(8)
     const asset = await builder.build()
     expect(getAssetInfoSpy).toHaveBeenNthCalledWith(1, 'SYM', ChainId.EosMainnet)
     expect(asset.blockchain).toStrictEqual(Blockchain.Eos)
@@ -29,6 +30,7 @@ describe('EOSIO asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
+      decimals: 8,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')

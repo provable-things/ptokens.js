@@ -1,7 +1,9 @@
-import { pTokensNode, AssetInfo } from 'ptokens-node'
-import PromiEvent from 'promievent'
 import { Blockchain, BlockchainType, ChainId, chainIdToTypeMap, Network } from 'ptokens-constants'
 import { maps } from 'ptokens-helpers'
+import { pTokensNode, AssetInfo } from 'ptokens-node'
+
+import PromiEvent from 'promievent'
+import BigNumber from 'bignumber.js'
 
 export type pTokenAssetConfig = {
   node: pTokensNode
@@ -67,14 +69,14 @@ export abstract class pTokensAsset {
   }
 
   abstract nativeToInterim(
-    amount: number,
+    amount: BigNumber,
     destinationAddress: string,
     destinationChainId: string,
     userData?: Uint8Array
   ): PromiEvent<string>
 
   abstract hostToInterim(
-    amount: number,
+    amount: BigNumber,
     destinationAddress: string,
     destinationChainId: string,
     userData?: Uint8Array

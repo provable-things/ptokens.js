@@ -1,8 +1,10 @@
+import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensAlgorandAsset, pTokensAlgorandProvider, BasicSignatureProvider } from '../src'
-import PromiEvent from 'promievent'
-import { Blockchain, ChainId, Network } from 'ptokens-constants'
+
 import algosdk from 'algosdk'
+import PromiEvent from 'promievent'
+import BigNumber from 'bignumber.js'
 
 const TEST_MNEMONIC =
   'remind hat sibling sock multiply heart tuition magic bounce option yard rely daring raven basket wood bike educate ensure museum gorilla oyster tower ability claim'
@@ -18,6 +20,7 @@ describe('Algorand asset', () => {
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
+        decimals: 6,
         vaultAddress: 'vault-contract-address',
         identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
       },
@@ -45,6 +48,7 @@ describe('Algorand asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 6,
           vaultAddress: 'vault-contract-address',
         },
       })
@@ -72,11 +76,12 @@ describe('Algorand asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 6,
           vaultAddress: 'vault-contract-address',
         },
       })
       try {
-        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing provider')
@@ -109,11 +114,12 @@ describe('Algorand asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          decimals: 6,
           vaultAddress: 'vault-contract-address',
         },
       })
       try {
-        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to hostToInterim() for native token')
@@ -136,11 +142,12 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenReference: 'token-internal-address',
+          decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
       try {
-        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing account')
@@ -165,10 +172,11 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenReference: 'token-internal-address',
+          decimals: 6,
         },
       })
       try {
-        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing identity')
@@ -210,13 +218,14 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenReference: 'token-internal-address',
+          decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(1, 'destination-address', ChainId.BitcoinMainnet)
+        .hostToInterim(BigNumber(123.456789), 'destination-address', ChainId.BitcoinMainnet)
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -231,7 +240,7 @@ describe('Algorand asset', () => {
         algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
           from: account.addr,
           to: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
-          amount: 1,
+          amount: 123456789,
           suggestedParams,
           assetIndex: 123456789,
           note: Uint8Array.from(Buffer.from('93009401cceccc97ccdeb364657374696e6174696f6e2d61646472657373', 'hex')),
@@ -273,13 +282,19 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenReference: 'token-internal-address',
+          decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(1, 'destination-address', ChainId.BitcoinMainnet, Uint8Array.from(Buffer.from('c0ffee', 'hex')))
+        .hostToInterim(
+          BigNumber(123.456789),
+          'destination-address',
+          ChainId.BitcoinMainnet,
+          Uint8Array.from(Buffer.from('c0ffee', 'hex'))
+        )
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -294,7 +309,7 @@ describe('Algorand asset', () => {
         algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
           from: account.addr,
           to: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
-          amount: 1,
+          amount: 123456789,
           suggestedParams,
           assetIndex: 123456789,
           note: Uint8Array.from(
@@ -346,6 +361,7 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenReference: 'token-internal-address',
+          decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
         customTransactions: [customTx],
@@ -353,7 +369,12 @@ describe('Algorand asset', () => {
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
-        .hostToInterim(1, 'destination-address', ChainId.BitcoinMainnet, Uint8Array.from(Buffer.from('c0ffee', 'hex')))
+        .hostToInterim(
+          BigNumber(123.456789),
+          'destination-address',
+          ChainId.BitcoinMainnet,
+          Uint8Array.from(Buffer.from('c0ffee', 'hex'))
+        )
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -398,11 +419,12 @@ describe('Algorand asset', () => {
           isNative: false,
           tokenAddress: '123456789',
           tokenReference: 'token-internal-address',
+          decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
       })
       try {
-        await asset.hostToInterim(1, 'destination-address', 'destination-chain-id')
+        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Transact exception')

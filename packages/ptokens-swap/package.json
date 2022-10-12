@@ -17,7 +17,8 @@
     "ptokens-helpers": "^0.1.0",
     "promievent": "^0.1.5",
     "ptokens-node": "^0.1.0",
-    "light-async-polling": "^1.0.2"
+    "light-async-polling": "^1.0.2",
+    "bignumber.js": "9.1.0"
   },
   "devDependencies": {
     "ptokens-assets-utxo": "^0.1.0",

@@ -2,6 +2,7 @@ import { BlockchainType, ChainId } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider, Status } from 'ptokens-node'
 import { pTokensSwap, pTokensSwapBuilder } from '../src/index'
 import { pTokenAssetMock } from './mocks/ptoken-asset'
+import BigNumber from 'bignumber.js'
 
 jest.mock('ptokens-node')
 // jest.mock('ptokens-deposit-address')
@@ -65,7 +66,7 @@ describe('pTokensSwap', () => {
       node,
       sourceAsset,
       [{ asset: destinationAsset, destinationAddress: 'destination-address' }],
-      10
+      BigNumber(10)
     )
     const promi = swap.execute()
     let inputTxBroadcasted = false,
@@ -103,7 +104,13 @@ describe('pTokensSwap', () => {
         outputTxProcessedObj = obj
         outputTxProcessed = true
       })
-    expect(nativeToInterimSpy).toHaveBeenNthCalledWith(1, 10, 'destination-address', ChainId.EthereumMainnet, undefined)
+    expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
+      1,
+      BigNumber(10),
+      'destination-address',
+      ChainId.EthereumMainnet,
+      undefined
+    )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
     expect(depositAddress).toStrictEqual('deposit-address')
     expect(inputTxBroadcasted).toBeTruthy()
@@ -218,7 +225,7 @@ describe('pTokensSwap', () => {
       })
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
-      123.456,
+      BigNumber(123.456),
       '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
       ChainId.EthereumMainnet,
       Buffer.from('user-data')
@@ -328,7 +335,7 @@ describe('pTokensSwap', () => {
       })
     expect(hostToInterimSpy).toHaveBeenNthCalledWith(
       1,
-      123.456,
+      BigNumber(123.456),
       '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
       ChainId.EthereumMainnet,
       undefined
@@ -437,7 +444,7 @@ describe('pTokensSwap', () => {
       })
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
-      123.456,
+      BigNumber(123.456),
       'bc1q2nd4p07tfezv9afr3kcn0l35m7sra5kgufcyzg',
       ChainId.BitcoinMainnet,
       Buffer.from('user-data')
