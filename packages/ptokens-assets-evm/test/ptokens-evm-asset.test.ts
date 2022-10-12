@@ -134,7 +134,7 @@ describe('EVM asset', () => {
           method: 'pegIn',
           value: 0,
         },
-        [1, 'token-contract-address', 'destination-address', 'destination-chain-id']
+        ['1', 'token-contract-address', 'destination-address', 'destination-chain-id']
       )
     })
 
@@ -185,7 +185,7 @@ describe('EVM asset', () => {
           method: 'pegIn',
           value: 0,
         },
-        [1, 'token-contract-address', 'destination-address', Buffer.from('user-data'), 'destination-chain-id']
+        ['1', 'token-contract-address', 'destination-address', Buffer.from('user-data'), 'destination-chain-id']
       )
     })
 
@@ -430,7 +430,7 @@ describe('EVM asset', () => {
           method: 'redeem',
           value: 0,
         },
-        [1, 'destination-address', 'destination-chain-id']
+        ['1', 'destination-address', 'destination-chain-id']
       )
     })
 
@@ -480,7 +480,7 @@ describe('EVM asset', () => {
           method: 'redeem',
           value: 0,
         },
-        [1, Buffer.from('user-data'), 'destination-address', 'destination-chain-id']
+        ['1', Buffer.from('user-data'), 'destination-address', 'destination-chain-id']
       )
     })
   })

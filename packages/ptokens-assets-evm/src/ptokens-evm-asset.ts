@@ -45,10 +45,10 @@ export class pTokensEvmAsset extends pTokensAsset {
                 userData
                   ? !this.assetInfo.tokenAddress
                     ? [destinationAddress, destinationChainId, userData]
-                    : [amount, this.assetInfo.tokenAddress, destinationAddress, userData, destinationChainId]
+                    : [amount.toString(), this.assetInfo.tokenAddress, destinationAddress, userData, destinationChainId]
                   : !this.assetInfo.tokenAddress
                   ? [destinationAddress, destinationChainId]
-                  : [amount, this.assetInfo.tokenAddress, destinationAddress, destinationChainId]
+                  : [amount.toString(), this.assetInfo.tokenAddress, destinationAddress, destinationChainId]
               )
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash: string) => promi.emit('txConfirmed', _hash))
@@ -83,8 +83,8 @@ export class pTokensEvmAsset extends pTokensAsset {
                   value: 0,
                 },
                 userData
-                  ? [amount, userData, destinationAddress, destinationChainId]
-                  : [amount, destinationAddress, destinationChainId]
+                  ? [amount.toString(), userData, destinationAddress, destinationChainId]
+                  : [amount.toString(), destinationAddress, destinationChainId]
               )
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash: string) => promi.emit('txConfirmed', _hash))
