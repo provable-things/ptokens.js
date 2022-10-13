@@ -42,8 +42,8 @@ export class pTokensSwapBuilder {
     return this
   }
 
-  setAmount(amount: number | string) {
-    this._amount = BigNumber(amount)
+  setAmount(_amount: number | string) {
+    this._amount = BigNumber(_amount)
     return this
   }
 
@@ -53,7 +53,8 @@ export class pTokensSwapBuilder {
     if (this._destinationAssets.length === 0) throw new Error('Missing destination assets')
     if (
       !this.destinationAssets.every(
-        (_asset) => _asset.assetInfo.tokenReference === this.sourceAsset.assetInfo.tokenReference
+        (_asset) =>
+          _asset.assetInfo.tokenReference.toLowerCase() === this.sourceAsset.assetInfo.tokenReference.toLowerCase()
       )
     )
       throw new Error('Invalid swap')
