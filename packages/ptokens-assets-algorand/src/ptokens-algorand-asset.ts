@@ -31,10 +31,10 @@ export class pTokensAlgorandAsset extends pTokensAsset {
     this._provider = config.provider
   }
 
-  setCustomTransactions(transactions: algosdk.Transaction[]) {
+  setCustomTransactions(transactions: algosdk.EncodedTransaction[]) {
     if (transactions === undefined) throw new Error('Invalid undefined transactions')
     if (transactions.length === 0) throw new Error('Invalid empty transactions array')
-    this._customTransactions = transactions
+    this._customTransactions = transactions.map((_tx) => algosdk.Transaction.from_obj_for_encoding(_tx))
     return this
   }
 

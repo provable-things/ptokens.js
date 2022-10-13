@@ -430,7 +430,7 @@ describe('Algorand asset', () => {
         assetIndex: 1,
         note: Uint8Array.from(Buffer.from('c0ffee', 'hex')),
       })
-      asset.setCustomTransactions([customTx])
+      asset.setCustomTransactions([customTx.get_obj_for_encoding()])
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
@@ -450,7 +450,9 @@ describe('Algorand asset', () => {
       expect(txHashConfirmed).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(getTransactionParamsSpy).toHaveBeenCalledTimes(0)
-      expect(transactSpy).toHaveBeenNthCalledWith(1, [customTx])
+      expect(transactSpy).toHaveBeenNthCalledWith(1, [
+        algosdk.Transaction.from_obj_for_encoding(customTx.get_obj_for_encoding()),
+      ])
     })
 
     test('Should reject if transact throws', async () => {

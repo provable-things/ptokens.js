@@ -1,12 +1,11 @@
 import algosdk from 'algosdk'
-import { Transaction } from 'algosdk'
 import PromiEvent from 'promievent'
 
 export interface SignerResult {
   blob: string
 }
 export interface SignatureProvider {
-  signTxn(_transactions: Transaction[]): Promise<string[] | SignerResult[]>
+  signTxn(_transactions: algosdk.Transaction[]): Promise<string[] | SignerResult[]>
 }
 
 const decodeBlob = (_blob: string) =>
@@ -43,7 +42,7 @@ export class pTokensAlgorandProvider {
     this._signer = _signer
   }
 
-  public transactInGroup(txns: Transaction[]) {
+  public transactInGroup(txns: algosdk.Transaction[]) {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {
