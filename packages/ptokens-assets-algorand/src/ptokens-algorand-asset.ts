@@ -9,7 +9,6 @@ import BigNumber from 'bignumber.js'
 
 export type pTokenAlgorandAssetConfig = pTokenAssetConfig & {
   provider?: pTokensAlgorandProvider
-  customTransactions?: algosdk.Transaction[]
 }
 
 const encodeNote = (destinationChainId: string, destinationAddress: string, userData: Uint8Array = undefined) =>
@@ -30,7 +29,13 @@ export class pTokensAlgorandAsset extends pTokensAsset {
     if (config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
     super(config, BlockchainType.ALGORAND)
     this._provider = config.provider
-    this._customTransactions = config.customTransactions
+  }
+
+  setCustomTransactions(transactions: algosdk.Transaction[]) {
+    if (transactions === undefined) throw new Error('Invalid undefined transactions')
+    if (transactions.length === 0) throw new Error('Invalid empty transactions array')
+    this._customTransactions = transactions
+    return this
   }
 
   nativeToInterim(): PromiEvent<string> {

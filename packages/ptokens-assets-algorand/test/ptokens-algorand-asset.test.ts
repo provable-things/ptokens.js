@@ -33,6 +33,71 @@ describe('Algorand asset', () => {
     expect(asset.identity).toEqual('HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA')
   })
 
+  test('Should reject if decimals are missing', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    try {
+      new pTokensAlgorandAsset({
+        node,
+        symbol: 'SYM',
+        assetInfo: {
+          chainId: ChainId.AlgorandMainnet,
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenReference: 'token-internal-address',
+        },
+      })
+      fail()
+    } catch (err) {
+      expect(err.message).toStrictEqual('Missing decimals')
+    }
+  })
+
+  test('Should reject if custom transactions are undefined', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const asset = new pTokensAlgorandAsset({
+      node,
+      symbol: 'SYM',
+      assetInfo: {
+        chainId: ChainId.AlgorandMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        decimals: 6,
+        vaultAddress: 'vault-contract-address',
+        identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+      },
+    })
+    try {
+      asset.setCustomTransactions(undefined)
+      fail()
+    } catch (err) {
+      expect(err.message).toStrictEqual('Invalid undefined transactions')
+    }
+  })
+
+  test('Should reject if custom transactions is an empty array', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const asset = new pTokensAlgorandAsset({
+      node,
+      symbol: 'SYM',
+      assetInfo: {
+        chainId: ChainId.AlgorandMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        decimals: 6,
+        vaultAddress: 'vault-contract-address',
+        identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+      },
+    })
+    try {
+      asset.setCustomTransactions([])
+      fail()
+    } catch (err) {
+      expect(err.message).toStrictEqual('Invalid empty transactions array')
+    }
+  })
+
   describe('nativeToInterim', () => {
     beforeEach(() => {
       jest.resetAllMocks()
@@ -344,14 +409,6 @@ describe('Algorand asset', () => {
         )
         return promi
       })
-      const customTx = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-        from: account.addr,
-        to: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
-        amount: 1,
-        suggestedParams,
-        assetIndex: 1,
-        note: Uint8Array.from(Buffer.from('c0ffee', 'hex')),
-      })
       const asset = new pTokensAlgorandAsset({
         node,
         symbol: 'SYM',
@@ -364,8 +421,16 @@ describe('Algorand asset', () => {
           decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
         },
-        customTransactions: [customTx],
       })
+      const customTx = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+        from: account.addr,
+        to: asset.identity,
+        amount: 1,
+        suggestedParams,
+        assetIndex: 1,
+        note: Uint8Array.from(Buffer.from('c0ffee', 'hex')),
+      })
+      asset.setCustomTransactions([customTx])
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
       const ret = await asset
