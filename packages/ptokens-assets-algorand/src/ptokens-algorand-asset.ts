@@ -68,12 +68,12 @@ export class pTokensAlgorandAsset extends pTokensAsset {
                     note: encodeNote(destinationChainId, destinationAddress, userData),
                   }),
                 ]
-            const groupId: string = await this._provider
+            const enclaveTx: string = await this._provider
               .transactInGroup(transactions)
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash) => promi.emit('txConfirmed', _hash))
               .once('error', reject)
-            return resolve(groupId)
+            return resolve(enclaveTx)
           } catch (_err) {
             return reject(_err)
           }

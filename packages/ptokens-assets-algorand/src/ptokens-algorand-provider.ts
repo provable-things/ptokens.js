@@ -59,9 +59,9 @@ export class pTokensAlgorandProvider {
               )
               .do()
             promi.emit('txBroadcasted', groupId)
-            await algosdk.waitForConfirmation(this._client, txns[0].txID(), 10)
+            await algosdk.waitForConfirmation(this._client, txns.at(-1).txID(), 10)
             promi.emit('txConfirmed', groupId)
-            return resolve(groupId)
+            return resolve(txns.at(-1).txID())
           } catch (_err) {
             return reject(_err)
           }

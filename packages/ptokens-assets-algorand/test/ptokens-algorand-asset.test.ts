@@ -163,8 +163,8 @@ describe('Algorand asset', () => {
       const transactSpy = jest.spyOn(provider, 'transactInGroup').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
-            promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
+            promi.emit('txBroadcasted', 'group-id')
+            promi.emit('txConfirmed', 'group-id')
             return resolve('tx-hash')
           })
         )
@@ -267,8 +267,8 @@ describe('Algorand asset', () => {
       const transactSpy = jest.spyOn(provider, 'transactInGroup').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
-            promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
+            promi.emit('txBroadcasted', 'group-id')
+            promi.emit('txConfirmed', 'group-id')
             return resolve('tx-hash')
           })
         )
@@ -297,8 +297,8 @@ describe('Algorand asset', () => {
         .on('txConfirmed', (_txHash) => {
           txHashConfirmed = _txHash
         })
-      expect(txHashBroadcasted).toEqual('tx-hash')
-      expect(txHashConfirmed).toEqual('tx-hash')
+      expect(txHashBroadcasted).toEqual('group-id')
+      expect(txHashConfirmed).toEqual('group-id')
       expect(ret).toEqual('tx-hash')
       expect(getTransactionParamsSpy).toHaveBeenNthCalledWith(1)
       expect(transactSpy).toHaveBeenNthCalledWith(1, [
@@ -402,8 +402,8 @@ describe('Algorand asset', () => {
       const transactSpy = jest.spyOn(provider, 'transactInGroup').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
-            promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
+            promi.emit('txBroadcasted', 'group-id')
+            promi.emit('txConfirmed', 'group-id')
             return resolve('tx-hash')
           })
         )
@@ -446,8 +446,8 @@ describe('Algorand asset', () => {
         .on('txConfirmed', (_txHash) => {
           txHashConfirmed = _txHash
         })
-      expect(txHashBroadcasted).toEqual('tx-hash')
-      expect(txHashConfirmed).toEqual('tx-hash')
+      expect(txHashBroadcasted).toEqual('group-id')
+      expect(txHashConfirmed).toEqual('group-id')
       expect(ret).toEqual('tx-hash')
       expect(getTransactionParamsSpy).toHaveBeenCalledTimes(0)
       expect(transactSpy).toHaveBeenNthCalledWith(1, [

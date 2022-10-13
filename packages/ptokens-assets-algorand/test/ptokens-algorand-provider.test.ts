@@ -99,7 +99,7 @@ describe('Algorand provider', () => {
     })
     let txBroadcasted, txConfirmed
     let txBroadcastedObj, txConfirmedObj
-    await provider
+    const res = await provider
       .transactInGroup([tx1, tx2])
       .on('txBroadcasted', (obj) => {
         txBroadcasted = true
@@ -109,6 +109,7 @@ describe('Algorand provider', () => {
         txConfirmed = true
         txConfirmedObj = obj
       })
+    expect(res).toStrictEqual(tx2.txID())
     expect(txBroadcasted).toBeTruthy()
     expect(txBroadcastedObj).toStrictEqual('htzK82MaCcs6tqDp/AGLQsMSewdZ2gIoExKo490wnoo=')
     expect(txConfirmed).toBeTruthy()
@@ -144,12 +145,7 @@ describe('Algorand provider', () => {
         112, 101, 165, 97, 120, 102, 101, 114, 164, 120, 97, 105, 100, 206, 0, 1, 226, 64,
       ]),
     ])
-    expect(waitForConfirmationSpy).toHaveBeenNthCalledWith(
-      1,
-      client,
-      'VBDDTAIALT7RKUSDOGE2CUIYMZXCIZOII2TNL4Y6NJ5XS4W35RXQ',
-      10
-    )
+    expect(waitForConfirmationSpy).toHaveBeenNthCalledWith(1, client, tx2.txID(), 10)
   })
 
   test('Should correctly transact in group with another signature provider', async () => {
@@ -192,7 +188,7 @@ describe('Algorand provider', () => {
     })
     let txBroadcasted, txConfirmed
     let txBroadcastedObj, txConfirmedObj
-    await provider
+    const res = await provider
       .transactInGroup([tx1, tx2])
       .on('txBroadcasted', (obj) => {
         txBroadcasted = true
@@ -202,6 +198,7 @@ describe('Algorand provider', () => {
         txConfirmed = true
         txConfirmedObj = obj
       })
+    expect(res).toStrictEqual(tx2.txID())
     expect(txBroadcasted).toBeTruthy()
     expect(txBroadcastedObj).toStrictEqual('htzK82MaCcs6tqDp/AGLQsMSewdZ2gIoExKo490wnoo=')
     expect(txConfirmed).toBeTruthy()
@@ -237,12 +234,7 @@ describe('Algorand provider', () => {
         112, 101, 165, 97, 120, 102, 101, 114, 164, 120, 97, 105, 100, 206, 0, 1, 226, 64,
       ]),
     ])
-    expect(waitForConfirmationSpy).toHaveBeenNthCalledWith(
-      1,
-      client,
-      'VBDDTAIALT7RKUSDOGE2CUIYMZXCIZOII2TNL4Y6NJ5XS4W35RXQ',
-      10
-    )
+    expect(waitForConfirmationSpy).toHaveBeenNthCalledWith(1, client, tx2.txID(), 10)
   })
 
   test('Should reject when something rejects', async () => {
