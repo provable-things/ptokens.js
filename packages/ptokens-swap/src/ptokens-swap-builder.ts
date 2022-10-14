@@ -1,7 +1,7 @@
 import { pTokensSwap, DestinationInfo } from './ptokens-swap'
 import { pTokensAsset } from 'ptokens-entities'
 import { pTokensNode } from 'ptokens-node'
-import { validators } from 'ptokens-helpers'
+import { stringUtils, validators } from 'ptokens-helpers'
 import BigNumber from 'bignumber.js'
 
 export class pTokensSwapBuilder {
@@ -47,17 +47,19 @@ export class pTokensSwapBuilder {
     return this
   }
 
+  private isValidSwap() {
+    return this.destinationAssets.every(
+      (_asset) =>
+        stringUtils.addHexPrefix(_asset.assetInfo.tokenReference).toLowerCase() ===
+        stringUtils.addHexPrefix(this.sourceAsset.assetInfo.tokenReference).toLowerCase()
+    )
+  }
+
   build(): pTokensSwap {
     if (!this._amount) throw new Error('Missing amount')
     if (!this._sourceAsset) throw new Error('Missing source asset')
     if (this._destinationAssets.length === 0) throw new Error('Missing destination assets')
-    if (
-      !this.destinationAssets.every(
-        (_asset) =>
-          _asset.assetInfo.tokenReference.toLowerCase() === this.sourceAsset.assetInfo.tokenReference.toLowerCase()
-      )
-    )
-      throw new Error('Invalid swap')
+    if (!this.isValidSwap()) throw new Error('Invalid swap')
     const ret = new pTokensSwap(this._node, this.sourceAsset, this._destinationAssets, this._amount)
     return ret
   }
