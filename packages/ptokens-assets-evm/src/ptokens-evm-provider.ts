@@ -45,7 +45,6 @@ export class pTokensEvmProvider {
 
   constructor(web3: Web3) {
     this._web3 = web3
-    this._gasLimit = 80000
   }
 
   public get gasPrice() {
