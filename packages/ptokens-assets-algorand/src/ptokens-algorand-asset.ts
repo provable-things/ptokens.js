@@ -19,7 +19,7 @@ const encodeNote = (destinationChainId: string, destinationAddress: string, user
         destinationAddress,
         Array.from(userData),
       ])
-    : encode([0, Array.from(stringUtils.hexStringToBuffer(destinationChainId)), destinationAddress])
+    : encode([0, Array.from(stringUtils.hexStringToBuffer(destinationChainId)), destinationAddress, []])
 
 export class pTokensAlgorandAsset extends pTokensAsset {
   private _provider: pTokensAlgorandProvider

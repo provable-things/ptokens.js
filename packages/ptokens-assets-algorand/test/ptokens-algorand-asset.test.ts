@@ -308,7 +308,7 @@ describe('Algorand asset', () => {
           amount: 123456789,
           suggestedParams,
           assetIndex: 123456789,
-          note: Uint8Array.from(Buffer.from('93009401cceccc97ccdeb364657374696e6174696f6e2d61646472657373', 'hex')),
+          note: Uint8Array.from(Buffer.from('94009401cceccc97ccdeb364657374696e6174696f6e2d6164647265737390', 'hex')),
         }),
       ])
     })
