@@ -20,16 +20,16 @@ describe('pTokensSwap', () => {
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
         outputs: [],
       })
       .mockResolvedValueOnce({
-        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
-        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
       })
       .mockResolvedValue({
-        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
-        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.CONFIRMED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.CONFIRMED }],
       })
 
     const sourceAsset = new pTokenAssetMock(
@@ -119,15 +119,15 @@ describe('pTokensSwap', () => {
     expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
     expect(inputTxDetectedObj).toStrictEqual([
-      { chain_id: 'input-chain-id', status: Status.BROADCASTED, tx_hash: 'originating-tx-hash' },
+      { chainId: 'input-chain-id', status: Status.BROADCASTED, txHash: 'originating-tx-hash' },
     ])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
-      { chain_id: 'output-chain-id', status: Status.BROADCASTED, tx_hash: 'output-tx-hash' },
+      { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
     expect(outputTxProcessed).toBeTruthy()
     expect(outputTxProcessedObj).toStrictEqual([
-      { chain_id: 'output-chain-id', status: Status.CONFIRMED, tx_hash: 'output-tx-hash' },
+      { chainId: 'output-chain-id', status: Status.CONFIRMED, txHash: 'output-tx-hash' },
     ])
   })
 
@@ -138,17 +138,17 @@ describe('pTokensSwap', () => {
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
         outputs: [],
       })
       .mockResolvedValueOnce({
-        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
-        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
       })
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValue({
-        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
-        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.CONFIRMED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.CONFIRMED }],
       })
 
     const builder = new pTokensSwapBuilder(node)
@@ -238,15 +238,15 @@ describe('pTokensSwap', () => {
     expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
     expect(inputTxDetectedObj).toStrictEqual([
-      { chain_id: 'input-chain-id', status: Status.BROADCASTED, tx_hash: 'originating-tx-hash' },
+      { chainId: 'input-chain-id', status: Status.BROADCASTED, txHash: 'originating-tx-hash' },
     ])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
-      { chain_id: 'output-chain-id', status: Status.BROADCASTED, tx_hash: 'output-tx-hash' },
+      { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
     expect(outputTxProcessed).toBeTruthy()
     expect(outputTxProcessedObj).toStrictEqual([
-      { chain_id: 'output-chain-id', status: Status.CONFIRMED, tx_hash: 'output-tx-hash' },
+      { chainId: 'output-chain-id', status: Status.CONFIRMED, txHash: 'output-tx-hash' },
     ])
   })
 
@@ -257,16 +257,16 @@ describe('pTokensSwap', () => {
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
         outputs: [],
       })
       .mockResolvedValueOnce({
         inputs: [],
-        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
       })
       .mockResolvedValue({
         inputs: [],
-        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.CONFIRMED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.CONFIRMED }],
       })
 
     const builder = new pTokensSwapBuilder(node)
@@ -347,15 +347,15 @@ describe('pTokensSwap', () => {
     expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
     expect(inputTxDetectedObj).toStrictEqual([
-      { chain_id: 'input-chain-id', status: Status.BROADCASTED, tx_hash: 'originating-tx-hash' },
+      { chainId: 'input-chain-id', status: Status.BROADCASTED, txHash: 'originating-tx-hash' },
     ])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
-      { chain_id: 'output-chain-id', status: Status.BROADCASTED, tx_hash: 'output-tx-hash' },
+      { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
     expect(outputTxProcessed).toBeTruthy()
     expect(outputTxProcessedObj).toStrictEqual([
-      { chain_id: 'output-chain-id', status: Status.CONFIRMED, tx_hash: 'output-tx-hash' },
+      { chainId: 'output-chain-id', status: Status.CONFIRMED, txHash: 'output-tx-hash' },
     ])
   })
 
@@ -366,16 +366,16 @@ describe('pTokensSwap', () => {
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [{ tx_hash: 'originating-tx-hash', chain_id: 'input-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
         outputs: [],
       })
       .mockResolvedValueOnce({
         inputs: [],
-        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
       })
       .mockResolvedValue({
         inputs: [],
-        outputs: [{ tx_hash: 'output-tx-hash', chain_id: 'output-chain-id', status: Status.CONFIRMED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.CONFIRMED }],
       })
 
     const builder = new pTokensSwapBuilder(node)
@@ -455,16 +455,14 @@ describe('pTokensSwap', () => {
     expect(inputTxConfirmed).toBeTruthy()
     expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
-    expect(inputTxDetectedObj).toStrictEqual([
-      { chain_id: 'input-chain-id', status: 0, tx_hash: 'originating-tx-hash' },
-    ])
+    expect(inputTxDetectedObj).toStrictEqual([{ chainId: 'input-chain-id', status: 0, txHash: 'originating-tx-hash' }])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
-      { chain_id: 'output-chain-id', status: Status.BROADCASTED, tx_hash: 'output-tx-hash' },
+      { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
     expect(outputTxProcessed).toBeTruthy()
     expect(outputTxProcessedObj).toStrictEqual([
-      { chain_id: 'output-chain-id', status: Status.CONFIRMED, tx_hash: 'output-tx-hash' },
+      { chainId: 'output-chain-id', status: Status.CONFIRMED, txHash: 'output-tx-hash' },
     ])
   })
 

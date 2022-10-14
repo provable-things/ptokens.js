@@ -7,9 +7,9 @@ export enum Status {
 }
 
 export type InnerTransactionStatus = {
-  tx_hash: string
+  txHash: string
   status: Status
-  chain_id: string
+  chainId: string
 }
 
 export type TransactionStatus = {
