@@ -14,5 +14,9 @@
   "dependencies": {
     "jsonrpc-lite": "^2.2.0",
     "ptokens-helpers": "^0.1.0"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "pTokens Node"
   }
 }

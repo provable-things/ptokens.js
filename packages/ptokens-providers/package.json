@@ -16,5 +16,9 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "pTokens Providers"
   }
 }

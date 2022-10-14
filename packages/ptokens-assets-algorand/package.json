@@ -19,5 +19,9 @@
     "promievent": "^0.1.5",
     "algosdk": "^1.22.0",
     "@msgpack/msgpack": "^2.8.0"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "pTokens Algorand Asset"
   }
 }

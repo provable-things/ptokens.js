@@ -25,5 +25,9 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "pTokens Helpers"
+  }
 }

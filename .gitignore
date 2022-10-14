@@ -43,4 +43,7 @@ dist
 # Types directory
 types
 
+# Docs directory
+docs
+
 .eslintcache

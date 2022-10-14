@@ -19,5 +19,9 @@
     "promievent": "^0.1.5",
     "light-async-polling": "^1.0.2",
     "bignumber.js": "^9.1.0"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "pTokens UTXO asset"
   }
 }

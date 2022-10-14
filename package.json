@@ -5,6 +5,7 @@
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "dev": "lerna run --parallel dev",
+    "doc": "typedoc",
     "lint": "lerna run lint",
     "test": "lerna run test",
     "type-check": "lerna run type-check",
@@ -42,7 +43,9 @@
     "rollup-plugin-string": "^3.0.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.31.2",
-    "ts-jest": "^29.0.0"
+    "ts-jest": "^29.0.0",
+    "typedoc": "^0.23.16",
+    "typedoc-plugin-resolve-crossmodule-references": "^0.3.2"
   },
   "dependencies": {
     "@babel/runtime": "^7.17.9",

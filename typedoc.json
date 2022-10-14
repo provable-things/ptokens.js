@@ -1,0 +1,10 @@
+{
+    "entryPointStrategy": "packages",
+    "entryPoints": [
+      "packages/*"
+    ],
+    "gitRevision": "dev",
+    "plugin": [
+      "typedoc-plugin-resolve-crossmodule-references"
+    ]
+  }

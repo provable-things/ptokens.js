@@ -17,5 +17,9 @@
     "ptokens-constants": "^0.1.0",
     "ptokens-helpers": "^0.1.0",
     "bignumber.js": "^9.1.0"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "pTokens Abstract Entities"
   }
 }

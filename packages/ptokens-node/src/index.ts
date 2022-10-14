@@ -1,4 +1,4 @@
 export { pTokensNode, Status } from './ptokens-node'
-import type { InnerTransactionStatus, AssetInfo } from './ptokens-node'
-export { InnerTransactionStatus, AssetInfo }
+import type { AssetInfo, InnerTransactionStatus, NativeDepositAddress, TransactionStatus } from './ptokens-node'
+export { AssetInfo, InnerTransactionStatus, NativeDepositAddress, TransactionStatus }
 export { pTokensNodeProvider } from './ptokens-node-provider'

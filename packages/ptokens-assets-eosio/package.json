@@ -24,5 +24,9 @@
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.1"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "pTokens EOSIO asset"
   }
 }

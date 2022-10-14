@@ -11,5 +11,9 @@
     "lint": "eslint ./src/",
     "test": "jest",
     "type-check": "tsc --noEmit"
+  },
+  "typedoc": {
+    "entryPoint": "./src/index.ts",
+    "displayName": "pTokens Constants"
   }
 }
