@@ -1,7 +1,7 @@
 import Web3 from 'web3'
 import { getAccount, getContract } from './lib/'
 import PromiEvent from 'promievent'
-import { TransactionReceipt } from 'web3-core'
+import { provider, TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils'
 import polling from 'light-async-polling'
 
@@ -43,8 +43,9 @@ export class pTokensEvmProvider {
   private _gasPrice: number
   private _gasLimit: number
 
-  constructor(web3: Web3) {
-    this._web3 = web3
+  constructor(_provider?: provider) {
+    this._web3 = new Web3()
+    if (_provider) this._web3.setProvider(_provider)
   }
 
   public get gasPrice() {

@@ -2,7 +2,6 @@ import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensEvmAsset, pTokensEvmProvider } from '../src'
 
-import Web3 from 'web3'
 import PromiEvent from 'promievent'
 import BigNumber from 'bignumber.js'
 
@@ -57,9 +56,8 @@ describe('EVM asset', () => {
     })
 
     test('Should not call nativeToInterim for non-native tokens', async () => {
-      const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
+      const provider = new pTokensEvmProvider()
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -93,9 +91,8 @@ describe('EVM asset', () => {
     })
 
     test('Should call makeContractSend with pegIn for native token', async () => {
-      const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
+      const provider = new pTokensEvmProvider()
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -145,9 +142,8 @@ describe('EVM asset', () => {
     })
 
     test('Should call makeContractSend with pegIn for native token and user data', async () => {
-      const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
+      const provider = new pTokensEvmProvider()
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -203,9 +199,8 @@ describe('EVM asset', () => {
     })
 
     test('Should call makeContractSend with pegInEth for system token', async () => {
-      const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
+      const provider = new pTokensEvmProvider()
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -255,9 +250,8 @@ describe('EVM asset', () => {
     })
 
     test('Should call makeContractSend with pegInEth for system token with user data', async () => {
-      const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
+      const provider = new pTokensEvmProvider()
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -307,9 +301,8 @@ describe('EVM asset', () => {
     })
 
     test('Should not call nativeToInterim for non-native tokens', async () => {
-      const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
+      const provider = new pTokensEvmProvider()
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -367,9 +360,8 @@ describe('EVM asset', () => {
     })
 
     test('Should not call hostToInterim for native tokens', async () => {
-      const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
+      const provider = new pTokensEvmProvider()
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -403,9 +395,8 @@ describe('EVM asset', () => {
     })
 
     test('Should call makeContractSend with redeem for non-native token', async () => {
-      const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
+      const provider = new pTokensEvmProvider()
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {
@@ -454,9 +445,8 @@ describe('EVM asset', () => {
     })
 
     test('Should call makeContractSend with redeem for non-native token with user data', async () => {
-      const web3 = new Web3()
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
-      const provider = new pTokensEvmProvider(web3)
+      const provider = new pTokensEvmProvider()
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<string>((resolve) =>
           setImmediate(() => {

@@ -1,4 +1,3 @@
-import Web3 from 'web3'
 import { pTokensEvmAssetBuilder, pTokensEvmProvider } from '../src'
 import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
@@ -36,7 +35,7 @@ describe('EVM asset', () => {
       decimals: 18,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
-    const provider = new pTokensEvmProvider(new Web3())
+    const provider = new pTokensEvmProvider()
     const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))
     const builder = new pTokensEvmAssetBuilder(node)
     builder.setBlockchain(ChainId.EthereumMainnet)
