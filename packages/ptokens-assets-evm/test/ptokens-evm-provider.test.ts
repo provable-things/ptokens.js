@@ -3,6 +3,7 @@ import * as utils from '../src/lib'
 import PromiEvent from 'promievent'
 import { AbiItem } from 'web3-utils'
 import { TransactionReceipt } from 'web3-core'
+import BigNumber from 'bignumber.js'
 
 const abi = require('./utils/exampleContractABI.json')
 const receiptWithTrueStatus = require('./utils/receiptWithTrueStatus.json')
@@ -169,7 +170,7 @@ describe('EVM provider', () => {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
-          value: 1,
+          value: BigNumber(1),
         },
         [1, 'arg2', 'arg3']
       )
@@ -185,7 +186,7 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
-    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1 })
+    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: BigNumber(1) })
   })
 
   test('Should send a contract method with no arguments', async () => {
@@ -216,7 +217,7 @@ describe('EVM provider', () => {
         method: 'number',
         abi,
         contractAddress: 'contract-address',
-        value: 1,
+        value: BigNumber(1),
       })
       .once('txBroadcasted', (_hash) => {
         txBroadcastedHash = _hash
@@ -230,7 +231,7 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(numberMock).toHaveBeenNthCalledWith(1)
-    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1 })
+    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: BigNumber(1) })
   })
 
   test('Should send a contract method with set gas price and gas limit', async () => {
@@ -264,7 +265,7 @@ describe('EVM provider', () => {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
-          value: 1,
+          value: BigNumber(1),
         },
         [1, 'arg2', 'arg3']
       )
@@ -280,7 +281,12 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
-    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1, gas: 200000, gasPrice: 100e9 })
+    expect(sendMock).toHaveBeenNthCalledWith(1, {
+      from: 'evm-account',
+      value: BigNumber(1),
+      gas: 200000,
+      gasPrice: 100e9,
+    })
   })
 
   test('Should send a contract method with set gas price', async () => {
@@ -313,7 +319,7 @@ describe('EVM provider', () => {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
-          value: 1,
+          value: BigNumber(1),
         },
         [1, 'arg2', 'arg3']
       )
@@ -329,7 +335,7 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
-    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1, gasPrice: 100e9 })
+    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: BigNumber(1), gasPrice: 100e9 })
   })
 
   test('Should send a contract method with set gas price and gas limit', async () => {
@@ -362,7 +368,7 @@ describe('EVM provider', () => {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
-          value: 1,
+          value: BigNumber(1),
         },
         [1, 'arg2', 'arg3']
       )
@@ -378,7 +384,7 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
-    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1, gas: 200000 })
+    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: BigNumber(1), gas: 200000 })
   })
 
   test('Should send a contract method and emit txError', async () => {
@@ -408,7 +414,7 @@ describe('EVM provider', () => {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
-          value: 1,
+          value: BigNumber(1),
         },
         [1, 'arg2', 'arg3']
       )
@@ -420,7 +426,7 @@ describe('EVM provider', () => {
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
-    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: 1 })
+    expect(sendMock).toHaveBeenNthCalledWith(1, { from: 'evm-account', value: BigNumber(1) })
   })
 
   test('Should reject if getAccount throws', async () => {
@@ -434,7 +440,7 @@ describe('EVM provider', () => {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
-          value: 1,
+          value: BigNumber(1),
         },
         [1, 'arg2', 'arg3']
       )
@@ -459,7 +465,7 @@ describe('EVM provider', () => {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
-          value: 1,
+          value: BigNumber(1),
         },
         [1, 'arg2', 'arg3']
       )
@@ -492,7 +498,7 @@ describe('EVM provider', () => {
           method: 'setNumber',
           abi,
           contractAddress: 'contract-address',
-          value: 1,
+          value: BigNumber(1),
         },
         [1, 'arg2', 'arg3']
       )

@@ -1,4 +1,4 @@
-import { BlockchainType } from 'ptokens-constants'
+import { BlockchainType, ChainId } from 'ptokens-constants'
 import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
 import { pTokensEvmProvider } from './ptokens-evm-provider'
 import { onChainFormat } from './lib'
@@ -27,6 +27,11 @@ export class pTokensEvmAsset extends pTokensAsset {
     this.provider = config.provider
   }
 
+  isWrappedToken(): boolean {
+    if (this.symbol.toLowerCase() === 'ftm' && this.chainId === ChainId.FantomMainnet) return true
+    return false
+  }
+
   protected nativeToInterim(
     _amount: BigNumber,
     _destinationAddress: string,
@@ -44,13 +49,13 @@ export class pTokensEvmAsset extends pTokensAsset {
             const txHash: string = await this.provider
               .makeContractSend(
                 {
-                  method: !this.assetInfo.tokenAddress ? SYSTEM_TOKEN_PEG_IN_METHOD : ERC20_TOKEN_PEG_IN_METHOD,
+                  method: this.isWrappedToken() ? SYSTEM_TOKEN_PEG_IN_METHOD : ERC20_TOKEN_PEG_IN_METHOD,
                   abi: pERC20VaultContractAbi as unknown as AbiItem,
                   contractAddress: this.assetInfo.vaultAddress,
-                  value: !this.assetInfo.tokenAddress ? +onChainFormat(_amount, this.assetInfo.decimals) : 0,
+                  value: this.isWrappedToken() ? onChainFormat(_amount, this.assetInfo.decimals) : BigNumber(0),
                 },
                 _userData
-                  ? !this.assetInfo.tokenAddress
+                  ? this.isWrappedToken()
                     ? [_destinationAddress, _destinationChainId, _userData]
                     : [
                         onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
@@ -59,7 +64,7 @@ export class pTokensEvmAsset extends pTokensAsset {
                         _userData,
                         _destinationChainId,
                       ]
-                  : !this.assetInfo.tokenAddress
+                  : this.isWrappedToken()
                   ? [_destinationAddress, _destinationChainId]
                   : [
                       onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
@@ -98,7 +103,7 @@ export class pTokensEvmAsset extends pTokensAsset {
                   method: ERC20_TOKEN_PEG_OUT_METHOD,
                   abi: pTokenOnEVMContractAbi as unknown as AbiItem,
                   contractAddress: this.assetInfo.tokenAddress,
-                  value: 0,
+                  value: BigNumber(0),
                 },
                 _userData
                   ? [

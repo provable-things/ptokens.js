@@ -1,10 +1,12 @@
 import Web3 from 'web3'
-import { getAccount, getContract } from './lib/'
 import PromiEvent from 'promievent'
 import { stringUtils } from 'ptokens-helpers'
 import { provider, TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils'
+import BigNumber from 'bignumber.js'
 import polling from 'light-async-polling'
+
+import { getAccount, getContract } from './lib/'
 
 export type MakeContractSendOptions = {
   /** The method to be called. */
@@ -14,7 +16,7 @@ export type MakeContractSendOptions = {
   /** The contract address. */
   contractAddress: string
   /** The value being sent with the transaction. */
-  value: number
+  value: BigNumber
   /** The gas limit for the transaction. */
   gasLimit?: number
 }
@@ -30,10 +32,10 @@ export type MakeContractCallOptions = {
 
 class SendOptions {
   from: string
-  value: number
+  value: BigNumber
   gasPrice: number
   gas: number
-  constructor(from: string, value: number) {
+  constructor(from: string, value: BigNumber) {
     this.from = from
     this.value = value
   }

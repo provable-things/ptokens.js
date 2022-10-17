@@ -134,7 +134,7 @@ describe('EVM asset', () => {
           abi: vaultAbi,
           contractAddress: 'vault-contract-address',
           method: 'pegIn',
-          value: 0,
+          value: BigNumber(0),
         },
         ['123456789000000000000', 'token-contract-address', 'destination-address', 'destination-chain-id']
       )
@@ -189,7 +189,7 @@ describe('EVM asset', () => {
           abi: vaultAbi,
           contractAddress: 'vault-contract-address',
           method: 'pegIn',
-          value: 0,
+          value: BigNumber(0),
         },
         [
           '123456789000000000000',
@@ -216,10 +216,10 @@ describe('EVM asset', () => {
       })
       const asset = new pTokensEvmAsset({
         node,
-        symbol: 'SYM',
+        symbol: 'FTM',
         provider: provider,
         assetInfo: {
-          chainId: ChainId.EthereumMainnet,
+          chainId: ChainId.FantomMainnet,
           isNative: true,
           tokenAddress: '',
           tokenReference: 'token-internal-address',
@@ -245,7 +245,7 @@ describe('EVM asset', () => {
           abi: vaultAbi,
           contractAddress: 'vault-contract-address',
           method: 'pegInEth',
-          value: 123456789000000000000,
+          value: BigNumber(123456789000000000000),
         },
         ['destination-address', 'destination-chain-id']
       )
@@ -266,10 +266,10 @@ describe('EVM asset', () => {
       })
       const asset = new pTokensEvmAsset({
         node,
-        symbol: 'SYM',
+        symbol: 'FTM',
         provider: provider,
         assetInfo: {
-          chainId: ChainId.EthereumMainnet,
+          chainId: ChainId.FantomMainnet,
           isNative: true,
           tokenAddress: '',
           tokenReference: 'token-internal-address',
@@ -300,7 +300,7 @@ describe('EVM asset', () => {
           abi: vaultAbi,
           contractAddress: 'vault-contract-address',
           method: 'pegInEth',
-          value: 123456789000000000000,
+          value: BigNumber(123456789000000000000),
         },
         ['destination-address', 'destination-chain-id', Buffer.from('user-data')]
       )
@@ -443,7 +443,7 @@ describe('EVM asset', () => {
           abi: tokenAbi,
           contractAddress: 'token-contract-address',
           method: 'redeem',
-          value: 0,
+          value: BigNumber(0),
         },
         ['123456789000000000000', 'destination-address', 'destination-chain-id']
       )
@@ -497,7 +497,7 @@ describe('EVM asset', () => {
           abi: tokenAbi,
           contractAddress: 'token-contract-address',
           method: 'redeem',
-          value: 0,
+          value: BigNumber(0),
         },
         ['123456789000000000000', Buffer.from('user-data'), 'destination-address', 'destination-chain-id']
       )
