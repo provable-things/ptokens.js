@@ -1,6 +1,6 @@
 {
   "name": "ptokens-constants",
-  "version": "0.1.0",
+  "version": "1.0.0-alpha.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "browser": "dist/bundle.umd.js",

@@ -1,6 +1,6 @@
 {
   "name": "ptokens-helpers",
-  "version": "0.1.0",
+  "version": "1.0.0-alpha.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "browser": "dist/bundle.umd.js",
@@ -13,13 +13,13 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "cross-fetch": "^3.1.5",
     "multicoin-address-validator": "^0.5.11",
-    "ptokens-constants": "^0.1.0",
-    "cross-fetch": "^3.1.5"
+    "ptokens-constants": "^1.0.0-alpha.0"
   },
   "devDependencies": {
-    "@types/multicoin-address-validator": "^0.5.0",
     "@types/jest": "^27.4.1",
+    "@types/multicoin-address-validator": "^0.5.0",
     "@types/node-fetch": "^2.6.1",
     "ts-jest": "^27.1.4"
   },

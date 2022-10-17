@@ -1,6 +1,6 @@
 {
   "name": "ptokens-assets-algorand",
-  "version": "0.1.0",
+  "version": "1.0.0-alpha.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "dist/index.d.ts",
@@ -12,13 +12,13 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "ptokens-constants": "^0.1.0",
-    "ptokens-entities": "^0.1.0",
-    "ptokens-helpers": "^0.1.0",
-    "ptokens-node": "^0.1.0",
-    "promievent": "^0.1.5",
+    "@msgpack/msgpack": "^2.8.0",
     "algosdk": "^1.22.0",
-    "@msgpack/msgpack": "^2.8.0"
+    "promievent": "^0.1.5",
+    "ptokens-constants": "^1.0.0-alpha.0",
+    "ptokens-entities": "^1.0.0-alpha.0",
+    "ptokens-helpers": "^1.0.0-alpha.0",
+    "ptokens-node": "^1.0.0-alpha.0"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",
