@@ -3,6 +3,7 @@
     "entryPoints": [
       "packages/*"
     ],
+    "exclude": ["packages/ptokens"],
     "gitRevision": "dev",
     "plugin": [
       "typedoc-plugin-resolve-crossmodule-references"

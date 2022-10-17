@@ -1,5 +1,5 @@
 {
-  "name": "ptokens-assets-eosio",
+  "name": "ptokens",
   "version": "0.1.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
@@ -8,25 +8,17 @@
     "build": "rollup -c ../../rollup.config.js",
     "dev": "rollup -c ../../rollup.config.js -w",
     "lint": "eslint ./src/",
-    "test": "jest",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "promievent": "^0.1.5",
+    "ptokens-assets-algorand": "^0.1.0",
+    "ptokens-assets-eosio": "^0.1.0",
+    "ptokens-assets-evm": "^0.1.0",
+    "ptokens-assets-utxo": "^0.1.0",
     "ptokens-constants": "^0.1.0",
     "ptokens-entities": "^0.1.0",
     "ptokens-helpers": "^0.1.0",
     "ptokens-node": "^0.1.0",
-    "eosjs": "^22.1.0",
-    "node-fetch": "^2.6.7",
-    "light-async-polling": "^1.0.2",
-    "bignumber.js": "^9.1.0"
-  },
-  "devDependencies": {
-    "@types/node-fetch": "^2.6.1"
-  },
-  "typedoc": {
-    "entryPoint": "./src/index.ts",
-    "displayName": "pTokens EOSIO asset"
+    "ptokens-swap": "^0.0.1"
   }
 }
