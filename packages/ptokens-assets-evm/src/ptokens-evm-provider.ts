@@ -99,7 +99,7 @@ export class pTokensEvmProvider {
               .once('error', (_error: Error) => promi.emit('txError', _error))
             return resolve(receipt.transactionHash)
           } catch (_err) {
-            reject(_err)
+            return reject(_err)
           }
         })() as unknown
     )
