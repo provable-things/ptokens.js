@@ -2,9 +2,15 @@ import algosdk from 'algosdk'
 import PromiEvent from 'promievent'
 
 export interface SignerResult {
+  /** A blob representing the signed transaction bytes */
   blob: string
 }
+
 export interface SignatureProvider {
+  /**
+   * A method that will be used to sign a group of transactions.
+   * @param _transactions An array of Algorand transactions to be signed.
+   */
   signTxn(_transactions: algosdk.Transaction[]): Promise<string[] | SignerResult[]>
 }
 
@@ -17,10 +23,16 @@ const decodeBlob = (_blob: string) =>
   )
 
 export class BasicSignatureProvider implements SignatureProvider {
-  _secretKey: algosdk.Account
+  private _secretKey: algosdk.Account
+
+  /**
+   * Create and initialize a basic signature provider from a secret key mnemonic.
+   * @param _mnemonic The secret key mnemonic.
+   */
   constructor(_mnemonic: string) {
     this._secretKey = algosdk.mnemonicToSecretKey(_mnemonic)
   }
+
   signTxn(_transactions: algosdk.Transaction[]) {
     return Promise.resolve(
       _transactions
@@ -35,6 +47,11 @@ export class pTokensAlgorandProvider {
   private _signer: SignatureProvider
   private _account: string
 
+  /**
+   * Create and initialize a pTokensAlgorandProvider object.
+   * @param _client An algosdk.Algodv2 instance.
+   * @param _signer A signature provider instance implementing _signTxn()_.
+   */
   constructor(_client: algosdk.Algodv2, _signer: SignatureProvider) {
     if (!_client) throw new Error('Invalid AlgodClient argument')
     if (!_signer || !_signer.signTxn) throw new Error('Invalid signature provider')
@@ -42,6 +59,30 @@ export class pTokensAlgorandProvider {
     this._signer = _signer
   }
 
+  /** Return the account set with _setAccount()_. */
+  get account(): string {
+    return this._account
+  }
+
+  /**
+   * Set an account
+   * @param _account The account.
+   * @returns The same provider. This allows methods chaining.
+   */
+  setAccount(_account: string) {
+    this._account = _account
+    return this
+  }
+
+  /**
+   * Push on-chain an array of transactions in a transactions group.
+   * The function returns a PromiEvent, i.e. a Promise that can also emit events.
+   * In particular, the events fired during the execution are the following:
+   * * _txBroadcasted_ -> fired with the transactions group ID when the transactions are broadcasted on-chain;
+   * * _txConfirmed_ -> fired with the transactions group ID when the transactions are confirmed on-chain;
+   * @param _txns The transactions to be broadcasted.
+   * @returns A PromiEvent that resolves with the hash of the latest transaction in the input array.
+   */
   transactInGroup(_txns: algosdk.Transaction[]) {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
@@ -70,15 +111,10 @@ export class pTokensAlgorandProvider {
     return promi
   }
 
-  get account(): string {
-    return this._account
-  }
-
-  setAccount(_account: string) {
-    this._account = _account
-    return this
-  }
-
+  /**
+   * Get suggested parameters for an Algorand transaction.
+   * @returns A SuggestedParams object (https://algorand.github.io/js-algorand-sdk/interfaces/SuggestedParams.html).
+   */
   async getTransactionParams() {
     return await this._client.getTransactionParams().do()
   }

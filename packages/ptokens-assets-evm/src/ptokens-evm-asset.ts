@@ -18,6 +18,9 @@ export type pTokenEvmAssetConfig = pTokenAssetConfig & { provider?: pTokensEvmPr
 export class pTokensEvmAsset extends pTokensAsset {
   private provider: pTokensEvmProvider
 
+  /**
+   * Create and initialize a pTokensEvmAsset object. pTokensEvmAsset objects shall be created with a pTokensEvmAssetBuilder instance.
+   */
   constructor(config: pTokenEvmAssetConfig) {
     if (config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
     super(config, BlockchainType.EVM)

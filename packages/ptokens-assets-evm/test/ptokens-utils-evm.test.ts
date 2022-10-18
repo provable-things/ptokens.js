@@ -11,7 +11,7 @@ const TEST_ETH_PRIVATE_KEY = '422c874bed50b69add046296530dc580f8e2e253879d98d660
 const TEST_ETH_PROVIDER = 'https://goerli.infura.io/v3/4762c881ac0c4938be76386339358ed6'
 
 describe('ethereum utilities', () => {
-  test('Should return the correct Ethereum offchain format', () => {
+  test('Should return the correct Ethereum off-chain format', () => {
     const onChainAmount = new BigNumber(10000)
     const decimals = 4
     const expectedOffChainAmount = '1'
@@ -19,7 +19,7 @@ describe('ethereum utilities', () => {
     expect(offChainAmount).toStrictEqual(expectedOffChainAmount)
   })
 
-  test('Should return the correct Ethereum onchain format', () => {
+  test('Should return the correct Ethereum on-chain format', () => {
     const offChainAmount = new BigNumber(1)
     const decimals = 4
     const expectedOnChainAmount = '10000'

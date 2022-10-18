@@ -23,6 +23,9 @@ const getAmountInEosFormat = (_amount: BigNumber, _decimals: number, symbol: str
 export class pTokensEosioAsset extends pTokensAsset {
   private provider: pTokensEosioProvider
 
+  /**
+   * Create and initialize a pTokensEosioAsset object. pTokensEosioAsset objects shall be created with a pTokensEosioAssetBuilder instance.
+   */
   constructor(_config: pTokenEosioAssetConfig) {
     if (_config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
     super(_config, BlockchainType.EOSIO)

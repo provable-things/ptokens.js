@@ -11,6 +11,11 @@ export class pTokensEosioAssetBuilder extends pTokensAssetBuilder {
     super(_node, BlockchainType.EOSIO)
   }
 
+  /**
+   * Set a pTokensEosioProvider for creating and sending transactions.
+   * @param _provider A pTokensEosioProvider object.
+   * @returns The same builder. This allows methods chaining.
+   */
   setProvider(_provider: pTokensEosioProvider): this {
     this._provider = _provider
     return this

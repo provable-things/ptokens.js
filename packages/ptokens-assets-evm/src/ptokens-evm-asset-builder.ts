@@ -11,6 +11,11 @@ export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
     super(_node, BlockchainType.EVM)
   }
 
+  /**
+   * Set a pTokensEvmProvider for creating and sending transactions.
+   * @param _provider A pTokensEvmProvider object.
+   * @returns The same builder. This allows methods chaining.
+   */
   setProvider(_provider: pTokensEvmProvider): this {
     this._provider = _provider
     return this

@@ -25,12 +25,20 @@ export class pTokensAlgorandAsset extends pTokensAsset {
   private _provider: pTokensAlgorandProvider
   private _customTransactions: algosdk.Transaction[]
 
+  /**
+   * Create and initialize a pTokensAlgorandAsset object. pTokensAlgorandAsset objects shall be created with a pTokensAlgorandAssetBuilder instance.
+   */
   constructor(_config: pTokenAlgorandAssetConfig) {
     if (_config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
     super(_config, BlockchainType.ALGORAND)
     this._provider = _config.provider
   }
 
+  /**
+   * Set custom transactions to be pushed on-chain when swapping. These will override the standard transactions used to interact with the pNetwork. __Use carefully__.
+   * @param _transactions An array of algosdk.EncodedTransaction objects (https://algorand.github.io/js-algorand-sdk/interfaces/EncodedTransaction.html).
+   * @returns The same asset. This allows methods chaining.
+   */
   setCustomTransactions(_transactions: algosdk.EncodedTransaction[]) {
     if (_transactions === undefined) throw new Error('Invalid undefined transactions')
     if (_transactions.length === 0) throw new Error('Invalid empty transactions array')

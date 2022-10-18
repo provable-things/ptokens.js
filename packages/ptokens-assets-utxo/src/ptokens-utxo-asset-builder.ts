@@ -10,6 +10,11 @@ export class pTokensUtxoAssetBuilder extends pTokensAssetBuilder {
     super(_node, BlockchainType.UTXO)
   }
 
+  /**
+   * Set a pTokensUtxoProvider for creating and sending transactions.
+   * @param _provider A pTokensUtxoProvider object.
+   * @returns The same builder. This allows methods chaining.
+   */
   setProvider(_provider: pTokensUtxoProvider): this {
     this.provider = _provider
     return this

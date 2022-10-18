@@ -10,7 +10,7 @@ describe('pTokensNode', () => {
   })
 
   describe('getProvider', () => {
-    test('Should return the provider set when calling contructor', () => {
+    test('Should return the provider set when calling constructor', () => {
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
       expect(node.provider).toStrictEqual(provider)
@@ -18,7 +18,7 @@ describe('pTokensNode', () => {
   })
 
   describe('getTransactionStatus', () =>
-    test('Should return the provider set when calling contructor', async () => {
+    test('Should return the provider set when calling constructor', async () => {
       const fetchJsonByPostSpy = jest.spyOn(http, 'fetchJsonByPost').mockResolvedValue(jsonrpc.success(1, { data: 1 }))
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
@@ -90,7 +90,7 @@ describe('pTokensNode', () => {
       expect(ret).toStrictEqual(null)
     })
 
-    test('Should throw the provider set when calling contructor', async () => {
+    test('Should throw the provider set when calling constructor', async () => {
       const fetchJsonByPostSpy = jest
         .spyOn(http, 'fetchJsonByPost')
         .mockRejectedValue(new Error('fetchJsonByPost error'))
@@ -112,7 +112,7 @@ describe('pTokensNode', () => {
   })
 
   describe('getNativeDepositAddress', () => {
-    test('Should return the provider set when calling contructor', async () => {
+    test('Should return the provider set when calling constructor', async () => {
       const fetchJsonByPostSpy = jest
         .spyOn(http, 'fetchJsonByPost')
         .mockResolvedValue(jsonrpc.success(1, { data: 'data' }))

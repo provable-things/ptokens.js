@@ -13,6 +13,9 @@ export type pTokenUtxoAssetConfig = pTokenAssetConfig & { provider?: pTokensUtxo
 export class pTokensUtxoAsset extends pTokensAsset {
   private provider: pTokensUtxoProvider
 
+  /**
+   * Create and initialize a pTokensUtxoAsset object. pTokensUtxoAsset objects shall be created with a pTokensUtxoAssetBuilder instance.
+   */
   constructor(_config: pTokenUtxoAssetConfig) {
     super(_config, BlockchainType.UTXO)
     this.provider = _config.provider
@@ -41,12 +44,12 @@ export class pTokensUtxoAsset extends pTokensAsset {
       (resolve, reject) =>
         (async () => {
           try {
-            if (!this._node) return reject(new Error('Undefined node'))
+            if (!this.node) return reject(new Error('Undefined node'))
             if (!_destinationChainId) return reject(new Error('Undefined chain ID'))
             if (!this.provider) return reject(new Error('Missing provider'))
             if (!this.assetInfo.isNative)
               return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
-            const config = { node: this._node }
+            const config = { node: this.node }
             const depositAddress = new pTokensDepositAddress(config)
             const address = await depositAddress.generate(_destinationAddress, this.chainId, _destinationChainId)
             promi.emit('depositAddress', address)

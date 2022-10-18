@@ -3,19 +3,33 @@ import PromiEvent from 'promievent'
 import polling from 'light-async-polling'
 
 export type Transaction = {
-  status?: { confirmed: boolean }
+  /** Status of the transaction. */
+  status?: {
+    /** Flag indicating if the transaction has been confirmed. */
+    confirmed: boolean
+  }
+  /** Number of confirmations. */
   confirmations?: number
 }
 
 export type Utxo = {
+  /** Transaction hash if tx_hash is not available */
   txid?: string
+  /** Transaction hash if txid is not available */
   tx_hash?: string
+  /** Number of confirmations. */
   confirmations?: number
-  status?: { confirmed: boolean }
+  /** Status of the transaction. */
+  status?: {
+    /** Flag indicating if the transaction has been confirmed. */
+    confirmed: boolean
+  }
 }
 
 export enum CallTypes {
+  /** GET request */
   CALL_GET,
+  /** POST request */
   CALL_POST,
 }
 
@@ -31,6 +45,11 @@ function getApi(_endpoint: string, _headers = {}, _timeout = 2000): AxiosInstanc
 export abstract class pTokensUtxoProvider {
   private _api: AxiosInstance
 
+  /**
+   * Create and initialize a pTokensUtxoProvider object.
+   * @param _endpoint The provider endpoint URL.
+   * @param _headers The headers to be used when sending requests to the endpoint.
+   */
   constructor(_endpoint: string, _headers = {}) {
     this._api = getApi(_endpoint, _headers)
   }
@@ -47,11 +66,27 @@ export abstract class pTokensUtxoProvider {
     return res.data
   }
 
+  /**
+   * Wait for the confirmation of a transaction pushed on-chain.
+   * @param _tx The hash of the transaction.
+   * @param _pollingTime The polling period.
+   * @returns A Promise that resolve with _Transaction_ object.
+   */
   abstract waitForTransactionConfirmation(_tx: string, _pollingTime: number): Promise<Transaction>
 
+  /**
+   * Monitor an address for unspent UTXOs
+   * @param _address The address.
+   * @param _pollingTime The polling period.
+   * @param _confirmations The number of confirmations.
+   */
   abstract monitorUtxoByAddress(_address: string, _pollingTime: number, _confirmations?: number): PromiEvent<string>
 
-  abstract broadcastTransaction(_network: string, _tx: string)
+  /**
+   * Broadcast a raw transaction.
+   * @param _tx The raw transactions in hex string.
+   */
+  abstract broadcastTransaction(_tx: string)
 }
 
 export class pTokensBlockstreamUtxoProvider extends pTokensUtxoProvider {
@@ -59,10 +94,20 @@ export class pTokensBlockstreamUtxoProvider extends pTokensUtxoProvider {
     return this._makeApiCall(CallTypes.CALL_POST, '/tx', _tx)
   }
 
+  /**
+   * Get unspent UTXOs for a specified address.
+   * @param _address The address.
+   * @returns An Promise that resolves with an array of unspent Utxo objects.
+   */
   getUtxoByAddress(_address: string) {
     return this._makeApiCall<Utxo[]>(CallTypes.CALL_GET, `/address/${_address}/utxo`)
   }
 
+  /**
+   * Get transaction hex for from a transaction hash.
+   * @param _txHash The transaction hash.
+   * @returns A Promise that resolves with the transaction hex.
+   */
   getTransactionHexByHash(_txHash: string) {
     return this._makeApiCall(CallTypes.CALL_GET, `/tx/${_txHash}/hex`)
   }

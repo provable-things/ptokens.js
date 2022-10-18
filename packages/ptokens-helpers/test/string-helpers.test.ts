@@ -16,16 +16,16 @@ test('Should return the 0x prefixed string', () => {
 
 test('Should remove the 0x prefix', () => {
   const string0xPrefixed = '0xhello'
-  const expectedStringnnNot0xPrefixed = 'hello'
+  const expectedStringNot0xPrefixed = 'hello'
   const result = stringUtils.removeHexPrefix(string0xPrefixed)
-  expect(result).toStrictEqual(expectedStringnnNot0xPrefixed)
+  expect(result).toStrictEqual(expectedStringNot0xPrefixed)
 })
 
 test('Should return the same string if 0x prefix is missing', () => {
   const string0xPrefixed = 'hello'
-  const expectedStringnnNot0xPrefixed = 'hello'
+  const expectedStringNot0xPrefixed = 'hello'
   const result = stringUtils.removeHexPrefix(string0xPrefixed)
-  expect(result).toStrictEqual(expectedStringnnNot0xPrefixed)
+  expect(result).toStrictEqual(expectedStringNot0xPrefixed)
 })
 
 test('Should return true since 0xhello is 0x prefixed', () => {

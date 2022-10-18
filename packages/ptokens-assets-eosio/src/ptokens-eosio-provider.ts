@@ -21,6 +21,11 @@ export class pTokensEosioProvider {
   private _actor: string
   private _permission: string
 
+  /**
+   * Create and initialize a pTokensEosioProvider object.
+   * @param _rpc An eosjs JsonRpc object or an RPC URL to initialize it.
+   * @param _signatureProvider A JsSignatureProvider object (https://developers.eos.io/manuals/eosjs/latest/faq/what-is-a-signature-provider).
+   */
   constructor(_rpc: JsonRpc | string, _signatureProvider: JsSignatureProvider = null) {
     if (!_rpc) throw new Error('Invalid RPC argument')
     this._api = new Api({
@@ -34,10 +39,16 @@ export class pTokensEosioProvider {
     this._permission = 'active'
   }
 
+  /** Return the blocksBehind set with _setBlocksBehind()_. */
   get blocksBehind() {
     return this._blocksBehind
   }
 
+  /**
+   * Set transactions blocksBehind. Defaults to 3.
+   * @param _blocksBehind The block behind.
+   * @returns The same provider. This allows methods chaining.
+   */
   setBlocksBehind(_blocksBehind: number) {
     if (_blocksBehind <= 0 || _blocksBehind >= 20) {
       throw new Error('Invalid blocks behind')
@@ -46,10 +57,16 @@ export class pTokensEosioProvider {
     return this
   }
 
+  /** Return the expireSeconds set with _setExpireSeconds()_. */
   get expireSeconds() {
     return this._expireSeconds
   }
 
+  /**
+   * Set transactions expireSeconds. Defaults to 60.
+   * @param _expireSeconds The expire seconds.
+   * @returns The same provider. This allows methods chaining.
+   */
   setExpireSeconds(_expireSeconds: number) {
     if (_expireSeconds <= 0 || _expireSeconds >= 1000) {
       throw new Error('Invalid expire seconds')
@@ -58,25 +75,50 @@ export class pTokensEosioProvider {
     return this
   }
 
+  /** Return the actor set with _setActor()_ */
   get actor(): string {
     return this._actor
   }
 
+  /**
+   * Set the actor account name that will be used to send transactions.
+   * @param _actor An actor account name.
+   * @returns The same provider. This allows methods chaining.
+   */
   setActor(_actor: string) {
     this._actor = _actor
     return this
   }
 
+  /**
+   * Set the permission level that will be used to send transactions.
+   * @param _permission The permission level.
+   * @returns The same provider. This allows methods chaining.
+   */
   setPermission(_permission: string) {
     this._permission = _permission
     return this
   }
 
+  /**
+   * Set a private key to initialize a JsSignatureProvider.
+   * @param _key A private key to sign transactions.
+   * @returns The same provider. This allows methods chaining.
+   */
   setPrivateKey(_key: string) {
     this._api.signatureProvider = new JsSignatureProvider([_key])
     return this
   }
 
+  /**
+   * Push on-chain an array of actions in a single transaction.
+   * The function returns a PromiEvent, i.e. a Promise that can also emit events.
+   * In particular, the events fired during the execution are the following:
+   * * _txBroadcasted_ -> fired with the transaction hash when the transaction is broadcasted on-chain;
+   * * _txConfirmed_ -> fired with the transaction hash when the transaction is confirmed on-chain;
+   * @param _actions The transactions to be broadcasted.
+   * @returns A PromiEvent that resolves with the hash of the resulting transaction.
+   */
   transact(_actions: Action[]) {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
@@ -119,6 +161,12 @@ export class pTokensEosioProvider {
     return promi
   }
 
+  /**
+   * Wait for the confirmation of a transaction pushed on-chain.
+   * @param _tx The hash of the transaction.
+   * @param _pollingTime The polling period. Defaults to 100 ms.
+   * @returns A Promise that resolves with _GetTransactionResult_ object (https://developers.eos.io/manuals/eosjs/latest/API-Reference/interfaces/_eosjs_rpc_interfaces_.gettransactionresult/#interface-gettransactionresult).
+   */
   async waitForTransactionConfirmation(_tx: string, _pollingTime = 100) {
     let receipt: GetTransactionResult = null
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
