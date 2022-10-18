@@ -83,7 +83,7 @@ async function pegOut() {
 void pegOut()
 
 ```
-Complete examples are available at [examples](https://github.com/provable-things/ptokens.js/examples).
+Complete examples are available at [examples](https://github.com/provable-things/ptokens.js/tree/master/examples).
 
 The full documentation can be found [here](https://provable-things.github.io/ptokens.js/).
 
