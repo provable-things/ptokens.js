@@ -27,7 +27,7 @@ export class pTokensEvmAsset extends pTokensAsset {
     this.provider = config.provider
   }
 
-  isWrappedToken(): boolean {
+  private isWrappedToken(): boolean {
     if (this.symbol.toLowerCase() === 'ftm' && this.chainId === ChainId.FantomMainnet) return true
     return false
   }
