@@ -1,6 +1,6 @@
 {
   "name": "ptokens",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "dist/index.d.ts",
@@ -11,14 +11,14 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "ptokens-assets-algorand": "^1.0.0",
-    "ptokens-assets-eosio": "^1.0.0",
-    "ptokens-assets-evm": "^1.0.0",
-    "ptokens-assets-utxo": "^1.0.0",
-    "ptokens-constants": "^1.0.0",
-    "ptokens-entities": "^1.0.0",
-    "ptokens-helpers": "^1.0.0",
-    "ptokens-node": "^1.0.0",
-    "ptokens-swap": "^1.0.0"
+    "ptokens-assets-algorand": "^1.0.1",
+    "ptokens-assets-eosio": "^1.0.1",
+    "ptokens-assets-evm": "^1.0.1",
+    "ptokens-assets-utxo": "^1.0.1",
+    "ptokens-constants": "^1.0.1",
+    "ptokens-entities": "^1.0.1",
+    "ptokens-helpers": "^1.0.1",
+    "ptokens-node": "^1.0.1",
+    "ptokens-swap": "^1.0.1"
   }
 }
