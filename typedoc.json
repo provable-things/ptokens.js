@@ -4,7 +4,7 @@
       "packages/*"
     ],
     "exclude": ["packages/ptokens"],
-    "gitRevision": "dev",
+    "gitRevision": "master",
     "plugin": [
       "typedoc-plugin-resolve-crossmodule-references"
     ]
