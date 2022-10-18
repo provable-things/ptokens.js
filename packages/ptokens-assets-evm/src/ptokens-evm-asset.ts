@@ -24,11 +24,11 @@ export class pTokensEvmAsset extends pTokensAsset {
     this.provider = config.provider
   }
 
-  nativeToInterim(
-    amount: BigNumber,
-    destinationAddress: string,
-    destinationChainId: string,
-    userData?: Uint8Array
+  protected nativeToInterim(
+    _amount: BigNumber,
+    _destinationAddress: string,
+    _destinationChainId: string,
+    _userData?: Uint8Array
   ): PromiEvent<string> {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
@@ -44,25 +44,25 @@ export class pTokensEvmAsset extends pTokensAsset {
                   method: !this.assetInfo.tokenAddress ? SYSTEM_TOKEN_PEG_IN_METHOD : ERC20_TOKEN_PEG_IN_METHOD,
                   abi: pERC20VaultContractAbi as unknown as AbiItem,
                   contractAddress: this.assetInfo.vaultAddress,
-                  value: !this.assetInfo.tokenAddress ? +onChainFormat(amount, this.assetInfo.decimals) : 0,
+                  value: !this.assetInfo.tokenAddress ? +onChainFormat(_amount, this.assetInfo.decimals) : 0,
                 },
-                userData
+                _userData
                   ? !this.assetInfo.tokenAddress
-                    ? [destinationAddress, destinationChainId, userData]
+                    ? [_destinationAddress, _destinationChainId, _userData]
                     : [
-                        onChainFormat(amount, this.assetInfo.decimals).toFixed(),
+                        onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
                         this.assetInfo.tokenAddress,
-                        destinationAddress,
-                        userData,
-                        destinationChainId,
+                        _destinationAddress,
+                        _userData,
+                        _destinationChainId,
                       ]
                   : !this.assetInfo.tokenAddress
-                  ? [destinationAddress, destinationChainId]
+                  ? [_destinationAddress, _destinationChainId]
                   : [
-                      onChainFormat(amount, this.assetInfo.decimals).toFixed(),
+                      onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
                       this.assetInfo.tokenAddress,
-                      destinationAddress,
-                      destinationChainId,
+                      _destinationAddress,
+                      _destinationChainId,
                     ]
               )
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
@@ -77,11 +77,11 @@ export class pTokensEvmAsset extends pTokensAsset {
     return promi
   }
 
-  hostToInterim(
-    amount: BigNumber,
-    destinationAddress: string,
-    destinationChainId: string,
-    userData?: Uint8Array
+  protected hostToInterim(
+    _amount: BigNumber,
+    _destinationAddress: string,
+    _destinationChainId: string,
+    _userData?: Uint8Array
   ): PromiEvent<string> {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
@@ -97,14 +97,18 @@ export class pTokensEvmAsset extends pTokensAsset {
                   contractAddress: this.assetInfo.tokenAddress,
                   value: 0,
                 },
-                userData
+                _userData
                   ? [
-                      onChainFormat(amount, this.assetInfo.decimals).toFixed(),
-                      userData,
-                      destinationAddress,
-                      destinationChainId,
+                      onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
+                      _userData,
+                      _destinationAddress,
+                      _destinationChainId,
                     ]
-                  : [onChainFormat(amount, this.assetInfo.decimals).toFixed(), destinationAddress, destinationChainId]
+                  : [
+                      onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
+                      _destinationAddress,
+                      _destinationChainId,
+                    ]
               )
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash: string) => promi.emit('txConfirmed', _hash))

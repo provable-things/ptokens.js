@@ -18,24 +18,24 @@ export abstract class pTokensAssetBuilder {
     this._type = _type
   }
 
-  setSymbol(symbol: string) {
-    this._symbol = symbol
+  setSymbol(_symbol: string) {
+    this._symbol = _symbol
     return this
   }
 
-  setWeight(weight: number) {
-    this._weight = weight
+  setWeight(_weight: number) {
+    this._weight = _weight
     return this
   }
 
-  setBlockchain(chainId: ChainId) {
-    if (chainIdToTypeMap.get(chainId) !== this._type) throw new Error('Unsupported chain ID')
-    this._chainId = chainId
+  setBlockchain(_chainId: ChainId) {
+    if (chainIdToTypeMap.get(_chainId) !== this._type) throw new Error('Unsupported chain ID')
+    this._chainId = _chainId
     return this
   }
 
-  setDecimals(decimals: number) {
-    this._decimals = decimals
+  setDecimals(_decimals: number) {
+    this._decimals = _decimals
     return this
   }
 

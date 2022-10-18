@@ -118,7 +118,7 @@ describe('Algorand asset', () => {
         },
       })
       try {
-        await asset.nativeToInterim()
+        await asset['nativeToInterim']()
         fail()
       } catch (err) {
         expect(err.message).toEqual('Method not implemented.')
@@ -146,7 +146,7 @@ describe('Algorand asset', () => {
         },
       })
       try {
-        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing provider')
@@ -184,7 +184,7 @@ describe('Algorand asset', () => {
         },
       })
       try {
-        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to hostToInterim() for native token')
@@ -212,7 +212,7 @@ describe('Algorand asset', () => {
         },
       })
       try {
-        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing account')
@@ -241,7 +241,7 @@ describe('Algorand asset', () => {
         },
       })
       try {
-        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing identity')
@@ -289,8 +289,7 @@ describe('Algorand asset', () => {
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
-      const ret = await asset
-        .hostToInterim(BigNumber(123.456789), 'destination-address', ChainId.BitcoinMainnet)
+      const ret = await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', ChainId.BitcoinMainnet)
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -353,13 +352,12 @@ describe('Algorand asset', () => {
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
-      const ret = await asset
-        .hostToInterim(
-          BigNumber(123.456789),
-          'destination-address',
-          ChainId.BitcoinMainnet,
-          Uint8Array.from(Buffer.from('c0ffee', 'hex'))
-        )
+      const ret = await asset['hostToInterim'](
+        BigNumber(123.456789),
+        'destination-address',
+        ChainId.BitcoinMainnet,
+        Uint8Array.from(Buffer.from('c0ffee', 'hex'))
+      )
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -433,13 +431,12 @@ describe('Algorand asset', () => {
       asset.setCustomTransactions([customTx.get_obj_for_encoding()])
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
-      const ret = await asset
-        .hostToInterim(
-          BigNumber(123.456789),
-          'destination-address',
-          ChainId.BitcoinMainnet,
-          Uint8Array.from(Buffer.from('c0ffee', 'hex'))
-        )
+      const ret = await asset['hostToInterim'](
+        BigNumber(123.456789),
+        'destination-address',
+        ChainId.BitcoinMainnet,
+        Uint8Array.from(Buffer.from('c0ffee', 'hex'))
+      )
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -491,7 +488,7 @@ describe('Algorand asset', () => {
         },
       })
       try {
-        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Transact exception')

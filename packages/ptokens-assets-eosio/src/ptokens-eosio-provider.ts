@@ -34,11 +34,11 @@ export class pTokensEosioProvider {
     this._permission = 'active'
   }
 
-  public get blocksBehind() {
+  get blocksBehind() {
     return this._blocksBehind
   }
 
-  public setBlocksBehind(_blocksBehind: number) {
+  setBlocksBehind(_blocksBehind: number) {
     if (_blocksBehind <= 0 || _blocksBehind >= 20) {
       throw new Error('Invalid blocks behind')
     }
@@ -46,11 +46,11 @@ export class pTokensEosioProvider {
     return this
   }
 
-  public get expireSeconds() {
+  get expireSeconds() {
     return this._expireSeconds
   }
 
-  public setExpireSeconds(_expireSeconds: number) {
+  setExpireSeconds(_expireSeconds: number) {
     if (_expireSeconds <= 0 || _expireSeconds >= 1000) {
       throw new Error('Invalid expire seconds')
     }
@@ -58,40 +58,40 @@ export class pTokensEosioProvider {
     return this
   }
 
-  public get actor(): string {
+  get actor(): string {
     return this._actor
   }
 
-  public setActor(_actor: string) {
+  setActor(_actor: string) {
     this._actor = _actor
     return this
   }
 
-  public setPermission(_permission: string) {
+  setPermission(_permission: string) {
     this._permission = _permission
     return this
   }
 
-  public setPrivateKey(_key: string) {
+  setPrivateKey(_key: string) {
     this._api.signatureProvider = new JsSignatureProvider([_key])
     return this
   }
 
-  public transact(actions: Action[]) {
+  transact(_actions: Action[]) {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {
           try {
             if (!this._actor) return reject(new Error('Missing actor'))
-            actions.forEach((action) => {
-              this._api.cachedAbis.set(action.contractAddress, {
-                abi: action.abi,
+            _actions.forEach((_action) => {
+              this._api.cachedAbis.set(_action.contractAddress, {
+                abi: _action.abi,
                 rawAbi: null,
               })
             })
             const ret = await this._api.transact(
               {
-                actions: actions.map((_action) => ({
+                actions: _actions.map((_action) => ({
                   name: _action.method,
                   account: _action.contractAddress,
                   data: _action.arguments !== undefined ? _action.arguments : {},

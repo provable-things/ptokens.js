@@ -5,31 +5,31 @@ export type DepositAddressConfig = {
 }
 
 export class pTokensDepositAddress {
-  node: pTokensNode
-  nonce: number
-  enclavePublicKey: string
-  address: string
-  hostAddress: string
+  private _node: pTokensNode
+  private _nonce: number
+  private _enclavePublicKey: string
+  private _address: string
+  private _hostAddress: string
 
   constructor(_config: DepositAddressConfig) {
-    this.node = _config.node
+    this._node = _config.node
   }
 
   async generate(_hostAddress: string, _originatingChainId: string, _destinationChainId: string) {
     try {
-      const res = await this.node.getNativeDepositAddress(_originatingChainId, _hostAddress, _destinationChainId)
-      this.nonce = res.nonce
-      this.enclavePublicKey = res.enclavePublicKey
-      this.address = res.nativeDepositAddress
-      this.hostAddress = _hostAddress
-      return this.address
+      const res = await this._node.getNativeDepositAddress(_originatingChainId, _hostAddress, _destinationChainId)
+      this._nonce = res.nonce
+      this._enclavePublicKey = res.enclavePublicKey
+      this._address = res.nativeDepositAddress
+      this._hostAddress = _hostAddress
+      return this._address
     } catch (_err) {
       throw new Error('Error during deposit address generation')
     }
   }
 
-  toString() {
-    return this.address
+  get address() {
+    return this._address
   }
 
   verify() {

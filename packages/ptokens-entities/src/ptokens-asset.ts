@@ -32,53 +32,53 @@ export abstract class pTokensAsset {
     this._weight = _config.weight || 1
   }
 
-  public get symbol(): string {
+  get symbol(): string {
     return this._symbol
   }
 
-  public get chainId(): ChainId {
+  get chainId(): ChainId {
     return this.assetInfo.chainId as ChainId
   }
 
-  public get blockchain(): Blockchain {
+  get blockchain(): Blockchain {
     return maps.chainIdToBlockchainMap.get(this._assetInfo.chainId).blockchain
   }
 
-  public get network(): Network {
+  get network(): Network {
     return maps.chainIdToBlockchainMap.get(this._assetInfo.chainId).network
   }
 
-  public get vaultAddress(): string {
+  get vaultAddress(): string {
     return this.assetInfo.vaultAddress ? this.assetInfo.vaultAddress : null
   }
 
-  public get tokenAddress(): string {
+  get tokenAddress(): string {
     return this.assetInfo.tokenAddress ? this.assetInfo.tokenAddress : null
   }
 
-  public get identity() {
+  get identity() {
     return this.assetInfo.identity ? this.assetInfo.identity : null
   }
 
-  public get weight(): number {
+  get weight(): number {
     return this._weight
   }
 
-  public get assetInfo(): AssetInfo {
+  get assetInfo(): AssetInfo {
     return this._assetInfo
   }
 
-  abstract nativeToInterim(
-    amount: BigNumber,
-    destinationAddress: string,
-    destinationChainId: string,
-    userData?: Uint8Array
+  protected abstract nativeToInterim(
+    _amount: BigNumber,
+    _destinationAddress: string,
+    _destinationChainId: string,
+    _userData?: Uint8Array
   ): PromiEvent<string>
 
-  abstract hostToInterim(
-    amount: BigNumber,
-    destinationAddress: string,
-    destinationChainId: string,
-    userData?: Uint8Array
+  protected abstract hostToInterim(
+    _amount: BigNumber,
+    _destinationAddress: string,
+    _destinationChainId: string,
+    _userData?: Uint8Array
   ): PromiEvent<string>
 }

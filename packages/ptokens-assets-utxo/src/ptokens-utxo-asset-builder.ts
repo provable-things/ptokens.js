@@ -6,12 +6,12 @@ import { pTokensUtxoProvider } from './ptokens-utxo-provider'
 export class pTokensUtxoAssetBuilder extends pTokensAssetBuilder {
   private provider: pTokensUtxoProvider
 
-  constructor(node: pTokensNode) {
-    super(node, BlockchainType.UTXO)
+  constructor(_node: pTokensNode) {
+    super(_node, BlockchainType.UTXO)
   }
 
-  setProvider(provider: pTokensUtxoProvider): this {
-    this.provider = provider
+  setProvider(_provider: pTokensUtxoProvider): this {
+    this.provider = _provider
     return this
   }
 

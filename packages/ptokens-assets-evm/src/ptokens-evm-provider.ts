@@ -1,6 +1,7 @@
 import Web3 from 'web3'
 import { getAccount, getContract } from './lib/'
 import PromiEvent from 'promievent'
+import { stringUtils } from 'ptokens-helpers'
 import { provider, TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils'
 import polling from 'light-async-polling'
@@ -48,11 +49,11 @@ export class pTokensEvmProvider {
     if (_provider) this._web3.setProvider(_provider)
   }
 
-  public get gasPrice() {
+  get gasPrice() {
     return this._gasPrice
   }
 
-  public setGasPrice(_gasPrice: number) {
+  setGasPrice(_gasPrice: number) {
     if (_gasPrice <= 0 || _gasPrice >= 1e12) {
       throw new Error('Invalid gas price')
     }
@@ -60,11 +61,11 @@ export class pTokensEvmProvider {
     return this
   }
 
-  public get gasLimit() {
+  get gasLimit() {
     return this._gasLimit
   }
 
-  public setGasLimit(_gasLimit: number) {
+  setGasLimit(_gasLimit: number) {
     if (_gasLimit <= 0 || _gasLimit >= 10e6) {
       throw new Error('Invalid gas limit')
     }
@@ -72,14 +73,14 @@ export class pTokensEvmProvider {
     return this
   }
 
-  public setPrivateKey(key: string) {
-    const account = this._web3.eth.accounts.privateKeyToAccount('0x' + key)
+  setPrivateKey(_key: string) {
+    const account = this._web3.eth.accounts.privateKeyToAccount(stringUtils.addHexPrefix(_key))
     this._web3.eth.accounts.wallet.add(account)
     this._web3.eth.defaultAccount = account.address
     return this
   }
 
-  public makeContractSend(_options: MakeContractSendOptions, _args: any[] = []) {
+  makeContractSend(_options: MakeContractSendOptions, _args: any[] = []) {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {

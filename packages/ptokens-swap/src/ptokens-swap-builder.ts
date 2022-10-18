@@ -6,39 +6,39 @@ import BigNumber from 'bignumber.js'
 
 export class pTokensSwapBuilder {
   private _sourceAsset: pTokensAsset
-  private _destinationAssets: Array<DestinationInfo> = []
+  private _destinationAssets: DestinationInfo[] = []
   private _amount: BigNumber
   private _node: pTokensNode
 
-  constructor(node: pTokensNode) {
-    this._node = node
+  constructor(_node: pTokensNode) {
+    this._node = _node
   }
 
-  public get sourceAsset(): pTokensAsset {
+  get sourceAsset(): pTokensAsset {
     return this._sourceAsset
   }
 
-  public get destinationAssets(): Array<pTokensAsset> {
+  get destinationAssets(): pTokensAsset[] {
     return this._destinationAssets.map((_el) => _el.asset)
   }
 
-  public get amount(): string {
+  get amount(): string {
     return this._amount.toFixed()
   }
 
-  public get node(): pTokensNode {
+  get node(): pTokensNode {
     return this._node
   }
 
-  setSourceAsset(asset: pTokensAsset) {
-    this._sourceAsset = asset
+  setSourceAsset(_asset: pTokensAsset) {
+    this._sourceAsset = _asset
     return this
   }
 
-  addDestinationAsset(asset: pTokensAsset, destinationAddress: string, userData: Uint8Array = undefined) {
-    const isValidAddressFunction = validators.chainIdToAddressValidatorMap.get(asset.chainId)
-    if (!isValidAddressFunction(destinationAddress)) throw new Error('Invalid destination address')
-    this._destinationAssets.push({ asset, destinationAddress, userData })
+  addDestinationAsset(_asset: pTokensAsset, _destinationAddress: string, _userData: Uint8Array = undefined) {
+    const isValidAddressFunction = validators.chainIdToAddressValidatorMap.get(_asset.chainId)
+    if (!isValidAddressFunction(_destinationAddress)) throw new Error('Invalid destination address')
+    this._destinationAssets.push({ asset: _asset, destinationAddress: _destinationAddress, userData: _userData })
     return this
   }
 

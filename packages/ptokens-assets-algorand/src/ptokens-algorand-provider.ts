@@ -42,14 +42,14 @@ export class pTokensAlgorandProvider {
     this._signer = _signer
   }
 
-  public transactInGroup(txns: algosdk.Transaction[]) {
+  transactInGroup(_txns: algosdk.Transaction[]) {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {
           try {
-            algosdk.assignGroupID(txns)
-            const groupId = txns[0].group.toString('base64')
-            const signedTxs = await this._signer.signTxn(txns)
+            algosdk.assignGroupID(_txns)
+            const groupId = _txns[0].group.toString('base64')
+            const signedTxs = await this._signer.signTxn(_txns)
             await this._client
               .sendRawTransaction(
                 signedTxs.map((_txn: SignerResult | string) => {
@@ -59,9 +59,9 @@ export class pTokensAlgorandProvider {
               )
               .do()
             promi.emit('txBroadcasted', groupId)
-            await algosdk.waitForConfirmation(this._client, txns.at(-1).txID(), 10)
+            await algosdk.waitForConfirmation(this._client, _txns.at(-1).txID(), 10)
             promi.emit('txConfirmed', groupId)
-            return resolve(txns.at(-1).txID())
+            return resolve(_txns.at(-1).txID())
           } catch (_err) {
             return reject(_err)
           }
@@ -70,11 +70,11 @@ export class pTokensAlgorandProvider {
     return promi
   }
 
-  public get account(): string {
+  get account(): string {
     return this._account
   }
 
-  public setAccount(_account: string) {
+  setAccount(_account: string) {
     this._account = _account
     return this
   }

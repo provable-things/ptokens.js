@@ -1,8 +1,8 @@
 export class pTokensNode {
   symbol: string
 
-  constructor(symbol: string) {
-    this.symbol = symbol
+  constructor(_symbol: string) {
+    this.symbol = _symbol
   }
   getSymbol(): string {
     return this.symbol

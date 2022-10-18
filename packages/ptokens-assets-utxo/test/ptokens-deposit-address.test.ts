@@ -16,7 +16,7 @@ describe('pTokens deposit address', () => {
       .mockResolvedValue(depositAddressSample)
     await depositAddress.generate('destination-address', 'orig-chain-id', 'dest-chain-id')
     expect(getNativeDepositAddressSpy).toBeCalledWith('orig-chain-id', 'destination-address', 'dest-chain-id')
-    expect(depositAddress.toString()).toEqual('3Ak5KkZ66PQ6koNoWai6SB3Pi31Z8sGFF6')
+    expect(depositAddress.address).toEqual('3Ak5KkZ66PQ6koNoWai6SB3Pi31Z8sGFF6')
   })
 
   test('Should throw when an error occurs generating an address', async () => {

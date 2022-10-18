@@ -68,7 +68,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+      await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
       fail()
     } catch (err) {
       expect(err.message).toEqual('Missing provider')
@@ -91,7 +91,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+      await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
       fail()
     } catch (err) {
       expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
@@ -116,8 +116,7 @@ describe('UTXO asset', () => {
     let txHashBroadcasted = ''
     let txHashConfirmed = ''
     let depositAddress
-    const ret = await asset
-      .nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+    const ret = await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
       .on('depositAddress', (_address) => {
         depositAddress = _address
       })
@@ -156,7 +155,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+      await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
       fail()
     } catch (err) {
       expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
@@ -177,7 +176,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.hostToInterim()
+      await asset['hostToInterim']()
       fail()
     } catch (err) {
       expect(err.message).toEqual('No ptokens in a UTXO blockchain')
@@ -203,7 +202,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+      await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
     } catch (err) {
       expect(err.message).toStrictEqual('Address generation error')
       expect(monitorUtxoByAddressSpy).toHaveBeenCalledTimes(0)
@@ -232,7 +231,7 @@ describe('UTXO asset', () => {
       },
     })
     try {
-      await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', undefined)
+      await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', undefined)
     } catch (err) {
       expect(err.message).toStrictEqual('Undefined chain ID')
       expect(monitorUtxoByAddressSpy).toHaveBeenCalledTimes(0)

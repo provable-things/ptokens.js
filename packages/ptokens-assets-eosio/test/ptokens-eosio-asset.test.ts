@@ -50,7 +50,7 @@ describe('EOSIO asset', () => {
         },
       })
       try {
-        await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing provider')
@@ -85,7 +85,7 @@ describe('EOSIO asset', () => {
         },
       })
       try {
-        await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
@@ -112,7 +112,7 @@ describe('EOSIO asset', () => {
         },
       })
       try {
-        await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing actor')
@@ -149,11 +149,13 @@ describe('EOSIO asset', () => {
         },
       })
       let txHash = ''
-      const ret = await asset
-        .nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
-        .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
-        })
+      const ret = await asset['nativeToInterim'](
+        BigNumber(123.456789),
+        'destination-address',
+        'destination-chain-id'
+      ).on('txBroadcasted', (_txHash) => {
+        txHash = _txHash
+      })
       expect(txHash).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(transactSpy).toHaveBeenNthCalledWith(1, [
@@ -199,11 +201,13 @@ describe('EOSIO asset', () => {
         },
       })
       let txHash = ''
-      const ret = await asset
-        .nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
-        .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
-        })
+      const ret = await asset['nativeToInterim'](
+        BigNumber(123.456789),
+        'destination-address',
+        'destination-chain-id'
+      ).on('txBroadcasted', (_txHash) => {
+        txHash = _txHash
+      })
       expect(txHash).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(transactSpy).toHaveBeenNthCalledWith(1, [
@@ -249,11 +253,14 @@ describe('EOSIO asset', () => {
         },
       })
       let txHash = ''
-      const ret = await asset
-        .nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
-        .on('txBroadcasted', (_txHash) => {
-          txHash = _txHash
-        })
+      const ret = await asset['nativeToInterim'](
+        BigNumber(123.456789),
+        'destination-address',
+        'destination-chain-id',
+        Buffer.from('user-data')
+      ).on('txBroadcasted', (_txHash) => {
+        txHash = _txHash
+      })
       expect(txHash).toEqual('tx-hash')
       expect(ret).toEqual('tx-hash')
       expect(transactSpy).toHaveBeenNthCalledWith(1, [
@@ -305,7 +312,7 @@ describe('EOSIO asset', () => {
         },
       })
       try {
-        await asset.nativeToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to nativeToInterim() for non-native token')
@@ -333,7 +340,7 @@ describe('EOSIO asset', () => {
         },
       })
       try {
-        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing provider')
@@ -368,7 +375,7 @@ describe('EOSIO asset', () => {
         },
       })
       try {
-        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Invalid call to hostToInterim() for native token')
@@ -394,7 +401,7 @@ describe('EOSIO asset', () => {
         },
       })
       try {
-        await asset.hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing actor')
@@ -430,8 +437,7 @@ describe('EOSIO asset', () => {
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
-      const ret = await asset
-        .hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+      const ret = await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
@@ -485,8 +491,12 @@ describe('EOSIO asset', () => {
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
-      const ret = await asset
-        .hostToInterim(BigNumber(123.456789), 'destination-address', 'destination-chain-id', Buffer.from('user-data'))
+      const ret = await asset['hostToInterim'](
+        BigNumber(123.456789),
+        'destination-address',
+        'destination-chain-id',
+        Buffer.from('user-data')
+      )
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })

@@ -34,37 +34,38 @@ export type NativeDepositAddress = {
 }
 
 export class pTokensNode {
-  provider: pTokensNodeProvider
+  private _provider: pTokensNodeProvider
 
-  constructor(provider: pTokensNodeProvider) {
-    this.provider = provider
-  }
-  getProvider(): pTokensNodeProvider {
-    return this.provider
+  constructor(_provider: pTokensNodeProvider) {
+    this._provider = _provider
   }
 
-  async getTransactionStatus(txHash: string, originatingChainId: string): Promise<TransactionStatus> {
-    return await this.provider.sendRpcRequest(1, 'node_getTransactionStatus', [txHash, originatingChainId])
+  get provider(): pTokensNodeProvider {
+    return this._provider
   }
 
-  async getSupportedChainsByAsset(tokenSymbol: string): Promise<AssetInfo[]> {
-    return await this.provider.sendRpcRequest(1, 'node_getSupportedChainsByAsset', [tokenSymbol])
+  async getTransactionStatus(_txHash: string, _originatingChainId: string): Promise<TransactionStatus> {
+    return await this.provider.sendRpcRequest(1, 'node_getTransactionStatus', [_txHash, _originatingChainId])
   }
 
-  async getAssetInfoByChainId(tokenSymbol: string, chainId: string): Promise<AssetInfo> {
-    const info = (await this.getSupportedChainsByAsset(tokenSymbol)).filter((p) => p.chainId == chainId)
+  async getSupportedChainsByAsset(_tokenSymbol: string): Promise<AssetInfo[]> {
+    return await this.provider.sendRpcRequest(1, 'node_getSupportedChainsByAsset', [_tokenSymbol])
+  }
+
+  async getAssetInfoByChainId(_tokenSymbol: string, _chainId: string): Promise<AssetInfo> {
+    const info = (await this.getSupportedChainsByAsset(_tokenSymbol)).filter((p) => p.chainId == _chainId)
     return info.length ? info.at(0) : null
   }
 
   async getNativeDepositAddress(
-    originatingChainId: string,
-    address: string,
-    destinationChainId: string
+    _originatingChainId: string,
+    _address: string,
+    _destinationChainId: string
   ): Promise<NativeDepositAddress> {
     return await this.provider.sendRpcRequest(1, 'node_getNativeDepositAddress', [
-      originatingChainId,
-      address,
-      destinationChainId,
+      _originatingChainId,
+      _address,
+      _destinationChainId,
     ])
   }
 }

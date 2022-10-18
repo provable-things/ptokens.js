@@ -7,12 +7,12 @@ import { pTokensEvmProvider } from './ptokens-evm-provider'
 export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
   private _provider: pTokensEvmProvider
 
-  constructor(node: pTokensNode) {
-    super(node, BlockchainType.EVM)
+  constructor(_node: pTokensNode) {
+    super(_node, BlockchainType.EVM)
   }
 
-  setProvider(provider: pTokensEvmProvider): this {
-    this._provider = provider
+  setProvider(_provider: pTokensEvmProvider): this {
+    this._provider = _provider
     return this
   }
 

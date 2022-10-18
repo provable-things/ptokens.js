@@ -13,16 +13,11 @@ export type DestinationInfo = {
 export class pTokensSwap {
   private _node: pTokensNode
   private _sourceAsset: pTokensAsset
-  private _destinationAssets: Array<DestinationInfo>
+  private _destinationAssets: DestinationInfo[]
   private _amount: BigNumber
   private controller: AbortController
 
-  constructor(
-    node: pTokensNode,
-    sourceAsset: pTokensAsset,
-    destinationAssets: Array<DestinationInfo>,
-    amount: BigNumber
-  ) {
+  constructor(node: pTokensNode, sourceAsset: pTokensAsset, destinationAssets: DestinationInfo[], amount: BigNumber) {
     this._node = node
     this._sourceAsset = sourceAsset
     this._destinationAssets = destinationAssets
@@ -30,28 +25,28 @@ export class pTokensSwap {
     this.controller = new AbortController()
   }
 
-  public get sourceAsset(): pTokensAsset {
+  get sourceAsset(): pTokensAsset {
     return this._sourceAsset
   }
 
-  public get destinationAssets(): Array<pTokensAsset> {
+  get destinationAssets(): pTokensAsset[] {
     return this._destinationAssets.map((_el) => _el.asset)
   }
 
-  public get amount(): string {
+  get amount(): string {
     return this._amount.toFixed()
   }
 
-  public get node(): pTokensNode {
+  get node(): pTokensNode {
     return this._node
   }
 
-  private monitorInputTransactions(txHash: string, origChainId: string): PromiEvent<InnerTransactionStatus[]> {
+  private monitorInputTransactions(_txHash: string, _origChainId: string): PromiEvent<InnerTransactionStatus[]> {
     const promi = new PromiEvent<InnerTransactionStatus[]>(
       (resolve) =>
         (async () => {
           async function getInputTransactions(node: pTokensNode) {
-            const resp = await node.getTransactionStatus(txHash, origChainId)
+            const resp = await node.getTransactionStatus(_txHash, _origChainId)
             return resp.inputs
           }
           let resp: InnerTransactionStatus[]
@@ -73,12 +68,12 @@ export class pTokensSwap {
     return promi
   }
 
-  private monitorOutputTransactions(txHash: string, origChainId: string): PromiEvent<InnerTransactionStatus[]> {
+  private monitorOutputTransactions(_txHash: string, _origChainId: string): PromiEvent<InnerTransactionStatus[]> {
     const promi = new PromiEvent<InnerTransactionStatus[]>(
       (resolve) =>
         (async () => {
           async function getOutputTransactions(node: pTokensNode) {
-            const resp = await node.getTransactionStatus(txHash, origChainId)
+            const resp = await node.getTransactionStatus(_txHash, _origChainId)
             return resp.outputs
           }
           let notified = false
@@ -116,14 +111,14 @@ export class pTokensSwap {
             this.controller.signal.addEventListener('abort', () => reject(new Error('Swap aborted by user')))
             let swapPromiEvent: PromiEvent<string>
             if (this.sourceAsset.assetInfo.isNative) {
-              swapPromiEvent = this.sourceAsset.nativeToInterim(
+              swapPromiEvent = this.sourceAsset['nativeToInterim'](
                 this._amount,
                 this._destinationAssets[0].destinationAddress,
                 this._destinationAssets[0].asset.chainId,
                 this._destinationAssets[0].userData
               )
             } else {
-              swapPromiEvent = this.sourceAsset.hostToInterim(
+              swapPromiEvent = this.sourceAsset['hostToInterim'](
                 this._amount,
                 this._destinationAssets[0].destinationAddress,
                 this._destinationAssets[0].asset.chainId,

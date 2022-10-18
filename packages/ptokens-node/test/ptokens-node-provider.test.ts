@@ -8,7 +8,7 @@ describe('pTokensNodeProvider', () => {
   describe('getUrl', () =>
     test('Should return the URL set when calling constructor', () => {
       const provider = new pTokensNodeProvider('a-url')
-      expect(provider.getUrl()).toStrictEqual('a-url')
+      expect(provider.url).toStrictEqual('a-url')
     }))
 
   describe('sendRpcRequest', () => {

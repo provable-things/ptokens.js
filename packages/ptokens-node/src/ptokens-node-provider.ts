@@ -2,17 +2,17 @@ import { http } from 'ptokens-helpers'
 import jsonrpc from 'jsonrpc-lite'
 import { SuccessObject, ErrorObject } from 'jsonrpc-lite'
 export class pTokensNodeProvider {
-  url: string
+  private _url: string
 
-  constructor(url: string) {
-    this.url = url
+  constructor(_url: string) {
+    this._url = _url
   }
 
-  getUrl(): string {
-    return this.url
+  get url(): string {
+    return this._url
   }
 
-  async sendRpcRequest<T>(_reqId: number, _method: string, _params: Array<any>): Promise<T> {
+  async sendRpcRequest<T>(_reqId: number, _method: string, _params: any[]): Promise<T> {
     const req = jsonrpc.request(_reqId, _method, _params)
     const resp = await http.fetchJsonByPost<SuccessObject | ErrorObject>(this.url, req)
     if ('error' in resp) throw new Error(`JSON RPC error ${resp.error.message}`)

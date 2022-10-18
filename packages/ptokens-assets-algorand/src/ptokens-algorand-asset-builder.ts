@@ -7,12 +7,12 @@ import { pTokensAlgorandProvider } from './ptokens-algorand-provider'
 export class pTokensAlgorandAssetBuilder extends pTokensAssetBuilder {
   private _provider: pTokensAlgorandProvider
 
-  constructor(node: pTokensNode) {
-    super(node, BlockchainType.ALGORAND)
+  constructor(_node: pTokensNode) {
+    super(_node, BlockchainType.ALGORAND)
   }
 
-  setProvider(provider: pTokensAlgorandProvider) {
-    this._provider = provider
+  setProvider(_provider: pTokensAlgorandProvider) {
+    this._provider = _provider
     return this
   }
 

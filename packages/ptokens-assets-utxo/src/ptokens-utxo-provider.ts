@@ -29,22 +29,20 @@ function getApi(_endpoint: string, _headers = {}, _timeout = 2000): AxiosInstanc
 }
 
 export abstract class pTokensUtxoProvider {
-  api: AxiosInstance
-  endpoint: string
+  private _api: AxiosInstance
 
   constructor(_endpoint: string, _headers = {}) {
-    this.api = getApi(_endpoint, _headers)
-    this.endpoint = _endpoint
+    this._api = getApi(_endpoint, _headers)
   }
 
   protected async _makeApiCall<T>(_callType: CallTypes, _apiPath: string, _params?: any): Promise<T> {
     let res: AxiosResponse<T>
     switch (_callType) {
       case CallTypes.CALL_GET:
-        res = await this.api.get(_apiPath)
+        res = await this._api.get(_apiPath)
         break
       case CallTypes.CALL_POST:
-        res = await this.api.post(_apiPath, _params)
+        res = await this._api.post(_apiPath, _params)
     }
     return res.data
   }

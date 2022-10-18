@@ -11,42 +11,42 @@ export type pTokenAlgorandAssetConfig = pTokenAssetConfig & {
   provider?: pTokensAlgorandProvider
 }
 
-const encodeNote = (destinationChainId: string, destinationAddress: string, userData: Uint8Array = undefined) =>
+const encodeNote = (_destinationChainId: string, _destinationAddress: string, userData: Uint8Array = undefined) =>
   userData
     ? encode([
         0,
-        Array.from(stringUtils.hexStringToBuffer(destinationChainId)),
-        destinationAddress,
+        Array.from(stringUtils.hexStringToBuffer(_destinationChainId)),
+        _destinationAddress,
         Array.from(userData),
       ])
-    : encode([0, Array.from(stringUtils.hexStringToBuffer(destinationChainId)), destinationAddress, []])
+    : encode([0, Array.from(stringUtils.hexStringToBuffer(_destinationChainId)), _destinationAddress, []])
 
 export class pTokensAlgorandAsset extends pTokensAsset {
   private _provider: pTokensAlgorandProvider
   private _customTransactions: algosdk.Transaction[]
 
-  constructor(config: pTokenAlgorandAssetConfig) {
-    if (config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
-    super(config, BlockchainType.ALGORAND)
-    this._provider = config.provider
+  constructor(_config: pTokenAlgorandAssetConfig) {
+    if (_config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
+    super(_config, BlockchainType.ALGORAND)
+    this._provider = _config.provider
   }
 
-  setCustomTransactions(transactions: algosdk.EncodedTransaction[]) {
-    if (transactions === undefined) throw new Error('Invalid undefined transactions')
-    if (transactions.length === 0) throw new Error('Invalid empty transactions array')
-    this._customTransactions = transactions.map((_tx) => algosdk.Transaction.from_obj_for_encoding(_tx))
+  setCustomTransactions(_transactions: algosdk.EncodedTransaction[]) {
+    if (_transactions === undefined) throw new Error('Invalid undefined transactions')
+    if (_transactions.length === 0) throw new Error('Invalid empty transactions array')
+    this._customTransactions = _transactions.map((_tx) => algosdk.Transaction.from_obj_for_encoding(_tx))
     return this
   }
 
-  nativeToInterim(): PromiEvent<string> {
+  protected nativeToInterim(): PromiEvent<string> {
     throw new Error('Method not implemented.')
   }
 
-  hostToInterim(
-    amount: BigNumber,
-    destinationAddress: string,
-    destinationChainId: string,
-    userData?: Uint8Array
+  protected hostToInterim(
+    _amount: BigNumber,
+    _destinationAddress: string,
+    _destinationChainId: string,
+    _userData?: Uint8Array
   ): PromiEvent<string> {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
@@ -63,9 +63,9 @@ export class pTokensAlgorandAsset extends pTokensAsset {
                     from: this._provider.account,
                     to: this.assetInfo.identity,
                     assetIndex: parseInt(this.assetInfo.tokenAddress),
-                    amount: +amount.multipliedBy(BigNumber(10).pow(this.assetInfo.decimals)),
+                    amount: +_amount.multipliedBy(BigNumber(10).pow(this.assetInfo.decimals)),
                     suggestedParams: await this._provider.getTransactionParams(),
-                    note: encodeNote(destinationChainId, destinationAddress, userData),
+                    note: encodeNote(_destinationChainId, _destinationAddress, _userData),
                   }),
                 ]
             const enclaveTx: string = await this._provider

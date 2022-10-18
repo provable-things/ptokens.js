@@ -13,7 +13,7 @@ describe('pTokensNode', () => {
     test('Should return the provider set when calling contructor', () => {
       const provider = new pTokensNodeProvider('a-url')
       const node = new pTokensNode(provider)
-      expect(node.getProvider()).toStrictEqual(provider)
+      expect(node.provider).toStrictEqual(provider)
     })
   })
 

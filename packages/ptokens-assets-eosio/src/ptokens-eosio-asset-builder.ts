@@ -7,12 +7,12 @@ import { pTokensEosioProvider } from './ptokens-eosio-provider'
 export class pTokensEosioAssetBuilder extends pTokensAssetBuilder {
   private _provider: pTokensEosioProvider
 
-  constructor(node: pTokensNode) {
-    super(node, BlockchainType.EOSIO)
+  constructor(_node: pTokensNode) {
+    super(_node, BlockchainType.EOSIO)
   }
 
-  setProvider(provider: pTokensEosioProvider): this {
-    this._provider = provider
+  setProvider(_provider: pTokensEosioProvider): this {
+    this._provider = _provider
     return this
   }
 

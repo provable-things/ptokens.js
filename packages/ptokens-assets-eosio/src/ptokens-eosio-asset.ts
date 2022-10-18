@@ -23,17 +23,17 @@ const getAmountInEosFormat = (_amount: BigNumber, _decimals: number, symbol: str
 export class pTokensEosioAsset extends pTokensAsset {
   private provider: pTokensEosioProvider
 
-  constructor(config: pTokenEosioAssetConfig) {
-    if (config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
-    super(config, BlockchainType.EOSIO)
-    this.provider = config.provider
+  constructor(_config: pTokenEosioAssetConfig) {
+    if (_config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
+    super(_config, BlockchainType.EOSIO)
+    this.provider = _config.provider
   }
 
-  nativeToInterim(
-    amount: BigNumber,
-    destinationAddress: string,
-    destinationChainId: string,
-    userData?: Uint8Array
+  protected nativeToInterim(
+    _amount: BigNumber,
+    _destinationAddress: string,
+    _destinationChainId: string,
+    _userData?: Uint8Array
   ): PromiEvent<string> {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
@@ -52,18 +52,18 @@ export class pTokensEosioAsset extends pTokensAsset {
                 arguments: {
                   from: this.provider.actor,
                   to: this.assetInfo.vaultAddress,
-                  quantity: getAmountInEosFormat(amount, this.assetInfo.decimals, this.symbol),
-                  memo: `${destinationAddress},${destinationChainId}${userData ? ',1' : ''}`,
+                  quantity: getAmountInEosFormat(_amount, this.assetInfo.decimals, this.symbol),
+                  memo: `${_destinationAddress},${_destinationChainId}${_userData ? ',1' : ''}`,
                 },
               },
             ]
-            if (userData)
+            if (_userData)
               actions.push({
                 contractAddress: this.assetInfo.vaultAddress,
                 method: EOSIO_VAULT_ADD_USER_DATA_METHOD,
                 abi: ptokenOnEOSIOVaultAbi,
                 arguments: {
-                  user_data: userData,
+                  user_data: _userData,
                 },
               })
             const txHash: string = await this.provider
@@ -80,11 +80,11 @@ export class pTokensEosioAsset extends pTokensAsset {
     return promi
   }
 
-  hostToInterim(
-    amount: BigNumber,
-    destinationAddress: string,
-    destinationChainId: string,
-    userData?: Uint8Array
+  protected hostToInterim(
+    _amount: BigNumber,
+    _destinationAddress: string,
+    _destinationChainId: string,
+    _userData?: Uint8Array
   ): PromiEvent<string> {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
@@ -95,10 +95,10 @@ export class pTokensEosioAsset extends pTokensAsset {
             if (this.assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
             const callArguments = {
               sender: this.provider.actor,
-              quantity: getAmountInEosFormat(amount, this.assetInfo.decimals, this.symbol.toUpperCase()),
-              memo: destinationAddress,
-              user_data: userData || '',
-              chain_id: destinationChainId.substring(2),
+              quantity: getAmountInEosFormat(_amount, this.assetInfo.decimals, this.symbol.toUpperCase()),
+              memo: _destinationAddress,
+              user_data: _userData || '',
+              chain_id: _destinationChainId.substring(2),
             }
             const txHash: string = await this.provider
               .transact([
