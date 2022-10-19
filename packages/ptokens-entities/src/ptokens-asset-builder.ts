@@ -16,8 +16,8 @@ export abstract class pTokensAssetBuilder {
 
   /**
    * Create and initialize a pTokensAssetBuilder object.
-   * @param _node A pNetworkNode necessary for pNetworkSwap.
-   * @param _type A type indicating the builder nature and used for validation.
+   * @param _node - A pNetworkNode necessary for pNetworkSwap.
+   * @param _type - A type indicating the builder nature and used for validation.
    */
   constructor(_node: pTokensNode, _type: BlockchainType) {
     this._node = _node
@@ -26,7 +26,7 @@ export abstract class pTokensAssetBuilder {
 
   /**
    * Set the pTokensAsset symbol.
-   * @param _symbol The token symbol.
+   * @param _symbol - The token symbol.
    * @returns The same builder. This allows methods chaining.
    */
   setSymbol(_symbol: string) {
@@ -36,7 +36,7 @@ export abstract class pTokensAssetBuilder {
 
   /**
    * Set a weight for the asset during the swap. Its usage is currently not supported.
-   * @param _weight A weight for the token.
+   * @param _weight - A weight for the token.
    * @returns The same builder. This allows methods chaining.
    */
   setWeight(_weight: number) {
@@ -46,7 +46,7 @@ export abstract class pTokensAssetBuilder {
 
   /**
    * Set the blockchain chain ID for the token.
-   * @param _chainId The chain ID.
+   * @param _chainId - The chain ID.
    * @returns The same builder. This allows methods chaining.
    */
   setBlockchain(_chainId: ChainId) {
@@ -57,7 +57,7 @@ export abstract class pTokensAssetBuilder {
 
   /**
    * Set the number of decimals for the token.
-   * @param _decimals The number of decimals.
+   * @param _decimals - The number of decimals.
    * @returns The same builder. This allows methods chaining.
    */
   setDecimals(_decimals: number) {

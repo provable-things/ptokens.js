@@ -12,7 +12,7 @@ export class pTokensUtxoAssetBuilder extends pTokensAssetBuilder {
 
   /**
    * Set a pTokensUtxoProvider for creating and sending transactions.
-   * @param _provider A pTokensUtxoProvider object.
+   * @param _provider - A pTokensUtxoProvider object.
    * @returns The same builder. This allows methods chaining.
    */
   setProvider(_provider: pTokensUtxoProvider): this {

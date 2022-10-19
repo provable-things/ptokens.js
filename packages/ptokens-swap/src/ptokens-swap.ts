@@ -19,10 +19,10 @@ export class pTokensSwap {
 
   /**
    * Create and initialize a pTokensSwap object. pTokensSwap object shall be created using a pTokensSwapBuilder object.
-   * @param node A pNetworkNode necessary for the swap process.
-   * @param sourceAsset The pTokensAsset that will be the source asset for the swap.
-   * @param destinationAssets The pTokensAsset array that will be destination assets for the swap.
-   * @param amount The amount of source asset that will be swapped.
+   * @param node - A pNetworkNode necessary for the swap process.
+   * @param sourceAsset - The pTokensAsset that will be the source asset for the swap.
+   * @param destinationAssets - The pTokensAsset array that will be destination assets for the swap.
+   * @param amount - The amount of source asset that will be swapped.
    */
   constructor(node: pTokensNode, sourceAsset: pTokensAsset, destinationAssets: DestinationInfo[], amount: BigNumber) {
     this._node = node

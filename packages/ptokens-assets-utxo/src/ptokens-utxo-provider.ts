@@ -48,8 +48,8 @@ export abstract class pTokensUtxoProvider implements pTokensAssetProvider {
 
   /**
    * Create and initialize a pTokensUtxoProvider object.
-   * @param _endpoint The provider endpoint URL.
-   * @param _headers The headers to be used when sending requests to the endpoint.
+   * @param _endpoint - The provider endpoint URL.
+   * @param _headers - The headers to be used when sending requests to the endpoint.
    */
   constructor(_endpoint: string, _headers = {}) {
     this._api = getApi(_endpoint, _headers)
@@ -71,15 +71,15 @@ export abstract class pTokensUtxoProvider implements pTokensAssetProvider {
 
   /**
    * Monitor an address for unspent UTXOs
-   * @param _address The address.
-   * @param _pollingTime The polling period.
-   * @param _confirmations The number of confirmations.
+   * @param _address - The address.
+   * @param _pollingTime - The polling period.
+   * @param _confirmations - The number of confirmations.
    */
   abstract monitorUtxoByAddress(_address: string, _pollingTime: number, _confirmations?: number): PromiEvent<string>
 
   /**
    * Broadcast a raw transaction.
-   * @param _tx The raw transactions in hex string.
+   * @param _tx - The raw transactions in hex string.
    */
   abstract broadcastTransaction(_tx: string)
 }
@@ -91,7 +91,7 @@ export class pTokensBlockstreamUtxoProvider extends pTokensUtxoProvider {
 
   /**
    * Get unspent UTXOs for a specified address.
-   * @param _address The address.
+   * @param _address - The address.
    * @returns An Promise that resolves with an array of unspent Utxo objects.
    */
   getUtxoByAddress(_address: string) {
@@ -100,7 +100,7 @@ export class pTokensBlockstreamUtxoProvider extends pTokensUtxoProvider {
 
   /**
    * Get transaction hex for from a transaction hash.
-   * @param _txHash The transaction hash.
+   * @param _txHash - The transaction hash.
    * @returns A Promise that resolves with the transaction hex.
    */
   getTransactionHexByHash(_txHash: string) {

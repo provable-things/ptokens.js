@@ -53,7 +53,7 @@ export class pTokensNode {
 
   /**
    * Create and initialize a pTokensNode object.
-   * @param _provider A pTokensNodeProvider that will be employed to send requests.
+   * @param _provider - A pTokensNodeProvider that will be employed to send requests.
    */
   constructor(_provider: pTokensNodeProvider) {
     this._provider = _provider
@@ -66,8 +66,8 @@ export class pTokensNode {
 
   /**
    * Get the transaction status related to a transaction.
-   * @param _txHash The hash of the transaction.
-   * @param _originatingChainId The chain ID where the transaction took place.
+   * @param _txHash - The hash of the transaction.
+   * @param _originatingChainId - The chain ID where the transaction took place.
    * @returns A Promise that resolves with a TransactionStatus object related to the queried transaction.
    */
   async getTransactionStatus(_txHash: string, _originatingChainId: string): Promise<TransactionStatus> {
@@ -76,7 +76,7 @@ export class pTokensNode {
 
   /**
    * Get asset info related to those blockchains where pNetwork supports the input symbol.
-   * @param _tokenSymbol The token symbol.
+   * @param _tokenSymbol - The token symbol.
    * @returns An array of AssetInfo objects for those chains where pNetwork supports the specified token.
    */
   async getSupportedChainsByAsset(_tokenSymbol: string): Promise<AssetInfo[]> {
@@ -85,8 +85,8 @@ export class pTokensNode {
 
   /**
    * Get asset info related to a particular blockchain where pNetwork should support the input symbol.
-   * @param _tokenSymbol The token symbol.
-   * @param _chainId The chain ID of the blockchain.
+   * @param _tokenSymbol - The token symbol.
+   * @param _chainId - The chain ID of the blockchain.
    * @returns An AssetInfo object for the specified blockchain. Null if the specified blockchain does not support the token.
    */
   async getAssetInfoByChainId(_tokenSymbol: string, _chainId: string): Promise<AssetInfo> {
@@ -96,9 +96,9 @@ export class pTokensNode {
 
   /**
    * Get a native deposit address where to transfer a UTXO asset for initiating a peg-in.
-   * @param _originatingChainId The chain ID of the source asset.
-   * @param _address The destination asset in the destination chain ID.
-   * @param _destinationChainId The chain ID of the destination asset.
+   * @param _originatingChainId - The chain ID of the source asset.
+   * @param _address - The destination asset in the destination chain ID.
+   * @param _destinationChainId - The chain ID of the destination asset.
    * @returns A Promise that resolves with a NativeDepositAddress.
    */
   async getNativeDepositAddress(

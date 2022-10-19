@@ -12,7 +12,7 @@ export class pTokensSwapBuilder {
 
   /**
    * Create and initialize a pTokensSwapBuilder object.
-   * @param _node A pNetworkNode necessary for pNetworkSwap.
+   * @param _node - A pNetworkNode necessary for pNetworkSwap.
    */
   constructor(_node: pTokensNode) {
     this._node = _node
@@ -27,7 +27,7 @@ export class pTokensSwapBuilder {
 
   /**
    * Set the source asset for the swap.
-   * @param _asset A pTokenAsset that will be the swap source asset.
+   * @param _asset - A pTokenAsset that will be the swap source asset.
    * @returns The same builder. This allows methods chaining.
    */
   setSourceAsset(_asset: pTokensAsset) {
@@ -45,9 +45,9 @@ export class pTokensSwapBuilder {
 
   /**
    * Add a destination pTokensAsset for the swap.
-   * @param _asset A pTokenAsset that will be one of the destination assets.
-   * @param _destinationAddress The destination address that will receive the _asset.
-   * @param _userData Optional user data.
+   * @param _asset - A pTokenAsset that will be one of the destination assets.
+   * @param _destinationAddress - The destination address that will receive the _asset.
+   * @param _userData - Optional user data.
    * @returns The same builder. This allows methods chaining.
    */
   addDestinationAsset(_asset: pTokensAsset, _destinationAddress: string, _userData: Uint8Array = undefined) {
@@ -66,7 +66,7 @@ export class pTokensSwapBuilder {
 
   /**
    * Set the amount of source asset that will be swapped.
-   * @param _amount The amount of source asset that will be swapped.
+   * @param _amount - The amount of source asset that will be swapped.
    * @returns The same builder. This allows methods chaining.
    */
   setAmount(_amount: number | string) {
@@ -91,7 +91,7 @@ export class pTokensSwapBuilder {
 
   /**
    * Build a pTokensSwap object from the parameters set when interacting with the builder.
-   * @returns An immutable pTokensSwap object.
+   * @returns - An immutable pTokensSwap object.
    */
   build(): pTokensSwap {
     if (!this._amount) throw new Error('Missing amount')

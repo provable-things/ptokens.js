@@ -13,7 +13,7 @@ export class pTokensEosioAssetBuilder extends pTokensAssetBuilder {
 
   /**
    * Set a pTokensEosioProvider for creating and sending transactions.
-   * @param _provider A pTokensEosioProvider object.
+   * @param _provider - A pTokensEosioProvider object.
    * @returns The same builder. This allows methods chaining.
    */
   setProvider(_provider: pTokensEosioProvider): this {

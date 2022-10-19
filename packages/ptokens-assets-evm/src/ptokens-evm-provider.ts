@@ -57,7 +57,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
 
   /**
    * Create and initialize a pTokensEvmProvider object.
-   * @param _provider A web3.js provider (refer to https://web3js.readthedocs.io/en/v1.8.0/web3.html#setprovider).
+   * @param _provider - A web3.js provider (refer to https://web3js.readthedocs.io/en/v1.8.0/web3.html#setprovider).
    */
   constructor(_provider?: provider) {
     this._web3 = new Web3()
@@ -73,7 +73,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
 
   /**
    * Set transactions gas price.
-   * @param _gasPrice The desired gas price to be used when sending transactions.
+   * @param _gasPrice - The desired gas price to be used when sending transactions.
    * @returns The same provider. This allows methods chaining.
    */
   setGasPrice(_gasPrice: number) {
@@ -93,7 +93,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
 
   /**
    * Set transactions gas limit.
-   * @param _gasPrice The desired gas limit to be used when sending transactions.
+   * @param _gasPrice - The desired gas limit to be used when sending transactions.
    * @returns The same provider. This allows methods chaining.
    */
   setGasLimit(_gasLimit: number) {
@@ -106,7 +106,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
 
   /**
    * Set a private key to sign transactions.
-   * @param _key A private key to sign transactions.
+   * @param _key - A private key to sign transactions.
    * @returns The same provider. This allows methods chaining.
    */
   setPrivateKey(_key: string) {
@@ -121,11 +121,11 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
    * Note this can alter the smart contract state.
    * The function returns a PromiEvent, i.e. a Promise that can also emit events.
    * In particular, the events fired during the execution are the following:
-   * * _txBroadcasted_ -> fired with the transactions hash when the transaction is broadcasted on-chain;
-   * * _txConfirmed_ -> fired with the transactions hash when the transaction is confirmed on-chain;
-   * * _txError -> fired whenever an error occurs during the transaction execution;
-   * @param _options An object specifying the contract interaction.
-   * @param _args The arguments to be passed to the contract method being called.
+   * * _txBroadcasted_ -\> fired with the transactions hash when the transaction is broadcasted on-chain;
+   * * _txConfirmed_ -\> fired with the transactions hash when the transaction is confirmed on-chain;
+   * * _txError -\> fired whenever an error occurs during the transaction execution;
+   * @param _options - An object specifying the contract interaction.
+   * @param _args - The arguments to be passed to the contract method being called.
    * @returns A PromiEvent that resolves with the hash of the resulting transaction.
    */
   makeContractSend(_options: MakeContractSendOptions, _args: any[] = []) {
@@ -158,8 +158,8 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
   /**
    * Call a “constant” method and execute its smart contract method in the EVM without sending any transaction.
    * Note calling cannot alter the smart contract state.
-   * @param _options An object specifying the contract interaction.
-   * @param _args The arguments to be passed to the contract method being called.
+   * @param _options - An object specifying the contract interaction.
+   * @param _args - The arguments to be passed to the contract method being called.
    * @returns A Promise that resolves with the return value(s) of the smart contract method.
    */
   async makeContractCall(_options: MakeContractCallOptions, _args: any[] = []): Promise<any> {

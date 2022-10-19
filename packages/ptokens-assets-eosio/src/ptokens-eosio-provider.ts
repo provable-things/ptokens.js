@@ -24,8 +24,8 @@ export class pTokensEosioProvider implements pTokensAssetProvider {
 
   /**
    * Create and initialize a pTokensEosioProvider object.
-   * @param _rpc An eosjs JsonRpc object or an RPC URL to initialize it.
-   * @param _signatureProvider A JsSignatureProvider object (https://developers.eos.io/manuals/eosjs/latest/faq/what-is-a-signature-provider).
+   * @param _rpc - An eosjs JsonRpc object or an RPC URL to initialize it.
+   * @param _signatureProvider - A JsSignatureProvider object (https://developers.eos.io/manuals/eosjs/latest/faq/what-is-a-signature-provider).
    */
   constructor(_rpc: JsonRpc | string, _signatureProvider: JsSignatureProvider = null) {
     if (!_rpc) throw new Error('Invalid RPC argument')
@@ -47,7 +47,7 @@ export class pTokensEosioProvider implements pTokensAssetProvider {
 
   /**
    * Set transactions blocksBehind. Defaults to 3.
-   * @param _blocksBehind The block behind.
+   * @param _blocksBehind - The block behind.
    * @returns The same provider. This allows methods chaining.
    */
   setBlocksBehind(_blocksBehind: number) {
@@ -65,7 +65,7 @@ export class pTokensEosioProvider implements pTokensAssetProvider {
 
   /**
    * Set transactions expireSeconds. Defaults to 60.
-   * @param _expireSeconds The expire seconds.
+   * @param _expireSeconds - The expire seconds.
    * @returns The same provider. This allows methods chaining.
    */
   setExpireSeconds(_expireSeconds: number) {
@@ -83,7 +83,7 @@ export class pTokensEosioProvider implements pTokensAssetProvider {
 
   /**
    * Set the actor account name that will be used to send transactions.
-   * @param _actor An actor account name.
+   * @param _actor - An actor account name.
    * @returns The same provider. This allows methods chaining.
    */
   setActor(_actor: string) {
@@ -93,7 +93,7 @@ export class pTokensEosioProvider implements pTokensAssetProvider {
 
   /**
    * Set the permission level that will be used to send transactions.
-   * @param _permission The permission level.
+   * @param _permission - The permission level.
    * @returns The same provider. This allows methods chaining.
    */
   setPermission(_permission: string) {
@@ -103,7 +103,7 @@ export class pTokensEosioProvider implements pTokensAssetProvider {
 
   /**
    * Set a private key to initialize a JsSignatureProvider.
-   * @param _key A private key to sign transactions.
+   * @param _key - A private key to sign transactions.
    * @returns The same provider. This allows methods chaining.
    */
   setPrivateKey(_key: string) {
@@ -115,9 +115,9 @@ export class pTokensEosioProvider implements pTokensAssetProvider {
    * Push on-chain an array of actions in a single transaction.
    * The function returns a PromiEvent, i.e. a Promise that can also emit events.
    * In particular, the events fired during the execution are the following:
-   * * _txBroadcasted_ -> fired with the transaction hash when the transaction is broadcasted on-chain;
-   * * _txConfirmed_ -> fired with the transaction hash when the transaction is confirmed on-chain;
-   * @param _actions The transactions to be broadcasted.
+   * * _txBroadcasted_ -\> fired with the transaction hash when the transaction is broadcasted on-chain;
+   * * _txConfirmed_ -\> fired with the transaction hash when the transaction is confirmed on-chain;
+   * @param _actions - The transactions to be broadcasted.
    * @returns A PromiEvent that resolves with the hash of the resulting transaction.
    */
   transact(_actions: Action[]) {

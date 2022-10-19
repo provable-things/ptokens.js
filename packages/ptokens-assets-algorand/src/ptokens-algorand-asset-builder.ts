@@ -9,7 +9,7 @@ export class pTokensAlgorandAssetBuilder extends pTokensAssetBuilder {
 
   /**
    * Create and initialize a pTokensAlgorandAssetBuilder object for building pTokensAlgorandAsset objects.
-   * @param _node A pNetworkNode necessary for pNetworkSwap.
+   * @param _node - A pNetworkNode necessary for pNetworkSwap.
    */
   constructor(_node: pTokensNode) {
     super(_node, BlockchainType.ALGORAND)
@@ -17,7 +17,7 @@ export class pTokensAlgorandAssetBuilder extends pTokensAssetBuilder {
 
   /**
    * Set a pTokensAlgorandProvider for creating and sending transactions.
-   * @param _provider A pTokensAlgorandProvider object.
+   * @param _provider - A pTokensAlgorandProvider object.
    * @returns The same builder. This allows methods chaining.
    */
   setProvider(_provider: pTokensAlgorandProvider) {

@@ -6,7 +6,7 @@ export class pTokensNodeProvider {
 
   /**
    * Create and initialize a pTokensNodeProvider object.
-   * @param _url The URL of a pNetwork node running pNetwork webserver v3.
+   * @param _url - The URL of a pNetwork node running pNetwork webserver v3.
    */
   constructor(_url: string) {
     this._url = _url
@@ -21,9 +21,9 @@ export class pTokensNodeProvider {
 
   /**
    * Send a RPC request to the pNetwork webserver.
-   * @param _reqId The request ID.
-   * @param _method The RPC method to be called.
-   * @param _params Optional parameters that will be passed to the RPC method.
+   * @param _reqId - The request ID.
+   * @param _method - The RPC method to be called.
+   * @param _params - Optional parameters that will be passed to the RPC method.
    * @returns A Promise that resolves with the result of the JSON response.
    */
   async sendRpcRequest<T>(_reqId: number, _method: string, _params: any[]): Promise<T> {

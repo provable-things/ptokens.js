@@ -41,7 +41,7 @@ export class pTokensAlgorandAsset extends pTokensAsset {
 
   /**
    * Set custom transactions to be pushed on-chain when swapping. These will override the standard transactions used to interact with the pNetwork. __Use carefully__.
-   * @param _transactions An array of algosdk.EncodedTransaction objects (https://algorand.github.io/js-algorand-sdk/interfaces/EncodedTransaction.html).
+   * @param _transactions - An array of algosdk.EncodedTransaction objects (https://algorand.github.io/js-algorand-sdk/interfaces/EncodedTransaction.html).
    * @returns The same asset. This allows methods chaining.
    */
   setCustomTransactions(_transactions: algosdk.EncodedTransaction[]) {
