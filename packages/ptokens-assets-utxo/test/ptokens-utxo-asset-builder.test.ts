@@ -21,6 +21,7 @@ describe('UTXO asset', () => {
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.chainId).toStrictEqual(ChainId.BitcoinMainnet)
     expect(asset.weight).toEqual(1)
+    expect(asset.provider).toEqual(undefined)
   })
 
   test('Should create an UTXO asset with Blockstream provider', async () => {
@@ -43,7 +44,7 @@ describe('UTXO asset', () => {
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.chainId).toStrictEqual(ChainId.BitcoinMainnet)
     expect(asset.weight).toEqual(1)
-    expect(asset['provider']).toEqual(provider)
+    expect(asset.provider).toEqual(provider)
   })
 
   test('Should not create an UTXO asset without blockchain data', async () => {

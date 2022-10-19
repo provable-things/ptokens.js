@@ -31,7 +31,7 @@ describe('Algorand asset', () => {
     expect(asset.chainId).toStrictEqual(ChainId.AlgorandMainnet)
     expect(asset.weight).toEqual(1)
     expect(asset.assetInfo).toStrictEqual(assetInfo)
-    expect(asset['_provider']).toStrictEqual(undefined)
+    expect(asset.provider).toStrictEqual(undefined)
     expect(asset['_customTransactions']).toStrictEqual(undefined)
   })
 
@@ -59,7 +59,7 @@ describe('Algorand asset', () => {
     expect(asset.chainId).toStrictEqual(ChainId.AlgorandMainnet)
     expect(asset.weight).toEqual(1)
     expect(asset.assetInfo).toStrictEqual(assetInfo)
-    expect(asset['_provider']).toStrictEqual(provider)
+    expect(asset.provider).toStrictEqual(provider)
     expect(asset['_customTransactions']).toStrictEqual(undefined)
   })
 

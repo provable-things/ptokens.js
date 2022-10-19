@@ -154,7 +154,7 @@ describe('UTXO provider', () => {
       headers: { 'Content-Type': 'application/json' },
       timeout: 2000,
     })
-    expect(ret).toEqual({ status: { confirmed: true } })
+    expect(ret).toEqual('tx-hash')
     expect(axiosGetSpy).toHaveBeenCalledTimes(4)
     expect(axiosGetSpy).toHaveBeenNthCalledWith(1, '/tx/tx-hash')
     expect(axiosGetSpy).toHaveBeenNthCalledWith(2, '/tx/tx-hash')

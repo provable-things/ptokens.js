@@ -8,6 +8,7 @@ import { encode } from '@msgpack/msgpack'
 import BigNumber from 'bignumber.js'
 
 export type pTokenAlgorandAssetConfig = pTokenAssetConfig & {
+  /** An pTokensAlgorandProvider for interacting with the underlaying blockchain */
   provider?: pTokensAlgorandProvider
 }
 
@@ -32,6 +33,10 @@ export class pTokensAlgorandAsset extends pTokensAsset {
     if (_config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
     super(_config, BlockchainType.ALGORAND)
     this._provider = _config.provider
+  }
+
+  get provider() {
+    return this._provider
   }
 
   /**

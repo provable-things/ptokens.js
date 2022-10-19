@@ -14,9 +14,12 @@ const SYSTEM_TOKEN_PEG_IN_METHOD = 'pegInEth'
 const ERC20_TOKEN_PEG_IN_METHOD = 'pegIn'
 const ERC20_TOKEN_PEG_OUT_METHOD = 'redeem'
 
-export type pTokenEvmAssetConfig = pTokenAssetConfig & { provider?: pTokensEvmProvider }
+export type pTokenEvmAssetConfig = pTokenAssetConfig & {
+  /** An pTokensEvmProvider for interacting with the underlaying blockchain */
+  provider?: pTokensEvmProvider
+}
 export class pTokensEvmAsset extends pTokensAsset {
-  private provider: pTokensEvmProvider
+  private _provider: pTokensEvmProvider
 
   /**
    * Create and initialize a pTokensEvmAsset object. pTokensEvmAsset objects shall be created with a pTokensEvmAssetBuilder instance.
@@ -24,7 +27,11 @@ export class pTokensEvmAsset extends pTokensAsset {
   constructor(config: pTokenEvmAssetConfig) {
     if (config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
     super(config, BlockchainType.EVM)
-    this.provider = config.provider
+    this._provider = config.provider
+  }
+
+  get provider() {
+    return this._provider
   }
 
   private isWrappedToken(): boolean {
@@ -42,11 +49,11 @@ export class pTokensEvmAsset extends pTokensAsset {
       (resolve, reject) =>
         (async () => {
           try {
-            if (!this.provider) return reject(new Error('Missing provider'))
+            if (!this._provider) return reject(new Error('Missing provider'))
             if (!this.assetInfo.isNative)
               return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
             if (!this.assetInfo.vaultAddress) return reject(new Error('Missing vault address'))
-            const txHash: string = await this.provider
+            const txHash: string = await this._provider
               .makeContractSend(
                 {
                   method: this.isWrappedToken() ? SYSTEM_TOKEN_PEG_IN_METHOD : ERC20_TOKEN_PEG_IN_METHOD,
@@ -95,9 +102,9 @@ export class pTokensEvmAsset extends pTokensAsset {
       (resolve, reject) =>
         (async () => {
           try {
-            if (!this.provider) return reject(new Error('Missing provider'))
+            if (!this._provider) return reject(new Error('Missing provider'))
             if (this.assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
-            const txHash: string = await this.provider
+            const txHash: string = await this._provider
               .makeContractSend(
                 {
                   method: ERC20_TOKEN_PEG_OUT_METHOD,

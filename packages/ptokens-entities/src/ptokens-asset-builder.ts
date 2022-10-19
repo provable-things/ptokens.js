@@ -1,6 +1,7 @@
 import { pTokensAsset } from './ptokens-asset'
 import { ChainId, Blockchain, Network, BlockchainType, chainIdToTypeMap } from 'ptokens-constants'
 import { pTokensNode, AssetInfo } from 'ptokens-node'
+import { pTokensAssetProvider } from './ptokens-asset-provider'
 
 export abstract class pTokensAssetBuilder {
   protected _symbol: string
@@ -63,6 +64,8 @@ export abstract class pTokensAssetBuilder {
     this._decimals = _decimals
     return this
   }
+
+  abstract setProvider(_provider: pTokensAssetProvider): this
 
   // eslint-disable-next-line @typescript-eslint/require-await
   protected async _build(): Promise<pTokensAsset> {

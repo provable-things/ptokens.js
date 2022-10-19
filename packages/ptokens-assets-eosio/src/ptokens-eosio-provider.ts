@@ -4,6 +4,7 @@ import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 import fetch from 'node-fetch'
 import { GetTransactionResult } from 'eosjs/dist/eosjs-rpc-interfaces'
+import { pTokensAssetProvider } from 'ptokens-entities'
 
 const EOS_TRANSACTION_EXECUTED = 'executed'
 
@@ -14,7 +15,7 @@ export type Action = {
   arguments?: any
 }
 
-export class pTokensEosioProvider {
+export class pTokensEosioProvider implements pTokensAssetProvider {
   private _api: Api
   private _blocksBehind: number
   private _expireSeconds: number
@@ -161,12 +162,6 @@ export class pTokensEosioProvider {
     return promi
   }
 
-  /**
-   * Wait for the confirmation of a transaction pushed on-chain.
-   * @param _tx The hash of the transaction.
-   * @param _pollingTime The polling period. Defaults to 1000 ms.
-   * @returns A Promise that resolves with _GetTransactionResult_ object (https://developers.eos.io/manuals/eosjs/latest/API-Reference/interfaces/_eosjs_rpc_interfaces_.gettransactionresult/#interface-gettransactionresult).
-   */
   async waitForTransactionConfirmation(_tx: string, _pollingTime = 1000) {
     let receipt: GetTransactionResult = null
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -179,6 +174,6 @@ export class pTokensEosioProvider {
         return false
       }
     }, _pollingTime)
-    return receipt
+    return receipt.id
   }
 }

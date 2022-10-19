@@ -1,3 +1,4 @@
+import { pTokensAssetProvider } from 'ptokens-entities'
 import algosdk from 'algosdk'
 import PromiEvent from 'promievent'
 
@@ -42,7 +43,7 @@ export class BasicSignatureProvider implements SignatureProvider {
   }
 }
 
-export class pTokensAlgorandProvider {
+export class pTokensAlgorandProvider implements pTokensAssetProvider {
   private _client: algosdk.Algodv2
   private _signer: SignatureProvider
   private _account: string
@@ -52,9 +53,8 @@ export class pTokensAlgorandProvider {
    * @param _client An algosdk.Algodv2 instance.
    * @param _signer A signature provider instance implementing _signTxn()_.
    */
-  constructor(_client: algosdk.Algodv2, _signer: SignatureProvider) {
+  constructor(_client: algosdk.Algodv2, _signer?: SignatureProvider) {
     if (!_client) throw new Error('Invalid AlgodClient argument')
-    if (!_signer || !_signer.signTxn) throw new Error('Invalid signature provider')
     this._client = _client
     this._signer = _signer
   }
@@ -88,6 +88,7 @@ export class pTokensAlgorandProvider {
       (resolve, reject) =>
         (async () => {
           try {
+            if (!this._signer || !this._signer.signTxn) throw new Error('Invalid signature provider')
             algosdk.assignGroupID(_txns)
             const groupId = _txns[0].group.toString('base64')
             const signedTxs = await this._signer.signTxn(_txns)
@@ -100,7 +101,7 @@ export class pTokensAlgorandProvider {
               )
               .do()
             promi.emit('txBroadcasted', groupId)
-            await algosdk.waitForConfirmation(this._client, _txns.at(-1).txID(), 10)
+            await this.waitForTransactionConfirmation(_txns.at(-1).txID())
             promi.emit('txConfirmed', groupId)
             return resolve(_txns.at(-1).txID())
           } catch (_err) {
@@ -117,5 +118,10 @@ export class pTokensAlgorandProvider {
    */
   async getTransactionParams() {
     return await this._client.getTransactionParams().do()
+  }
+
+  async waitForTransactionConfirmation(_txHash: string): Promise<string> {
+    await algosdk.waitForConfirmation(this._client, _txHash, 10)
+    return _txHash
   }
 }

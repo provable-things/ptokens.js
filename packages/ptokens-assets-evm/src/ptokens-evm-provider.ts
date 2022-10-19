@@ -7,6 +7,7 @@ import BigNumber from 'bignumber.js'
 import polling from 'light-async-polling'
 
 import { getAccount, getContract } from './lib/'
+import { pTokensAssetProvider } from 'ptokens-entities'
 
 export type MakeContractSendOptions = {
   /** The method to be called. */
@@ -49,7 +50,7 @@ class SendOptions {
   }
 }
 
-export class pTokensEvmProvider {
+export class pTokensEvmProvider implements pTokensAssetProvider {
   private _web3: Web3
   private _gasPrice: number
   private _gasLimit: number
@@ -169,12 +170,6 @@ export class pTokensEvmProvider {
     return contract.methods[method](..._args).call() as Promise<any>
   }
 
-  /**
-   * Wait for the confirmation of a transaction pushed on-chain.
-   * @param _tx The hash of the transaction.
-   * @param _pollingTime The polling period. Defaults to 1000 ms.
-   * @returns A Promise that resolves with the transaction hash.
-   */
   async waitForTransactionConfirmation(_tx: string, _pollingTime = 1000) {
     let receipt: TransactionReceipt = null
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call

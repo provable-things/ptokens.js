@@ -4,15 +4,16 @@ import { pTokensNode, AssetInfo } from 'ptokens-node'
 
 import PromiEvent from 'promievent'
 import BigNumber from 'bignumber.js'
+import { pTokensAssetProvider } from './ptokens-asset-provider'
 
 export type pTokenAssetConfig = {
   /** A pTokensNode to interact with the pNetwork. */
   node: pTokensNode
   /** The token symbol. */
   symbol: string
-  /** AssetInfo object containing asset technical details. */
+  /** An AssetInfo object containing asset technical details. */
   assetInfo: AssetInfo
-  /** Weight of the asset during the swap. Defaults to 1. Actually it is not supported.  */
+  /** The asset weight during the swap. Defaults to 1. Actually it is not supported.  */
   weight?: number
 }
 
@@ -86,6 +87,9 @@ export abstract class pTokensAsset {
   get assetInfo(): AssetInfo {
     return this._assetInfo
   }
+
+  /** Return the pTokensAssetProvider eventually assigned */
+  abstract get provider(): pTokensAssetProvider
 
   protected abstract nativeToInterim(
     _amount: BigNumber,

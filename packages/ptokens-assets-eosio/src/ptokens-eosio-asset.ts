@@ -13,6 +13,7 @@ const EOSIO_TOKEN_TRANSFER_METHOD = 'transfer'
 const EOSIO_VAULT_ADD_USER_DATA_METHOD = 'adduserdata'
 
 export type pTokenEosioAssetConfig = pTokenAssetConfig & {
+  /** An pTokensEosioProvider for interacting with the underlaying blockchain */
   provider?: pTokensEosioProvider
 }
 
@@ -21,7 +22,7 @@ const getAmountInEosFormat = (_amount: BigNumber, _decimals: number, symbol: str
 }
 
 export class pTokensEosioAsset extends pTokensAsset {
-  private provider: pTokensEosioProvider
+  private _provider: pTokensEosioProvider
 
   /**
    * Create and initialize a pTokensEosioAsset object. pTokensEosioAsset objects shall be created with a pTokensEosioAssetBuilder instance.
@@ -29,7 +30,11 @@ export class pTokensEosioAsset extends pTokensAsset {
   constructor(_config: pTokenEosioAssetConfig) {
     if (_config.assetInfo.decimals === undefined) throw new Error('Missing decimals')
     super(_config, BlockchainType.EOSIO)
-    this.provider = _config.provider
+    this._provider = _config.provider
+  }
+
+  get provider() {
+    return this._provider
   }
 
   protected nativeToInterim(
@@ -42,8 +47,8 @@ export class pTokensEosioAsset extends pTokensAsset {
       (resolve, reject) =>
         (async () => {
           try {
-            if (!this.provider) return reject(new Error('Missing provider'))
-            if (!this.provider.actor) return reject(new Error('Missing actor'))
+            if (!this._provider) return reject(new Error('Missing provider'))
+            if (!this._provider.actor) return reject(new Error('Missing actor'))
             if (!this.assetInfo.isNative)
               return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
             if (!this.assetInfo.vaultAddress) return reject(new Error('Missing vault address'))
@@ -53,7 +58,7 @@ export class pTokensEosioAsset extends pTokensAsset {
                 method: EOSIO_TOKEN_TRANSFER_METHOD,
                 abi: pTokenOnEOSIOContractAbi,
                 arguments: {
-                  from: this.provider.actor,
+                  from: this._provider.actor,
                   to: this.assetInfo.vaultAddress,
                   quantity: getAmountInEosFormat(_amount, this.assetInfo.decimals, this.symbol),
                   memo: `${_destinationAddress},${_destinationChainId}${_userData ? ',1' : ''}`,
@@ -69,7 +74,7 @@ export class pTokensEosioAsset extends pTokensAsset {
                   user_data: _userData,
                 },
               })
-            const txHash: string = await this.provider
+            const txHash: string = await this._provider
               .transact(actions)
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash) => promi.emit('txConfirmed', _hash))
@@ -93,17 +98,17 @@ export class pTokensEosioAsset extends pTokensAsset {
       (resolve, reject) =>
         (async () => {
           try {
-            if (!this.provider) return reject(new Error('Missing provider'))
-            if (!this.provider.actor) return reject(new Error('Missing actor'))
+            if (!this._provider) return reject(new Error('Missing provider'))
+            if (!this._provider.actor) return reject(new Error('Missing actor'))
             if (this.assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
             const callArguments = {
-              sender: this.provider.actor,
+              sender: this._provider.actor,
               quantity: getAmountInEosFormat(_amount, this.assetInfo.decimals, this.symbol.toUpperCase()),
               memo: _destinationAddress,
               user_data: _userData || '',
               chain_id: _destinationChainId.substring(2),
             }
-            const txHash: string = await this.provider
+            const txHash: string = await this._provider
               .transact([
                 {
                   method: EOSIO_TOKEN_PEG_OUT_METHOD,

@@ -24,6 +24,7 @@ describe('EVM asset', () => {
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.chainId).toStrictEqual(ChainId.EthereumMainnet)
     expect(asset.weight).toEqual(1)
+    expect(asset.provider).toEqual(undefined)
   })
 
   test('Should create an EVM asset with provider', async () => {
@@ -47,7 +48,7 @@ describe('EVM asset', () => {
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.chainId).toStrictEqual(ChainId.EthereumMainnet)
     expect(asset.weight).toEqual(1)
-    expect(asset['provider']).toEqual(provider)
+    expect(asset.provider).toEqual(provider)
   })
 
   test('Should not create an EVM asset without blockchain data', async () => {

@@ -628,14 +628,13 @@ describe('EOSIO provider', () => {
   // })
 
   test('Should wait for transaction confirmation', async () => {
-    const expected = executedGetTransactionResult
     const provider = new pTokensEosioProvider('http://api-mainnet.starteos.io')
     const ret = await provider.waitForTransactionConfirmation(
       'ea2ca390a256283ac55981a75c0832ccffabcd764153fd090ecc2ed28d88c6c7',
       500
     )
     expect(waitForConfirmationSpy).toHaveBeenCalledTimes(3)
-    expect(ret).toStrictEqual(expected)
+    expect(ret).toStrictEqual('ea2ca390a256283ac55981a75c0832ccffabcd764153fd090ecc2ed28d88c6c7')
   })
 
   test('Should use the passed RPC provider', async () => {
@@ -651,6 +650,6 @@ describe('EOSIO provider', () => {
       500
     )
     expect(waitForConfirmationSpy).toHaveBeenCalledTimes(3)
-    expect(ret).toStrictEqual(expected)
+    expect(ret).toStrictEqual('ea2ca390a256283ac55981a75c0832ccffabcd764153fd090ecc2ed28d88c6c7')
   })
 })

@@ -9,23 +9,30 @@ import BigNumber from 'bignumber.js'
 const confirmations: Map<ChainId, number> = new Map([[ChainId.BitcoinMainnet, 1]])
 const POLLING_TIME = 3000
 
-export type pTokenUtxoAssetConfig = pTokenAssetConfig & { provider?: pTokensUtxoProvider }
+export type pTokenUtxoAssetConfig = pTokenAssetConfig & {
+  /** An pTokensUtxoProvider for interacting with the underlaying blockchain */
+  provider?: pTokensUtxoProvider
+}
 export class pTokensUtxoAsset extends pTokensAsset {
-  private provider: pTokensUtxoProvider
+  private _provider: pTokensUtxoProvider
 
   /**
    * Create and initialize a pTokensUtxoAsset object. pTokensUtxoAsset objects shall be created with a pTokensUtxoAssetBuilder instance.
    */
   constructor(_config: pTokenUtxoAssetConfig) {
     super(_config, BlockchainType.UTXO)
-    this.provider = _config.provider
+    this._provider = _config.provider
+  }
+
+  get provider() {
+    return this._provider
   }
 
   protected waitForDeposit(_address: string): PromiEvent<string> {
     const promi = new PromiEvent<string>(
       (resolve) =>
         (async () => {
-          const nativeTxId = await this.provider
+          const nativeTxId = await this._provider
             .monitorUtxoByAddress(_address, POLLING_TIME, confirmations.get(this.chainId) || 1)
             .on('txBroadcasted', (_txId) => promi.emit('txBroadcasted', _txId))
             .on('txConfirmed', (_txId) => promi.emit('txConfirmed', _txId))
@@ -46,7 +53,7 @@ export class pTokensUtxoAsset extends pTokensAsset {
           try {
             if (!this.node) return reject(new Error('Undefined node'))
             if (!_destinationChainId) return reject(new Error('Undefined chain ID'))
-            if (!this.provider) return reject(new Error('Missing provider'))
+            if (!this._provider) return reject(new Error('Missing provider'))
             if (!this.assetInfo.isNative)
               return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
             const config = { node: this.node }

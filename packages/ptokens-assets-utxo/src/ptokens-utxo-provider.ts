@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
 import PromiEvent from 'promievent'
 import polling from 'light-async-polling'
+import { pTokensAssetProvider } from 'ptokens-entities'
 
 export type Transaction = {
   /** Status of the transaction. */
@@ -42,7 +43,7 @@ function getApi(_endpoint: string, _headers = {}, _timeout = 2000): AxiosInstanc
   })
 }
 
-export abstract class pTokensUtxoProvider {
+export abstract class pTokensUtxoProvider implements pTokensAssetProvider {
   private _api: AxiosInstance
 
   /**
@@ -66,13 +67,7 @@ export abstract class pTokensUtxoProvider {
     return res.data
   }
 
-  /**
-   * Wait for the confirmation of a transaction pushed on-chain.
-   * @param _tx The hash of the transaction.
-   * @param _pollingTime The polling period.
-   * @returns A Promise that resolve with _Transaction_ object.
-   */
-  abstract waitForTransactionConfirmation(_tx: string, _pollingTime: number): Promise<Transaction>
+  abstract waitForTransactionConfirmation(_txHash: string, _pollingTime?: number): Promise<string>
 
   /**
    * Monitor an address for unspent UTXOs
@@ -147,18 +142,18 @@ export class pTokensBlockstreamUtxoProvider extends pTokensUtxoProvider {
     return promi
   }
 
-  async waitForTransactionConfirmation(_tx: string, _pollingTime: number): Promise<Transaction> {
+  async waitForTransactionConfirmation(_txHash: string, _pollingTime = 1000) {
     let transaction: Transaction = null
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await polling(async () => {
       try {
-        transaction = await this._makeApiCall(CallTypes.CALL_GET, `/tx/${_tx}`)
+        transaction = await this._makeApiCall(CallTypes.CALL_GET, `/tx/${_txHash}`)
         if (!transaction || !transaction.status) return false
         return transaction.status.confirmed
       } catch (err) {
         return false
       }
     }, _pollingTime)
-    return transaction
+    return _txHash
   }
 }

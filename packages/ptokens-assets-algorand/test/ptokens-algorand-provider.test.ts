@@ -319,4 +319,56 @@ describe('Algorand provider', () => {
       expect(waitForConfirmationSpy).toHaveBeenCalledTimes(0)
     }
   })
+
+  test('Should reject calling transactInGroup without a signature provider', async () => {
+    const account = algosdk.mnemonicToSecretKey(TEST_MNEMONIC)
+    const client = new algosdk.Algodv2('http://algoclient.p.network')
+    const provider = new pTokensAlgorandProvider(client)
+    const doSpy = jest.spyOn(SendRawTransaction.prototype, 'do').mockRejectedValue(new Error('do error'))
+    const sendRawTransactionSpy = jest.spyOn(client, 'sendRawTransaction')
+    const waitForConfirmationSpy = jest.spyOn(algosdk, 'waitForConfirmation').mockResolvedValue({})
+    const suggestedParams = {
+      fee: 100,
+      lastRound: 10000,
+      firstRound: 9000,
+      genesisID: 'mainnet-v1.0',
+      genesisHash: 'wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=',
+    }
+    const tx1 = algosdk.makeApplicationCallTxnFromObject({
+      from: account.addr,
+      appIndex: 123456,
+      suggestedParams,
+      onComplete: algosdk.OnApplicationComplete.NoOpOC,
+    })
+    const tx2 = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+      from: account.addr,
+      to: account.addr,
+      amount: 0,
+      assetIndex: 123456,
+      suggestedParams,
+    })
+    let txBroadcasted, txConfirmed
+    let txBroadcastedObj, txConfirmedObj
+    try {
+      await provider
+        .transactInGroup([tx1, tx2])
+        .on('txBroadcasted', (obj) => {
+          txBroadcasted = true
+          txBroadcastedObj = obj
+        })
+        .on('txConfirmed', (obj) => {
+          txConfirmed = true
+          txConfirmedObj = obj
+        })
+    } catch (err) {
+      expect(err.message).toEqual('Invalid signature provider')
+      expect(txBroadcasted).toBeUndefined()
+      expect(txBroadcastedObj).toBeUndefined()
+      expect(txConfirmed).toBeUndefined()
+      expect(txConfirmedObj).toBeUndefined()
+      expect(doSpy).toHaveBeenCalledTimes(0)
+      expect(sendRawTransactionSpy).toHaveBeenCalledTimes(0)
+      expect(waitForConfirmationSpy).toHaveBeenCalledTimes(0)
+    }
+  })
 })

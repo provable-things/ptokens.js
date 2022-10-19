@@ -4,7 +4,7 @@ import { pTokensNode } from 'ptokens-node'
 import { pTokensUtxoAsset } from './ptokens-utxo-asset'
 import { pTokensUtxoProvider } from './ptokens-utxo-provider'
 export class pTokensUtxoAssetBuilder extends pTokensAssetBuilder {
-  private provider: pTokensUtxoProvider
+  private _provider: pTokensUtxoProvider
 
   constructor(_node: pTokensNode) {
     super(_node, BlockchainType.UTXO)
@@ -16,7 +16,7 @@ export class pTokensUtxoAssetBuilder extends pTokensAssetBuilder {
    * @returns The same builder. This allows methods chaining.
    */
   setProvider(_provider: pTokensUtxoProvider): this {
-    this.provider = _provider
+    this._provider = _provider
     return this
   }
 
@@ -25,7 +25,7 @@ export class pTokensUtxoAssetBuilder extends pTokensAssetBuilder {
     const config = {
       node: this._node,
       symbol: this._symbol,
-      provider: this.provider,
+      provider: this._provider,
       assetInfo: this._assetInfo,
       type: BlockchainType.UTXO,
     }
