@@ -26,13 +26,18 @@ describe('isValidAddressByChainId', () => {
   ]
   const eosioAddresses: AddressCheck[] = [
     { address: 'bittrexacct1', expected: true },
+    { address: 'bittrexacct.', expected: false },
+    { address: 'bit.re.acct1', expected: true },
+    { address: 'bittrexacct11', expected: false },
     { address: 'binancecleos', expected: true },
-    { address: '123456789012', expected: true },
-    { address: '12345678.012', expected: true },
+    { address: '123456789012', expected: false },
+    { address: '12345678.012', expected: false },
     { address: '1234567890123', expected: false },
     { address: '12345678901', expected: false },
     { address: '12345678901@', expected: false },
     { address: 'binancecleoS', expected: false },
+    { address: 'pnettest1', expected: true },
+    { address: 'a', expected: true },
   ]
   const addressesToCheck = new Map<ChainId, { address: string; expected: boolean }[]>([
     [
