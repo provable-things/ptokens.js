@@ -1,6 +1,6 @@
 {
   "name": "ptokens-assets-algorand",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "dist/index.d.ts",
@@ -16,9 +16,9 @@
     "algosdk": "^1.22.0",
     "promievent": "^0.1.5",
     "ptokens-constants": "^1.0.1",
-    "ptokens-entities": "^1.0.1",
-    "ptokens-helpers": "^1.0.1",
-    "ptokens-node": "^1.0.1"
+    "ptokens-entities": "^1.0.2",
+    "ptokens-helpers": "^1.0.2",
+    "ptokens-node": "^1.0.2"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",

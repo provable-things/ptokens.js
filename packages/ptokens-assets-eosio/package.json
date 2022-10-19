@@ -1,6 +1,6 @@
 {
   "name": "ptokens-assets-eosio",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "dist/index.d.ts",
@@ -18,9 +18,9 @@
     "node-fetch": "^2.6.7",
     "promievent": "^0.1.5",
     "ptokens-constants": "^1.0.1",
-    "ptokens-entities": "^1.0.1",
-    "ptokens-helpers": "^1.0.1",
-    "ptokens-node": "^1.0.1"
+    "ptokens-entities": "^1.0.2",
+    "ptokens-helpers": "^1.0.2",
+    "ptokens-node": "^1.0.2"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.1"
