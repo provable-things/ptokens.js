@@ -164,10 +164,10 @@ export class pTokensEosioProvider {
   /**
    * Wait for the confirmation of a transaction pushed on-chain.
    * @param _tx The hash of the transaction.
-   * @param _pollingTime The polling period. Defaults to 100 ms.
+   * @param _pollingTime The polling period. Defaults to 1000 ms.
    * @returns A Promise that resolves with _GetTransactionResult_ object (https://developers.eos.io/manuals/eosjs/latest/API-Reference/interfaces/_eosjs_rpc_interfaces_.gettransactionresult/#interface-gettransactionresult).
    */
-  async waitForTransactionConfirmation(_tx: string, _pollingTime = 100) {
+  async waitForTransactionConfirmation(_tx: string, _pollingTime = 1000) {
     let receipt: GetTransactionResult = null
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await polling(async () => {
