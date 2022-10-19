@@ -50,10 +50,12 @@ async function pegIn() {
     await swap
       .execute()
       .on('depositAddress', (_addr) => console.info('depositAddress', _addr))
+      .on('inputTxBroadcasted', (_) => console.info('inputTxBroadcasted', _))
+      .on('inputTxConfirmed', (_) => console.info('inputTxConfirmed', _))
       .on('inputTxDetected', (_) => console.info('inputTxDetected', _))
-      .on('inputTxProcessed', (_) => console.info('inputTxProcessed', _))
       .on('outputTxDetected', (_) => console.info('outputTxDetected', _))
-      .on('outputTxProcessed', (_) => console.info('outputTxProcessed', _))
+      .on('outputTxBroadcasted', (_) => console.info('outputTxBroadcasted', _))
+      .on('outputTxConfirmed', (_) => console.info('outputTxConfirmed', _))
   } catch (err) {
     console.info('err', err.message)
   }

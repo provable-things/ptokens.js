@@ -4,9 +4,9 @@ export enum Status {
   /** Transaction errored  */
   ERROR = -1,
   /** Transaction has been broadcasted */
-  BROADCASTED = 0,
+  DETECTED = 0,
   /** Transaction has been confirmed */
-  CONFIRMED = 1,
+  BROADCASTED = 1,
 }
 
 export type InnerTransactionStatus = {
@@ -71,7 +71,7 @@ export class pTokensNode {
    * @returns A Promise that resolves with a TransactionStatus object related to the queried transaction.
    */
   async getTransactionStatus(_txHash: string, _originatingChainId: string): Promise<TransactionStatus> {
-    return await this.provider.sendRpcRequest(1, 'node_getTransactionStatus', [_txHash, _originatingChainId])
+    return await this._provider.sendRpcRequest(1, 'node_getTransactionStatus', [_txHash, _originatingChainId])
   }
 
   /**
@@ -80,7 +80,7 @@ export class pTokensNode {
    * @returns An array of AssetInfo objects for those chains where pNetwork supports the specified token.
    */
   async getSupportedChainsByAsset(_tokenSymbol: string): Promise<AssetInfo[]> {
-    return await this.provider.sendRpcRequest(1, 'node_getSupportedChainsByAsset', [_tokenSymbol])
+    return await this._provider.sendRpcRequest(1, 'node_getSupportedChainsByAsset', [_tokenSymbol])
   }
 
   /**
@@ -106,7 +106,7 @@ export class pTokensNode {
     _address: string,
     _destinationChainId: string
   ): Promise<NativeDepositAddress> {
-    return await this.provider.sendRpcRequest(1, 'node_getNativeDepositAddress', [
+    return await this._provider.sendRpcRequest(1, 'node_getNativeDepositAddress', [
       _originatingChainId,
       _address,
       _destinationChainId,

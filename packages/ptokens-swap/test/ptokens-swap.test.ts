@@ -1,7 +1,7 @@
-import { BlockchainType, ChainId } from 'ptokens-constants'
+import { ChainId } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider, Status } from 'ptokens-node'
 import { pTokensSwap, pTokensSwapBuilder } from '../src/index'
-import { pTokenAssetMock } from './mocks/ptoken-asset'
+import { pTokenAssetFailingMock, pTokenAssetMock, pTokensProviderMock } from './mocks/ptoken-asset'
 import BigNumber from 'bignumber.js'
 
 jest.mock('ptokens-node')
@@ -13,55 +13,52 @@ describe('pTokensSwap', () => {
     jest.resetAllMocks()
   })
 
-  test('Should swap native asset without user data ', async () => {
+  test('Should swap native asset without user data', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
         outputs: [],
       })
       .mockResolvedValueOnce({
-        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
-        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.DETECTED }],
       })
       .mockResolvedValue({
-        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
-        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.CONFIRMED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
       })
 
-    const sourceAsset = new pTokenAssetMock(
-      {
-        node,
-        symbol: 'SOURCE',
-        assetInfo: {
-          chainId: ChainId.BitcoinMainnet,
-          isNative: true,
-          tokenAddress: 'token-contract-address',
-          tokenReference: 'token-internal-address',
-          vaultAddress: 'vault-contract-address',
-        },
+    const sourceAsset = new pTokenAssetMock({
+      node,
+      symbol: 'SOURCE',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
       },
-      BlockchainType.UTXO
-    )
-    const destinationAsset = new pTokenAssetMock(
-      {
-        node,
-        symbol: 'DESTINATION',
-        assetInfo: {
-          chainId: ChainId.EthereumMainnet,
-          isNative: false,
-          tokenAddress: 'token-contract-address',
-          tokenReference: 'token-internal-address',
-          vaultAddress: 'vault-contract-address',
-        },
+    })
+    const assetProvider = new pTokensProviderMock()
+    const destinationAsset = new pTokenAssetMock({
+      node,
+      symbol: 'DESTINATION',
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
       },
-      BlockchainType.EVM
-    )
+      provider: assetProvider,
+    })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
+    const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
     const swap = new pTokensSwap(
       node,
       sourceAsset,
@@ -73,14 +70,16 @@ describe('pTokensSwap', () => {
       inputTxConfirmed = false,
       inputTxDetected = false,
       outputTxDetected = false,
-      outputTxProcessed = false
+      outputTxBroadcasted = false,
+      outputTxConfirmed = false
     let depositAddress,
       inputTxBroadcastedObj,
       inputTxConfirmedObj,
       inputTxDetectedObj,
       outputTxDetectedObj,
-      outputTxProcessedObj
-    await promi
+      outputTxBroadcastedObj,
+      outputTxConfirmedObj
+    const ret = await promi
       .on('depositAddress', (address) => {
         depositAddress = address
       })
@@ -100,9 +99,13 @@ describe('pTokensSwap', () => {
         outputTxDetectedObj = obj
         outputTxDetected = true
       })
-      .on('outputTxProcessed', (obj) => {
-        outputTxProcessedObj = obj
-        outputTxProcessed = true
+      .on('outputTxBroadcasted', (obj) => {
+        outputTxBroadcastedObj = obj
+        outputTxBroadcasted = true
+      })
+      .on('outputTxConfirmed', (obj) => {
+        outputTxConfirmedObj = obj
+        outputTxConfirmed = true
       })
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
@@ -112,6 +115,7 @@ describe('pTokensSwap', () => {
       undefined
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
+    expect(waitForTransactionConfirmationSpy).toHaveBeenNthCalledWith(1, 'output-tx-hash')
     expect(depositAddress).toStrictEqual('deposit-address')
     expect(inputTxBroadcasted).toBeTruthy()
     expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
@@ -119,69 +123,71 @@ describe('pTokensSwap', () => {
     expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
     expect(inputTxDetectedObj).toStrictEqual([
-      { chainId: 'input-chain-id', status: Status.BROADCASTED, txHash: 'originating-tx-hash' },
+      { chainId: 'input-chain-id', status: Status.DETECTED, txHash: 'originating-tx-hash' },
     ])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
+      { chainId: 'output-chain-id', status: Status.DETECTED, txHash: 'output-tx-hash' },
+    ])
+    expect(outputTxBroadcasted).toBeTruthy()
+    expect(outputTxBroadcastedObj).toStrictEqual([
       { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
-    expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([
-      { chainId: 'output-chain-id', status: Status.CONFIRMED, txHash: 'output-tx-hash' },
+    expect(outputTxConfirmed).toBeTruthy()
+    expect(outputTxConfirmedObj).toStrictEqual([
+      { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
+    expect(ret).toStrictEqual([{ chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' }])
   })
 
-  test('Should swap native asset with user data ', async () => {
+  test('Should swap native asset with user data', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
         outputs: [],
       })
       .mockResolvedValueOnce({
-        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
-        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.DETECTED }],
       })
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValue({
-        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
-        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.CONFIRMED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
       })
 
     const builder = new pTokensSwapBuilder(node)
-    const sourceAsset = new pTokenAssetMock(
-      {
-        node,
-        symbol: 'SOURCE',
-        assetInfo: {
-          chainId: ChainId.BitcoinMainnet,
-          isNative: true,
-          tokenAddress: 'token-contract-address',
-          tokenReference: 'token-internal-address',
-          vaultAddress: 'vault-contract-address',
-        },
+    const sourceAsset = new pTokenAssetMock({
+      node,
+      symbol: 'SOURCE',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
       },
-      BlockchainType.UTXO
-    )
-    const destinationAsset = new pTokenAssetMock(
-      {
-        node,
-        symbol: 'DESTINATION',
-        assetInfo: {
-          chainId: ChainId.EthereumMainnet,
-          isNative: false,
-          tokenAddress: 'token-contract-address',
-          tokenReference: 'token-internal-address',
-          vaultAddress: 'vault-contract-address',
-        },
+    })
+    const assetProvider = new pTokensProviderMock()
+    const destinationAsset = new pTokenAssetMock({
+      node,
+      symbol: 'DESTINATION',
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
       },
-      BlockchainType.EVM
-    )
+      provider: assetProvider,
+    })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
+    const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
     builder
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
@@ -192,14 +198,16 @@ describe('pTokensSwap', () => {
       inputTxConfirmed = false,
       inputTxDetected = false,
       outputTxDetected = false,
-      outputTxProcessed = false
+      outputTxBroadcasted = false,
+      outputTxConfirmed = false
     let depositAddress,
       inputTxBroadcastedObj,
       inputTxConfirmedObj,
       inputTxDetectedObj,
       outputTxDetectedObj,
-      outputTxProcessedObj
-    await promi
+      outputTxBroadcastedObj,
+      outputTxConfirmedObj
+    const ret = await promi
       .on('depositAddress', (address) => {
         depositAddress = address
       })
@@ -219,9 +227,13 @@ describe('pTokensSwap', () => {
         outputTxDetectedObj = obj
         outputTxDetected = true
       })
-      .on('outputTxProcessed', (obj) => {
-        outputTxProcessedObj = obj
-        outputTxProcessed = true
+      .on('outputTxBroadcasted', (obj) => {
+        outputTxBroadcastedObj = obj
+        outputTxBroadcasted = true
+      })
+      .on('outputTxConfirmed', (obj) => {
+        outputTxConfirmedObj = obj
+        outputTxConfirmed = true
       })
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
@@ -231,6 +243,7 @@ describe('pTokensSwap', () => {
       Buffer.from('user-data')
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
+    expect(waitForTransactionConfirmationSpy).toHaveBeenNthCalledWith(1, 'output-tx-hash')
     expect(depositAddress).toStrictEqual('deposit-address')
     expect(inputTxBroadcasted).toBeTruthy()
     expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
@@ -238,68 +251,70 @@ describe('pTokensSwap', () => {
     expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
     expect(inputTxDetectedObj).toStrictEqual([
-      { chainId: 'input-chain-id', status: Status.BROADCASTED, txHash: 'originating-tx-hash' },
+      { chainId: 'input-chain-id', status: Status.DETECTED, txHash: 'originating-tx-hash' },
     ])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
+      { chainId: 'output-chain-id', status: Status.DETECTED, txHash: 'output-tx-hash' },
+    ])
+    expect(outputTxBroadcasted).toBeTruthy()
+    expect(outputTxBroadcastedObj).toStrictEqual([
       { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
-    expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([
-      { chainId: 'output-chain-id', status: Status.CONFIRMED, txHash: 'output-tx-hash' },
+    expect(outputTxConfirmed).toBeTruthy()
+    expect(outputTxConfirmedObj).toStrictEqual([
+      { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
+    expect(ret).toStrictEqual([{ chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' }])
   })
 
-  test('Should swap host asset without user data ', async () => {
+  test('Should swap host asset without user data', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
         outputs: [],
       })
       .mockResolvedValueOnce({
         inputs: [],
-        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.DETECTED }],
       })
       .mockResolvedValue({
         inputs: [],
-        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.CONFIRMED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
       })
 
     const builder = new pTokensSwapBuilder(node)
-    const sourceAsset = new pTokenAssetMock(
-      {
-        node,
-        symbol: 'SOURCE',
-        assetInfo: {
-          chainId: ChainId.BitcoinMainnet,
-          isNative: false,
-          tokenAddress: 'token-contract-address',
-          tokenReference: 'token-internal-address',
-          vaultAddress: 'vault-contract-address',
-        },
+    const sourceAsset = new pTokenAssetMock({
+      node,
+      symbol: 'SOURCE',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
       },
-      BlockchainType.UTXO
-    )
-    const destinationAsset = new pTokenAssetMock(
-      {
-        node,
-        symbol: 'DESTINATION',
-        assetInfo: {
-          chainId: ChainId.EthereumMainnet,
-          isNative: false,
-          tokenAddress: 'token-contract-address',
-          tokenReference: 'token-internal-address',
-          vaultAddress: 'vault-contract-address',
-        },
+    })
+    const assetProvider = new pTokensProviderMock()
+    const destinationAsset = new pTokenAssetMock({
+      node,
+      symbol: 'DESTINATION',
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
       },
-      BlockchainType.EVM
-    )
+      provider: assetProvider,
+    })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
+    const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
     builder
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
@@ -310,9 +325,15 @@ describe('pTokensSwap', () => {
       inputTxConfirmed = false,
       inputTxDetected = false,
       outputTxDetected = false,
-      outputTxProcessed = false
-    let inputTxBroadcastedObj, inputTxConfirmedObj, inputTxDetectedObj, outputTxDetectedObj, outputTxProcessedObj
-    await promi
+      outputTxBroadcasted = false,
+      outputTxConfirmed = false
+    let inputTxBroadcastedObj,
+      inputTxConfirmedObj,
+      inputTxDetectedObj,
+      outputTxDetectedObj,
+      outputTxBroadcastedObj,
+      outputTxConfirmedObj
+    const ret = await promi
       .on('inputTxBroadcasted', (obj) => {
         inputTxBroadcastedObj = obj
         inputTxBroadcasted = true
@@ -329,9 +350,13 @@ describe('pTokensSwap', () => {
         outputTxDetectedObj = obj
         outputTxDetected = true
       })
-      .on('outputTxProcessed', (obj) => {
-        outputTxProcessedObj = obj
-        outputTxProcessed = true
+      .on('outputTxBroadcasted', (obj) => {
+        outputTxBroadcastedObj = obj
+        outputTxBroadcasted = true
+      })
+      .on('outputTxConfirmed', (obj) => {
+        outputTxConfirmedObj = obj
+        outputTxConfirmed = true
       })
     expect(hostToInterimSpy).toHaveBeenNthCalledWith(
       1,
@@ -341,87 +366,96 @@ describe('pTokensSwap', () => {
       undefined
     )
     expect(nativeToInterimSpy).toHaveBeenCalledTimes(0)
+    expect(waitForTransactionConfirmationSpy).toHaveBeenNthCalledWith(1, 'output-tx-hash')
     expect(inputTxBroadcasted).toBeTruthy()
     expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
     expect(inputTxConfirmed).toBeTruthy()
     expect(inputTxConfirmedObj).toBe('originating-tx-hash')
     expect(inputTxDetected).toBeTruthy()
     expect(inputTxDetectedObj).toStrictEqual([
-      { chainId: 'input-chain-id', status: Status.BROADCASTED, txHash: 'originating-tx-hash' },
+      { chainId: 'input-chain-id', status: Status.DETECTED, txHash: 'originating-tx-hash' },
     ])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
+      { chainId: 'output-chain-id', status: Status.DETECTED, txHash: 'output-tx-hash' },
+    ])
+    expect(outputTxBroadcasted).toBeTruthy()
+    expect(outputTxBroadcastedObj).toStrictEqual([
       { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
-    expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([
-      { chainId: 'output-chain-id', status: Status.CONFIRMED, txHash: 'output-tx-hash' },
+    expect(outputTxConfirmed).toBeTruthy()
+    expect(outputTxConfirmedObj).toStrictEqual([
+      { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
+    expect(ret).toStrictEqual([{ chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' }])
   })
 
-  test('Should swap host asset with user data ', async () => {
+  test('Should swap host asset with user data', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
     getTransactionStatusSpy
       .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
       .mockResolvedValueOnce({ inputs: [], outputs: [] })
       .mockResolvedValueOnce({
-        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
         outputs: [],
       })
       .mockResolvedValueOnce({
         inputs: [],
-        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.DETECTED }],
       })
       .mockResolvedValue({
         inputs: [],
-        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.CONFIRMED }],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
       })
 
     const builder = new pTokensSwapBuilder(node)
-    const sourceAsset = new pTokenAssetMock(
-      {
-        node,
-        symbol: 'SRC',
-        assetInfo: {
-          chainId: ChainId.EthereumMainnet,
-          isNative: true,
-          tokenAddress: 'token-contract-address',
-          tokenReference: 'token-internal-address',
-          vaultAddress: 'vault-contract-address',
-        },
+    const sourceAsset = new pTokenAssetMock({
+      node,
+      symbol: 'SRC',
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
       },
-      BlockchainType.EVM
-    )
-    const destinationAsset = new pTokenAssetMock(
-      {
-        node,
-        symbol: 'DST',
-        assetInfo: {
-          chainId: ChainId.BitcoinMainnet,
-          isNative: false,
-          tokenAddress: 'token-contract-address',
-          tokenReference: 'token-internal-address',
-          vaultAddress: 'vault-contract-address',
-        },
+    })
+    const assetProvider = new pTokensProviderMock()
+    const destinationAsset = new pTokenAssetMock({
+      node,
+      symbol: 'DST',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
       },
-      BlockchainType.UTXO
-    )
+      provider: assetProvider,
+    })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
     const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
+    const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
     builder
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
-      .addDestinationAsset(destinationAsset, 'bc1q2nd4p07tfezv9afr3kcn0l35m7sra5kgufcyzg', Buffer.from('user-data'))
+      .addDestinationAsset(destinationAsset, '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF', Buffer.from('user-data'))
     const swap = builder.build()
     const promi = swap.execute()
     let inputTxBroadcasted = false,
       inputTxConfirmed = false,
       inputTxDetected = false,
       outputTxDetected = false,
-      outputTxProcessed = false
-    let inputTxBroadcastedObj, inputTxConfirmedObj, inputTxDetectedObj, outputTxDetectedObj, outputTxProcessedObj
-    await promi
+      outputTxBroadcasted = false,
+      outputTxConfirmed = false
+    let inputTxBroadcastedObj,
+      inputTxConfirmedObj,
+      inputTxDetectedObj,
+      outputTxDetectedObj,
+      outputTxBroadcastedObj,
+      outputTxConfirmedObj
+    const ret = await promi
       .on('inputTxBroadcasted', (obj) => {
         inputTxBroadcastedObj = obj
         inputTxBroadcasted = true
@@ -438,15 +472,136 @@ describe('pTokensSwap', () => {
         outputTxDetectedObj = obj
         outputTxDetected = true
       })
-      .on('outputTxProcessed', (obj) => {
-        outputTxProcessedObj = obj
-        outputTxProcessed = true
+      .on('outputTxBroadcasted', (obj) => {
+        outputTxBroadcastedObj = obj
+        outputTxBroadcasted = true
+      })
+      .on('outputTxConfirmed', (obj) => {
+        outputTxConfirmedObj = obj
+        outputTxConfirmed = true
       })
     expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
       1,
       BigNumber(123.456),
-      'bc1q2nd4p07tfezv9afr3kcn0l35m7sra5kgufcyzg',
-      ChainId.BitcoinMainnet,
+      '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF',
+      ChainId.BscMainnet,
+      Buffer.from('user-data')
+    )
+    expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
+    expect(waitForTransactionConfirmationSpy).toHaveBeenNthCalledWith(1, 'output-tx-hash')
+    expect(inputTxBroadcasted).toBeTruthy()
+    expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
+    expect(inputTxConfirmed).toBeTruthy()
+    expect(inputTxConfirmedObj).toBe('originating-tx-hash')
+    expect(inputTxDetected).toBeTruthy()
+    expect(inputTxDetectedObj).toStrictEqual([{ chainId: 'input-chain-id', status: 0, txHash: 'originating-tx-hash' }])
+    expect(outputTxDetected).toBeTruthy()
+    expect(outputTxDetectedObj).toStrictEqual([
+      { chainId: 'output-chain-id', status: Status.DETECTED, txHash: 'output-tx-hash' },
+    ])
+    expect(outputTxBroadcasted).toBeTruthy()
+    expect(outputTxBroadcastedObj).toStrictEqual([
+      { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
+    ])
+    expect(outputTxConfirmed).toBeTruthy()
+    expect(outputTxConfirmedObj).toStrictEqual([
+      { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
+    ])
+    expect(ret).toStrictEqual([{ chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' }])
+  })
+
+  test('Should emit all events but outputTxConfirmed if destination asset provider is missing', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
+    getTransactionStatusSpy
+      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
+      .mockResolvedValueOnce({ inputs: [], outputs: [] })
+      .mockResolvedValueOnce({
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
+        outputs: [],
+      })
+      .mockResolvedValueOnce({
+        inputs: [],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.DETECTED }],
+      })
+      .mockResolvedValue({
+        inputs: [],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
+      })
+
+    const builder = new pTokensSwapBuilder(node)
+    const sourceAsset = new pTokenAssetMock({
+      node,
+      symbol: 'SRC',
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    const destinationAsset = new pTokenAssetMock({
+      node,
+      symbol: 'DST',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
+    const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
+    builder
+      .setAmount(123.456)
+      .setSourceAsset(sourceAsset)
+      .addDestinationAsset(destinationAsset, '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF', Buffer.from('user-data'))
+    const swap = builder.build()
+    const promi = swap.execute()
+    let inputTxBroadcasted = false,
+      inputTxConfirmed = false,
+      inputTxDetected = false,
+      outputTxDetected = false,
+      outputTxBroadcasted = false,
+      outputTxConfirmed = false
+    let inputTxBroadcastedObj,
+      inputTxConfirmedObj,
+      inputTxDetectedObj,
+      outputTxDetectedObj,
+      outputTxBroadcastedObj,
+      outputTxConfirmedObj
+    const ret = await promi
+      .on('inputTxBroadcasted', (obj) => {
+        inputTxBroadcastedObj = obj
+        inputTxBroadcasted = true
+      })
+      .on('inputTxConfirmed', (obj) => {
+        inputTxConfirmedObj = obj
+        inputTxConfirmed = true
+      })
+      .on('inputTxDetected', (obj) => {
+        inputTxDetectedObj = obj
+        inputTxDetected = true
+      })
+      .on('outputTxDetected', (obj) => {
+        outputTxDetectedObj = obj
+        outputTxDetected = true
+      })
+      .on('outputTxBroadcasted', (obj) => {
+        outputTxBroadcastedObj = obj
+        outputTxBroadcasted = true
+      })
+      .on('outputTxConfirmed', (obj) => {
+        outputTxConfirmedObj = obj
+        outputTxConfirmed = true
+      })
+    expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
+      1,
+      BigNumber(123.456),
+      '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF',
+      ChainId.BscMainnet,
       Buffer.from('user-data')
     )
     expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
@@ -458,12 +613,151 @@ describe('pTokensSwap', () => {
     expect(inputTxDetectedObj).toStrictEqual([{ chainId: 'input-chain-id', status: 0, txHash: 'originating-tx-hash' }])
     expect(outputTxDetected).toBeTruthy()
     expect(outputTxDetectedObj).toStrictEqual([
+      { chainId: 'output-chain-id', status: Status.DETECTED, txHash: 'output-tx-hash' },
+    ])
+    expect(outputTxBroadcasted).toBeTruthy()
+    expect(outputTxBroadcastedObj).toStrictEqual([
       { chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' },
     ])
-    expect(outputTxProcessed).toBeTruthy()
-    expect(outputTxProcessedObj).toStrictEqual([
-      { chainId: 'output-chain-id', status: Status.CONFIRMED, txHash: 'output-tx-hash' },
-    ])
+    expect(outputTxConfirmed).toBeFalsy()
+    expect(outputTxConfirmedObj).toStrictEqual(undefined)
+    expect(ret).toStrictEqual([{ chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' }])
+  })
+
+  test('Should reject if nativeToInterim fails', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
+    getTransactionStatusSpy
+      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
+      .mockResolvedValueOnce({ inputs: [], outputs: [] })
+      .mockResolvedValueOnce({
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
+        outputs: [],
+      })
+      .mockResolvedValueOnce({
+        inputs: [],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.DETECTED }],
+      })
+      .mockResolvedValue({
+        inputs: [],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
+      })
+
+    const builder = new pTokensSwapBuilder(node)
+    const sourceAsset = new pTokenAssetFailingMock({
+      node,
+      symbol: 'SRC',
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    const assetProvider = new pTokensProviderMock()
+    const destinationAsset = new pTokenAssetMock({
+      node,
+      symbol: 'DST',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
+      },
+      provider: assetProvider,
+    })
+    const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
+    const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
+    const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
+    builder
+      .setAmount(123.456)
+      .setSourceAsset(sourceAsset)
+      .addDestinationAsset(destinationAsset, '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF', Buffer.from('user-data'))
+    const swap = builder.build()
+    try {
+      await swap.execute()
+    } catch (_err) {
+      expect(_err.message).toStrictEqual('nativeToInterim error')
+      expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
+        1,
+        BigNumber(123.456),
+        '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF',
+        ChainId.BscMainnet,
+        Buffer.from('user-data')
+      )
+      expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
+      expect(waitForTransactionConfirmationSpy).toHaveBeenCalledTimes(0)
+    }
+  })
+
+  test('Should reject if hostToInterim fails', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
+    getTransactionStatusSpy
+      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
+      .mockResolvedValueOnce({ inputs: [], outputs: [] })
+      .mockResolvedValueOnce({
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
+        outputs: [],
+      })
+      .mockResolvedValueOnce({
+        inputs: [],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.DETECTED }],
+      })
+      .mockResolvedValue({
+        inputs: [],
+        outputs: [{ txHash: 'output-tx-hash', chainId: 'output-chain-id', status: Status.BROADCASTED }],
+      })
+
+    const builder = new pTokensSwapBuilder(node)
+    const sourceAsset = new pTokenAssetFailingMock({
+      node,
+      symbol: 'SRC',
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    const assetProvider = new pTokensProviderMock()
+    const destinationAsset = new pTokenAssetMock({
+      node,
+      symbol: 'DST',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
+      },
+      provider: assetProvider,
+    })
+    const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
+    const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
+    const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
+    builder
+      .setAmount(123.456)
+      .setSourceAsset(sourceAsset)
+      .addDestinationAsset(destinationAsset, '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF', Buffer.from('user-data'))
+    const swap = builder.build()
+    try {
+      await swap.execute()
+    } catch (_err) {
+      expect(_err.message).toStrictEqual('hostToInterim error')
+      expect(hostToInterimSpy).toHaveBeenNthCalledWith(
+        1,
+        BigNumber(123.456),
+        '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF',
+        ChainId.BscMainnet,
+        Buffer.from('user-data')
+      )
+      expect(nativeToInterimSpy).toHaveBeenCalledTimes(0)
+      expect(waitForTransactionConfirmationSpy).toHaveBeenCalledTimes(0)
+    }
   })
 
   // Note: this test causes jest to report 'A worker process has failed to exit gracefully and has been force exited.
