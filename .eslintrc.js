@@ -1,7 +1,7 @@
 module.exports = {
   // ...
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'node', 'prettier'],
+  plugins: ['@typescript-eslint', 'node', 'prettier', "eslint-plugin-tsdoc"],
   overrides: [
     {
       files: ['*.ts', '*.tsx', 'examples/*.js'], // Your TypeScript files extension
@@ -28,6 +28,7 @@ module.exports = {
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',
+        "tsdoc/syntax": "warn"
       },
       parserOptions: {
         tsconfigRootDir: __dirname,
