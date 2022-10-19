@@ -1,22 +1,30 @@
+# ptokens.js | pNetwork Javascript API
+
+Javascript module for interacting with pNetwork.
+
 ## Introduction
 pTokens.js is the library that allows interoperability with the pNetwork interacting with pNetwork bridges.
 This library supports **only v2** bridges.
 
-- It's entirely written in Typescript, but there are ready-to-use bundles to integrate it in your backend/frontend application.
-
-- It's object-oriented designed and implementing the builder pattern to ease objects creation
+- It's entirely written in Typescript, but there are ready-to-use bundles to integrate it into your backend/frontend application.
+- It's object-oriented designed and implements the builder pattern to ease objects creation
 - It permits host-to-host swaps, unleashing the pTokens to pTokens bridge feature.
 
 ## Installation
 The package is published in the [npm registry](https://www.npmjs.com/package/ptokens).
 
-Initiate your Javascript/Typescript project and install is as a dependency
+Initiate your Javascript/Typescript project and install it as a dependency:
+
 ```shell
 $ npm i ptokens
 ```
 
-## Usage
-This is a working example where pBTC on Ethereum are pegged-out to pBTC on Algorand.
+## Documentation
+
+The full documentation can be found [here](https://provable-things.github.io/ptokens.js/).
+
+## Examples
+This is a working example where pBTC on Ethereum tokens are pegged-out to pBTC on Algorand.
 
 ```ts
 const {
@@ -81,27 +89,57 @@ async function pegOut() {
 }
 
 void pegOut()
-
 ```
+
 Complete examples are available at [examples](https://github.com/provable-things/ptokens.js/tree/master/examples).
 
-The full documentation can be found [here](https://provable-things.github.io/ptokens.js/).
+## Development
 
-## Development mode
 If you wish to contribute, please open a new Pull Request.
 
 Technically speaking, this is a monorepo containing multiple packages. These are managed using [lerna](https://github.com/lerna/lerna). Typescript source code is transpiled and bundled using [Rollup](https://rollupjs.org/guide/en/).
 
+### Development mode
+
 **Rollup** has the following option available
+
 ```
 -w, --watch                 Watch files in bundle and rebuild on changes
 ```
-Every package has a dedicated `dev` script which runs **rollup** with the watch option.
+
+Every package has a dedicated `dev` script that runs **rollup** with the watch option.
 
 These scripts can be run in parallel by executing the following command from the project root directory:
+
 ```shell
 $ npm run dev
 ```
+
 In this way, a developer can make adjustments to the codebase and test it on the fly, without the need to build the affected packages.
 
-**Tip:** leave the command running on a separated shell.
+**Tip:** leave the command running on a separate shell.
+
+### Building
+
+To build a new version of the library, run:
+
+```shell
+$ npm run build
+```
+
+### Testing
+To run tests in Node.js, run:
+
+```shell
+$ npm test
+```
+
+### Generating Documentation
+
+To generate the documentation website, run:
+
+```shell
+$ npm run docs
+```
+
+The static website will be located in the `docs/` directory.
