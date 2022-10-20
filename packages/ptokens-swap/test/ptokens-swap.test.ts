@@ -510,6 +510,132 @@ describe('pTokensSwap', () => {
     expect(ret).toStrictEqual([{ chainId: 'output-chain-id', status: Status.BROADCASTED, txHash: 'output-tx-hash' }])
   })
 
+  test('Should swap to Algorand address and not call waitForTransactionConfirmation', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
+    getTransactionStatusSpy
+      .mockRejectedValueOnce(new Error('Failed to extract the json from the response:{"size":0,"timeout":0}'))
+      .mockResolvedValueOnce({ inputs: [], outputs: [] })
+      .mockResolvedValueOnce({
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.DETECTED }],
+        outputs: [],
+      })
+      .mockResolvedValueOnce({
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ txHash: 'output-group-id', chainId: '0x03c38e67', status: Status.DETECTED }],
+      })
+      .mockResolvedValue({
+        inputs: [{ txHash: 'originating-tx-hash', chainId: 'input-chain-id', status: Status.BROADCASTED }],
+        outputs: [{ txHash: 'output-group-id', chainId: '0x03c38e67', status: Status.BROADCASTED }],
+      })
+
+    const builder = new pTokensSwapBuilder(node)
+    const sourceAsset = new pTokenAssetMock({
+      node,
+      symbol: 'SRC',
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    const assetProvider = new pTokensProviderMock()
+    const destinationAsset = new pTokenAssetFailingMock({
+      node,
+      symbol: 'DST',
+      assetInfo: {
+        chainId: ChainId.AlgorandMainnet,
+        isNative: false,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        vaultAddress: 'vault-contract-address',
+      },
+      provider: assetProvider,
+    })
+    const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
+    const hostToInterimSpy = jest.spyOn(sourceAsset, 'hostToInterim')
+    const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
+    builder
+      .setAmount(123.456)
+      .setSourceAsset(sourceAsset)
+      .addDestinationAsset(
+        destinationAsset,
+        'LCRDY3LYAANTVS3XRHEHWHGXRTKZYVTX55P5IA2AT5ZDJ4CWZFFZIKVHLI',
+        Buffer.from('user-data')
+      )
+    const swap = builder.build()
+    const promi = swap.execute()
+    let inputTxBroadcasted = false,
+      inputTxConfirmed = false,
+      inputTxDetected = false,
+      outputTxDetected = false,
+      outputTxBroadcasted = false,
+      outputTxConfirmed = false
+    let inputTxBroadcastedObj,
+      inputTxConfirmedObj,
+      inputTxDetectedObj,
+      outputTxDetectedObj,
+      outputTxBroadcastedObj,
+      outputTxConfirmedObj
+    const ret = await promi
+      .on('inputTxBroadcasted', (obj) => {
+        inputTxBroadcastedObj = obj
+        inputTxBroadcasted = true
+      })
+      .on('inputTxConfirmed', (obj) => {
+        inputTxConfirmedObj = obj
+        inputTxConfirmed = true
+      })
+      .on('inputTxDetected', (obj) => {
+        inputTxDetectedObj = obj
+        inputTxDetected = true
+      })
+      .on('outputTxDetected', (obj) => {
+        outputTxDetectedObj = obj
+        outputTxDetected = true
+      })
+      .on('outputTxBroadcasted', (obj) => {
+        outputTxBroadcastedObj = obj
+        outputTxBroadcasted = true
+      })
+      .on('outputTxConfirmed', (obj) => {
+        outputTxConfirmedObj = obj
+        outputTxConfirmed = true
+      })
+    expect(nativeToInterimSpy).toHaveBeenNthCalledWith(
+      1,
+      BigNumber(123.456),
+      'LCRDY3LYAANTVS3XRHEHWHGXRTKZYVTX55P5IA2AT5ZDJ4CWZFFZIKVHLI',
+      ChainId.AlgorandMainnet,
+      Buffer.from('user-data')
+    )
+    expect(hostToInterimSpy).toHaveBeenCalledTimes(0)
+    expect(waitForTransactionConfirmationSpy).toHaveBeenCalledTimes(0)
+    expect(inputTxBroadcasted).toBeTruthy()
+    expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
+    expect(inputTxConfirmed).toBeTruthy()
+    expect(inputTxConfirmedObj).toBe('originating-tx-hash')
+    expect(inputTxDetected).toBeTruthy()
+    expect(inputTxDetectedObj).toStrictEqual([{ chainId: 'input-chain-id', status: 0, txHash: 'originating-tx-hash' }])
+    expect(outputTxDetected).toBeTruthy()
+    expect(outputTxDetectedObj).toStrictEqual([
+      { chainId: ChainId.AlgorandMainnet, status: Status.DETECTED, txHash: 'output-group-id' },
+    ])
+    expect(outputTxBroadcasted).toBeTruthy()
+    expect(outputTxBroadcastedObj).toStrictEqual([
+      { chainId: ChainId.AlgorandMainnet, status: Status.BROADCASTED, txHash: 'output-group-id' },
+    ])
+    expect(outputTxConfirmed).toBeTruthy()
+    expect(outputTxConfirmedObj).toStrictEqual([
+      { chainId: ChainId.AlgorandMainnet, status: Status.BROADCASTED, txHash: 'output-group-id' },
+    ])
+    expect(ret).toStrictEqual([
+      { chainId: ChainId.AlgorandMainnet, status: Status.BROADCASTED, txHash: 'output-group-id' },
+    ])
+  })
+
   test('Should emit all events but outputTxConfirmed if destination asset provider is missing', async () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
     const getTransactionStatusSpy = jest.spyOn(pTokensNode.prototype, 'getTransactionStatus')
@@ -648,7 +774,7 @@ describe('pTokensSwap', () => {
       node,
       symbol: 'SRC',
       assetInfo: {
-        chainId: ChainId.EthereumMainnet,
+        chainId: ChainId.AlgorandMainnet,
         isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
@@ -716,7 +842,7 @@ describe('pTokensSwap', () => {
       node,
       symbol: 'SRC',
       assetInfo: {
-        chainId: ChainId.EthereumMainnet,
+        chainId: ChainId.AlgorandMainnet,
         isNative: false,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',

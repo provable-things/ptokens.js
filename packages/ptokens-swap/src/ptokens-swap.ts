@@ -1,3 +1,4 @@
+import { ChainId } from 'ptokens-constants'
 import { pTokensAsset } from 'ptokens-entities'
 import { pTokensNode, Status, InnerTransactionStatus } from 'ptokens-node'
 import PromiEvent from 'promievent'
@@ -119,6 +120,13 @@ export class pTokensSwap {
     return promi
   }
 
+  private async waitOutputsConfirmation(_outputs: InnerTransactionStatus[]) {
+    // TODO: for Algorand, the report contains the group ID, and algosdk.waitForConfirmation() cannot be used.
+    // Anyway, confirmation is fast, so we can simulate the function with a delay.
+    if (_outputs[0].chainId === ChainId.AlgorandMainnet) await new Promise((resolve) => setTimeout(resolve, 5000))
+    else await this._destinationAssets[0].asset.provider.waitForTransactionConfirmation(_outputs[0].txHash)
+  }
+
   /**
    * Abort a running swap.
    */
@@ -182,7 +190,7 @@ export class pTokensSwap {
                 promi.emit('outputTxBroadcasted', outputs)
               })
             if (this._destinationAssets[0].asset.provider) {
-              await this._destinationAssets[0].asset.provider.waitForTransactionConfirmation(outputs[0].txHash)
+              await this.waitOutputsConfirmation(outputs)
               promi.emit('outputTxConfirmed', outputs)
             }
             return resolve(outputs)

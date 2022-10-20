@@ -55,7 +55,7 @@ export class pTokenAssetFailingMock extends pTokensAsset {
   }
 
   constructor(_config: pTokenAssetMockConfig) {
-    super(_config, BlockchainType.EVM)
+    super(_config, BlockchainType.ALGORAND)
     if (_config.provider) this._provider = _config.provider
   }
 
