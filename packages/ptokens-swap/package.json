@@ -1,6 +1,6 @@
 {
   "name": "ptokens-swap",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "dist/index.d.ts",
@@ -16,13 +16,13 @@
     "light-async-polling": "^1.0.2",
     "promievent": "^0.1.5",
     "ptokens-constants": "^1.0.1",
-    "ptokens-entities": "^1.0.2",
+    "ptokens-entities": "^1.0.3",
     "ptokens-helpers": "^1.0.2",
-    "ptokens-node": "^1.0.2"
+    "ptokens-node": "^1.0.3"
   },
   "devDependencies": {
-    "ptokens-assets-evm": "^1.0.2",
-    "ptokens-assets-utxo": "^1.0.2",
+    "ptokens-assets-evm": "^1.0.3",
+    "ptokens-assets-utxo": "^1.0.3",
     "web3": "^1.8.0"
   },
   "typedoc": {
