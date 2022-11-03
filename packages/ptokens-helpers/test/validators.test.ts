@@ -63,6 +63,8 @@ describe('isValidAddressByChainId', () => {
         { address: 'tc1qw508d6qejxtdg4y5r3zarvary0c5xw7kg3g4ty', expected: false },
         { address: 'BC13W508D6QEJXTDG4Y5R3ZARVARY0C5XW7KN40WF2', expected: false },
         { address: 'bc1gmk9yu', expected: false },
+        { address: '3kl1dyw6aenig4swmdmhhqkq8ys8xqzdz3', expected: false },
+        { address: '3KL1dyW6aeNig4swMDMhHQKq8ys8xQZDZ3', expected: true },
       ],
     ],
     [
