@@ -17,12 +17,6 @@
     "multicoin-address-validator": "^0.5.11",
     "ptokens-constants": "^1.0.1"
   },
-  "devDependencies": {
-    "@types/jest": "^27.4.1",
-    "@types/multicoin-address-validator": "^0.5.0",
-    "@types/node-fetch": "^2.6.1",
-    "ts-jest": "^27.1.4"
-  },
   "files": [
     "dist"
   ],

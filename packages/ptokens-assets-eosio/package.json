@@ -22,9 +22,6 @@
     "ptokens-helpers": "^1.0.2",
     "ptokens-node": "^1.0.3"
   },
-  "devDependencies": {
-    "@types/node-fetch": "^2.6.1"
-  },
   "typedoc": {
     "entryPoint": "./src/index.ts",
     "displayName": "pTokens EOSIO asset"
