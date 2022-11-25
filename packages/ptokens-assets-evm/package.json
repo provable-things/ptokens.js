@@ -12,6 +12,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@babel/runtime": "^7.20.1",
     "bignumber.js": "^9.1.0",
     "light-async-polling": "^1.0.2",
     "promievent": "^0.1.5",

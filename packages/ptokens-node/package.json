@@ -12,6 +12,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@babel/runtime": "^7.20.1",
     "jsonrpc-lite": "^2.2.0",
     "ptokens-helpers": "^1.0.2"
   },
