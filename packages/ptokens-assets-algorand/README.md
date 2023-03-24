@@ -24,4 +24,4 @@ algorandBuilder.setSymbol('pbtc')
 const algorandAsset = await algorandBuilder.build()
 ```
 
-See the full documentation [here](https://provable-things.github.io/ptokens.js/modules/pTokens_Algorand_Asset.html).
+See the full documentation [here](https://pnetwork-association.github.io/ptokens.js/modules/pTokens_Algorand_Asset.html).

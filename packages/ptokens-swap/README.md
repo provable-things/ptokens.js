@@ -39,4 +39,4 @@ try {
 }
 ```
 
-See the full documentation [here](https://provable-things.github.io/ptokens.js/modules/pTokens_Swap.html).
+See the full documentation [here](https://pnetwork-association.github.io/ptokens.js/modules/pTokens_Swap.html).

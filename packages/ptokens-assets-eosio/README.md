@@ -24,4 +24,4 @@ eosioBuilder.setSymbol('pbtc')
 const eosioAsset = await eosioBuilder.build()
 ```
 
-See the full documentation [here](https://provable-things.github.io/ptokens.js/modules/pTokens_EOSIO_asset.html).
+See the full documentation [here](https://pnetwork-association.github.io/ptokens.js/modules/pTokens_EOSIO_asset.html).

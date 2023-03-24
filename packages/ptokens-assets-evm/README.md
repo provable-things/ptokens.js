@@ -24,4 +24,4 @@ evmBuilder.setSymbol('pbtc')
 const evmAsset = await evmBuilder.build()
 ```
 
-See the full documentation [here](https://provable-things.github.io/ptokens.js/modules/pTokens_EVM_asset.html).
+See the full documentation [here](https://pnetwork-association.github.io/ptokens.js/modules/pTokens_EVM_asset.html).

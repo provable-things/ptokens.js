@@ -24,4 +24,4 @@ utxoBuilder.setSymbol('btc')
 const utxoAsset = await utxoBuilder.build()
 ```
 
-See the full documentation [here](https://provable-things.github.io/ptokens.js/modules/pTokens_UTXO_asset.html).
+See the full documentation [here](https://pnetwork-association.github.io/ptokens.js/modules/pTokens_UTXO_asset.html).

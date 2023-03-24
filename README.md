@@ -21,7 +21,7 @@ $ npm i ptokens
 
 ## Documentation
 
-The full documentation can be found [here](https://provable-things.github.io/ptokens.js/).
+The full documentation can be found [here](https://pnetwork-association.github.io/ptokens.js/).
 
 ## Examples
 This is a working example where pBTC on Ethereum tokens are pegged-out to pBTC on Algorand.
@@ -93,7 +93,7 @@ async function pegOut() {
 void pegOut()
 ```
 
-Complete examples are available at [examples](https://github.com/provable-things/ptokens.js/tree/master/examples).
+Complete examples are available at [examples](https://github.com/pnetwork-association/ptokens.js/tree/master/examples).
 
 ## Development
 
