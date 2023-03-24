@@ -1,6 +1,6 @@
 {
   "name": "ptokens-entities",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "browser": "dist/bundle.umd.js",
@@ -17,7 +17,7 @@
     "promievent": "^0.1.5",
     "ptokens-constants": "^1.0.1",
     "ptokens-helpers": "^1.0.4",
-    "ptokens-node": "^1.0.4"
+    "ptokens-node": "^1.0.5"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",
