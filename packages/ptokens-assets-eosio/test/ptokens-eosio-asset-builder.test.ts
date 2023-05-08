@@ -23,6 +23,7 @@ describe('EOSIO asset', () => {
     expect(asset.chainId).toStrictEqual(ChainId.EosMainnet)
     expect(asset.weight).toEqual(1)
     expect(asset.provider).toEqual(undefined)
+    expect(asset['_customActions']).toStrictEqual(undefined)
   })
 
   test('Should create an EOSIO asset with provider', async () => {
@@ -48,6 +49,7 @@ describe('EOSIO asset', () => {
     expect(asset.chainId).toStrictEqual(ChainId.EosMainnet)
     expect(asset.weight).toEqual(1)
     expect(asset.provider).toEqual(provider)
+    expect(asset['_customActions']).toStrictEqual(undefined)
   })
 
   test('Should not create an EOSIO asset without blockchain data', async () => {

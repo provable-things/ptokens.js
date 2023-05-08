@@ -1,6 +1,6 @@
 import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
-import { pTokensEosioAsset, pTokensEosioProvider } from '../src'
+import { pTokensEosioAsset, pTokensEosioProvider, Action } from '../src'
 
 import PromiEvent from 'promievent'
 import BigNumber from 'bignumber.js'
@@ -52,6 +52,51 @@ describe('EOSIO asset', () => {
       expect(err.message).toStrictEqual('Missing decimals')
     }
   })
+
+  test('Should reject if custom actions are undefined', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const asset = new pTokensEosioAsset({
+      node,
+      symbol: 'SYM',
+      assetInfo: {
+        chainId: ChainId.EosMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        decimals: 6,
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    try {
+      asset.setCustomActions(undefined)
+      fail()
+    } catch (err) {
+      expect(err.message).toStrictEqual('Invalid undefined actions')
+    }
+  })
+
+  test('Should reject if custom actions is an empty array', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const asset = new pTokensEosioAsset({
+      node,
+      symbol: 'SYM',
+      assetInfo: {
+        chainId: ChainId.EosMainnet,
+        isNative: true,
+        tokenAddress: 'token-contract-address',
+        tokenReference: 'token-internal-address',
+        decimals: 6,
+        vaultAddress: 'vault-contract-address',
+      },
+    })
+    try {
+      asset.setCustomActions([])
+      fail()
+    } catch (err) {
+      expect(err.message).toStrictEqual('Invalid empty actions array')
+    }
+  })
+
   describe('nativeToInterim', () => {
     beforeEach(() => {
       jest.resetAllMocks()
@@ -341,6 +386,66 @@ describe('EOSIO asset', () => {
       }
     })
 
+    test('Should call transact with custom actions', async () => {
+      const abi = require('../src/abi/pTokenOnEOSContractAbiV2.json')
+      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+      const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
+      const transactSpy = jest.spyOn(provider, 'transact').mockImplementation(() => {
+        const promi = new PromiEvent<string>((resolve) =>
+          setImmediate(() => {
+            promi.emit('txBroadcasted', 'tx-hash')
+            promi.emit('txConfirmed', 'tx-hash')
+            return resolve('tx-hash')
+          })
+        )
+        return promi
+      })
+      const asset = new pTokensEosioAsset({
+        node,
+        symbol: 'SYM',
+        provider: provider,
+        assetInfo: {
+          chainId: ChainId.EosMainnet,
+          isNative: true,
+          tokenAddress: 'token.address',
+          tokenReference: 'token-internal-address',
+          decimals: 6,
+          vaultAddress: 'vault-contract-address',
+        },
+      })
+      const customAction = {
+        contractAddress: 'token.address',
+        method: 'transfer',
+        abi,
+        arguments: {
+          from: 'sender',
+          to: 'receiver',
+          quantity: '1.0000 SYM',
+          memo: 'memo',
+        },
+      }
+      asset.setCustomActions([customAction])
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
+      const ret = await asset['nativeToInterim'](
+        BigNumber(123.456789),
+        'destination-address',
+        ChainId.BitcoinMainnet,
+        Uint8Array.from(Buffer.from('c0ffee', 'hex'))
+      )
+        .on('txBroadcasted', (_txHash) => {
+          txHashBroadcasted = _txHash
+        })
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
+      expect(ret).toEqual('tx-hash')
+      expect(transactSpy).toHaveBeenNthCalledWith(1, [customAction])
+    })
+
     test('Should reject if transact throws', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
@@ -574,6 +679,65 @@ describe('EOSIO asset', () => {
           },
         },
       ])
+    })
+
+    test('Should call transact with custom actions', async () => {
+      const abi = require('../src/abi/pTokenOnEOSContractAbiV2.json')
+      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+      const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
+      const transactSpy = jest.spyOn(provider, 'transact').mockImplementation(() => {
+        const promi = new PromiEvent<string>((resolve) =>
+          setImmediate(() => {
+            promi.emit('txBroadcasted', 'tx-hash')
+            promi.emit('txConfirmed', 'tx-hash')
+            return resolve('tx-hash')
+          })
+        )
+        return promi
+      })
+      const asset = new pTokensEosioAsset({
+        node,
+        symbol: 'SYM',
+        provider: provider,
+        assetInfo: {
+          chainId: ChainId.EosMainnet,
+          isNative: false,
+          tokenAddress: 'token.address',
+          tokenReference: 'token-internal-address',
+          decimals: 4,
+        },
+      })
+      const customAction: Action = {
+        contractAddress: 'token.address',
+        method: 'transfer',
+        abi,
+        arguments: {
+          from: 'sender',
+          to: 'receiver',
+          quantity: '1.0000 SYM',
+          memo: 'memo',
+        },
+      }
+      asset.setCustomActions([customAction])
+      let txHashBroadcasted = ''
+      let txHashConfirmed = ''
+      const ret = await asset['hostToInterim'](
+        BigNumber(123.456789),
+        'destination-address',
+        ChainId.BitcoinMainnet,
+        Uint8Array.from(Buffer.from('c0ffee', 'hex'))
+      )
+        .on('txBroadcasted', (_txHash) => {
+          txHashBroadcasted = _txHash
+        })
+        .on('txConfirmed', (_txHash) => {
+          txHashConfirmed = _txHash
+        })
+      expect(txHashBroadcasted).toEqual('tx-hash')
+      expect(txHashConfirmed).toEqual('tx-hash')
+      expect(ret).toEqual('tx-hash')
+      expect(transactSpy).toHaveBeenNthCalledWith(1, [customAction])
     })
 
     test('Should reject if transact throws', async () => {
