@@ -1,6 +1,7 @@
 import { BlockchainType } from 'ptokens-constants'
 import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
 import { Action, pTokensEosioProvider } from './ptokens-eosio-provider'
+import { getAmountInEosFormat } from './lib'
 
 import PromiEvent from 'promievent'
 import BigNumber from 'bignumber.js'
@@ -15,10 +16,6 @@ const EOSIO_VAULT_ADD_USER_DATA_METHOD = 'adduserdata'
 export type pTokenEosioAssetConfig = pTokenAssetConfig & {
   /** An pTokensEosioProvider for interacting with the underlaying blockchain */
   provider?: pTokensEosioProvider
-}
-
-const getAmountInEosFormat = (_amount: BigNumber, _decimals: number, symbol: string) => {
-  return `${_amount.toFixed(_decimals)} ${symbol.toUpperCase()}`
 }
 
 export class pTokensEosioAsset extends pTokensAsset {
