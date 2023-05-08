@@ -31,6 +31,27 @@ describe('EOSIO asset', () => {
     expect(asset.network).toStrictEqual(Network.Mainnet)
     expect(asset.weight).toEqual(1)
   })
+
+  test('Should reject if decimals are undefined', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    try {
+      new pTokensEosioAsset({
+        node,
+        symbol: 'SYM',
+        assetInfo: {
+          chainId: ChainId.EosMainnet,
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenReference: 'token-internal-address',
+          decimals: undefined,
+          vaultAddress: 'vault-contract-address',
+        },
+      })
+      fail()
+    } catch (err) {
+      expect(err.message).toStrictEqual('Missing decimals')
+    }
+  })
   describe('nativeToInterim', () => {
     beforeEach(() => {
       jest.resetAllMocks()
@@ -319,6 +340,39 @@ describe('EOSIO asset', () => {
         expect(transactSpy).toHaveBeenCalledTimes(0)
       }
     })
+
+    test('Should reject if transact throws', async () => {
+      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+      const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
+      jest.spyOn(provider, 'transact').mockImplementation(() => {
+        const promi = new PromiEvent<string>((resolve, reject) =>
+          setImmediate(() => {
+            return reject(new Error('Transact exception'))
+          })
+        )
+        return promi
+      })
+      const asset = new pTokensEosioAsset({
+        node,
+        symbol: 'SYM',
+        provider: provider,
+        assetInfo: {
+          chainId: ChainId.EosMainnet,
+          isNative: true,
+          tokenAddress: 'token-contract-address',
+          tokenReference: 'token-internal-address',
+          decimals: 8,
+          vaultAddress: 'vault-contract-address',
+        },
+      })
+      try {
+        await asset['nativeToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        fail()
+      } catch (err) {
+        expect(err.message).toEqual('Transact exception')
+      }
+    })
   })
 
   describe('hostToInterim', () => {
@@ -409,7 +463,7 @@ describe('EOSIO asset', () => {
       }
     })
 
-    test('Should call makeContractSend with redeem for non-native token', async () => {
+    test('Should call transact with redeem for non-native token', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
       provider.setActor('tokenOwner')
@@ -463,7 +517,7 @@ describe('EOSIO asset', () => {
       ])
     })
 
-    test('Should call makeContractSend with redeem for non-native token with user data', async () => {
+    test('Should call transact with redeem for non-native token with user data', async () => {
       const node = new pTokensNode(new pTokensNodeProvider('test-url'))
       const provider = new pTokensEosioProvider('eos-rpc-endpoint')
       provider.setActor('tokenOwner')
@@ -520,6 +574,38 @@ describe('EOSIO asset', () => {
           },
         },
       ])
+    })
+
+    test('Should reject if transact throws', async () => {
+      const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+      const provider = new pTokensEosioProvider('eos-rpc-endpoint')
+      provider.setActor('tokenOwner')
+      jest.spyOn(provider, 'transact').mockImplementation(() => {
+        const promi = new PromiEvent<string>((resolve, reject) =>
+          setImmediate(() => {
+            return reject(new Error('Transact exception'))
+          })
+        )
+        return promi
+      })
+      const asset = new pTokensEosioAsset({
+        node,
+        symbol: 'SYM',
+        provider: provider,
+        assetInfo: {
+          chainId: ChainId.EosMainnet,
+          isNative: false,
+          tokenAddress: 'token.address',
+          tokenReference: 'token-internal-address',
+          decimals: 6,
+        },
+      })
+      try {
+        await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        fail()
+      } catch (err) {
+        expect(err.message).toEqual('Transact exception')
+      }
     })
   })
 })
