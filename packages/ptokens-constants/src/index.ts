@@ -7,7 +7,7 @@ export enum ChainId {
   BscMainnet = '0x00e4b170',
   XdaiMainnet = '0x00f1918e',
   PolygonMainnet = '0x0075dd4c',
-  UltraMainnet = '0x025d3c68',
+  UltraMainnet = '0x02f9337d',
   ArbitrumMainnet = '0x00ce98c4',
   LuxochainMainnet = '0x00d5beb0',
   FantomMainnet = '0x0022af98',
