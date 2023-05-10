@@ -1,6 +1,6 @@
 {
   "name": "ptokens-node",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
   "dependencies": {
     "@babel/runtime": "^7.20.1",
     "jsonrpc-lite": "^2.2.0",
-    "ptokens-helpers": "^1.0.4"
+    "ptokens-helpers": "^1.1.0"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",

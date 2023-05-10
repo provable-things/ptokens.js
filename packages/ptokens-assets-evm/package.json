@@ -1,6 +1,6 @@
 {
   "name": "ptokens-assets-evm",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "dist/index.d.ts",
@@ -16,10 +16,10 @@
     "bignumber.js": "^9.1.0",
     "light-async-polling": "^1.0.2",
     "promievent": "^0.1.5",
-    "ptokens-constants": "^1.0.1",
-    "ptokens-entities": "^1.0.5",
-    "ptokens-helpers": "^1.0.4",
-    "ptokens-node": "^1.0.5",
+    "ptokens-constants": "^1.1.0",
+    "ptokens-entities": "^1.1.0",
+    "ptokens-helpers": "^1.1.0",
+    "ptokens-node": "^1.1.0",
     "web3": "^1.8.0"
   },
   "typedoc": {
