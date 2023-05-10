@@ -1,6 +1,7 @@
 import { BlockchainType } from 'ptokens-constants'
 import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
 import { Action, pTokensEosioProvider } from './ptokens-eosio-provider'
+import { getAmountInEosFormat } from './lib'
 
 import PromiEvent from 'promievent'
 import BigNumber from 'bignumber.js'
@@ -17,12 +18,9 @@ export type pTokenEosioAssetConfig = pTokenAssetConfig & {
   provider?: pTokensEosioProvider
 }
 
-const getAmountInEosFormat = (_amount: BigNumber, _decimals: number, symbol: string) => {
-  return `${_amount.toFixed(_decimals)} ${symbol.toUpperCase()}`
-}
-
 export class pTokensEosioAsset extends pTokensAsset {
   private _provider: pTokensEosioProvider
+  private _customActions: Action[]
 
   /**
    * Create and initialize a pTokensEosioAsset object. pTokensEosioAsset objects shall be created with a pTokensEosioAssetBuilder instance.
@@ -35,6 +33,18 @@ export class pTokensEosioAsset extends pTokensAsset {
 
   get provider() {
     return this._provider
+  }
+
+  /**
+   * Set custom actions to be pushed on-chain when swapping. These will override the standard actions used to interact with the pNetwork. __Use carefully__.
+   * @param _actions - An array of algosdk.EncodedTransaction objects (https://algorand.github.io/js-algorand-sdk/interfaces/EncodedTransaction.html).
+   * @returns The same asset. This allows methods chaining.
+   */
+  setCustomActions(_actions: Action[]) {
+    if (_actions === undefined) throw new Error('Invalid undefined actions')
+    if (_actions.length === 0) throw new Error('Invalid empty actions array')
+    this._customActions = _actions
+    return this
   }
 
   protected nativeToInterim(
@@ -52,28 +62,32 @@ export class pTokensEosioAsset extends pTokensAsset {
             if (!this.assetInfo.isNative)
               return reject(new Error('Invalid call to nativeToInterim() for non-native token'))
             if (!this.assetInfo.vaultAddress) return reject(new Error('Missing vault address'))
-            const actions: Action[] = [
-              {
-                contractAddress: this.assetInfo.tokenAddress,
-                method: EOSIO_TOKEN_TRANSFER_METHOD,
-                abi: pTokenOnEOSIOContractAbi,
-                arguments: {
-                  from: this._provider.actor,
-                  to: this.assetInfo.vaultAddress,
-                  quantity: getAmountInEosFormat(_amount, this.assetInfo.decimals, this.symbol),
-                  memo: `${_destinationAddress},${_destinationChainId}${_userData ? ',1' : ''}`,
+            let actions: Action[]
+            if (this._customActions) actions = this._customActions
+            else {
+              actions = [
+                {
+                  contractAddress: this.assetInfo.tokenAddress,
+                  method: EOSIO_TOKEN_TRANSFER_METHOD,
+                  abi: pTokenOnEOSIOContractAbi,
+                  arguments: {
+                    from: this._provider.actor,
+                    to: this.assetInfo.vaultAddress,
+                    quantity: getAmountInEosFormat(_amount, this.assetInfo.decimals, this.symbol),
+                    memo: `${_destinationAddress},${_destinationChainId}${_userData ? ',1' : ''}`,
+                  },
                 },
-              },
-            ]
-            if (_userData)
-              actions.push({
-                contractAddress: this.assetInfo.vaultAddress,
-                method: EOSIO_VAULT_ADD_USER_DATA_METHOD,
-                abi: ptokenOnEOSIOVaultAbi,
-                arguments: {
-                  user_data: _userData,
-                },
-              })
+              ]
+              if (_userData)
+                actions.push({
+                  contractAddress: this.assetInfo.vaultAddress,
+                  method: EOSIO_VAULT_ADD_USER_DATA_METHOD,
+                  abi: ptokenOnEOSIOVaultAbi,
+                  arguments: {
+                    user_data: _userData,
+                  },
+                })
+            }
             const txHash: string = await this._provider
               .transact(actions)
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
@@ -108,15 +122,20 @@ export class pTokensEosioAsset extends pTokensAsset {
               user_data: _userData || '',
               chain_id: _destinationChainId.substring(2),
             }
-            const txHash: string = await this._provider
-              .transact([
+            let actions: Action[]
+            if (this._customActions) actions = this._customActions
+            else {
+              actions = [
                 {
                   method: EOSIO_TOKEN_PEG_OUT_METHOD,
                   abi: pTokenOnEOSIOContractAbi,
                   contractAddress: this.assetInfo.tokenAddress,
                   arguments: callArguments,
                 },
-              ])
+              ]
+            }
+            const txHash: string = await this._provider
+              .transact(actions)
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash) => promi.emit('txConfirmed', _hash))
               .once('error', reject)
