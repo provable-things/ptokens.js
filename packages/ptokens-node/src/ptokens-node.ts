@@ -25,6 +25,24 @@ export type TransactionStatus = {
   outputs: InnerTransactionStatus[]
 }
 
+export type NativeToXBasisPoints = {
+  nativeToHost: number
+  nativeToNative: number
+}
+
+export type HostToXBasisPoints = {
+  hostToHost: number
+  hostToNative: number
+}
+
+export type AssetFees = {
+  networkFee: number
+  networkFeeUsd?: number
+  basisPoints: NativeToXBasisPoints | HostToXBasisPoints
+  minNodeOperatorFee: number
+  minNodeOperatorFeeUsd?: number
+}
+
 export type AssetInfo = {
   /** The chain ID of the asset's blockchain. */
   chainId: string
@@ -40,6 +58,8 @@ export type AssetInfo = {
   vaultAddress?: string
   /** pNetwork enclave address. */
   identity?: string
+  /** Token-related fees */
+  fees: AssetFees
 }
 
 export type NativeDepositAddress = {
@@ -80,6 +100,7 @@ export class pTokensNode {
    * @returns An array of AssetInfo objects for those chains where pNetwork supports the specified token.
    */
   async getSupportedChainsByAsset(_tokenSymbol: string): Promise<AssetInfo[]> {
+    console.info('getSupportedChainsByAsset this._provider', this._provider)
     return await this._provider.sendRpcRequest(1, 'node_getSupportedChainsByAsset', [_tokenSymbol])
   }
 
@@ -90,6 +111,7 @@ export class pTokensNode {
    * @returns An AssetInfo object for the specified blockchain. Null if the specified blockchain does not support the token.
    */
   async getAssetInfoByChainId(_tokenSymbol: string, _chainId: string): Promise<AssetInfo> {
+    console.info('getAssetInfoByChainId')
     const info = (await this.getSupportedChainsByAsset(_tokenSymbol)).filter((p) => p.chainId == _chainId)
     return info.length ? info.at(0) : null
   }
