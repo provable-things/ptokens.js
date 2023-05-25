@@ -5,8 +5,25 @@ import { pTokenAssetFailingMock, pTokenAssetMock, pTokensProviderMock } from './
 import BigNumber from 'bignumber.js'
 
 jest.mock('ptokens-node')
-// jest.mock('ptokens-deposit-address')
 jest.setTimeout(10000)
+
+const NATIVE_TO_X_FEES = {
+  networkFee: 1e18,
+  minNodeOperatorFee: 2e18,
+  basisPoints: {
+    nativeToHost: 30,
+    nativeToNative: 40,
+  },
+}
+
+const HOST_TO_X_FEES = {
+  networkFee: 5e18,
+  minNodeOperatorFee: 6e18,
+  basisPoints: {
+    hostToHost: 70,
+    hostToNative: 80,
+  },
+}
 
 describe('pTokensSwap', () => {
   beforeEach(() => {
@@ -41,6 +58,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: NATIVE_TO_X_FEES,
       },
     })
     const assetProvider = new pTokensProviderMock()
@@ -53,6 +71,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: HOST_TO_X_FEES,
       },
       provider: assetProvider,
     })
@@ -170,6 +189,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: NATIVE_TO_X_FEES,
       },
     })
     const assetProvider = new pTokensProviderMock()
@@ -182,6 +202,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: HOST_TO_X_FEES,
       },
       provider: assetProvider,
     })
@@ -297,6 +318,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: HOST_TO_X_FEES,
       },
     })
     const assetProvider = new pTokensProviderMock()
@@ -309,6 +331,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: HOST_TO_X_FEES,
       },
       provider: assetProvider,
     })
@@ -419,6 +442,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: NATIVE_TO_X_FEES,
       },
     })
     const assetProvider = new pTokensProviderMock()
@@ -431,6 +455,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: HOST_TO_X_FEES,
       },
       provider: assetProvider,
     })
@@ -539,6 +564,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: NATIVE_TO_X_FEES,
       },
     })
     const assetProvider = new pTokensProviderMock()
@@ -551,6 +577,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: HOST_TO_X_FEES,
       },
       provider: assetProvider,
     })
@@ -665,6 +692,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: NATIVE_TO_X_FEES,
       },
     })
     const destinationAsset = new pTokenAssetMock({
@@ -676,6 +704,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: HOST_TO_X_FEES,
       },
     })
     const nativeToInterimSpy = jest.spyOn(sourceAsset, 'nativeToInterim')
@@ -779,6 +808,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: NATIVE_TO_X_FEES,
       },
     })
     const assetProvider = new pTokensProviderMock()
@@ -791,6 +821,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: HOST_TO_X_FEES,
       },
       provider: assetProvider,
     })
@@ -847,6 +878,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: HOST_TO_X_FEES,
       },
     })
     const assetProvider = new pTokensProviderMock()
@@ -859,6 +891,7 @@ describe('pTokensSwap', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: NATIVE_TO_X_FEES,
       },
       provider: assetProvider,
     })
