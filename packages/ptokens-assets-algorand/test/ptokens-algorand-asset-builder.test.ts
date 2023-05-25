@@ -6,6 +6,15 @@ import algosdk from 'algosdk'
 const TEST_MNEMONIC =
   'remind hat sibling sock multiply heart tuition magic bounce option yard rely daring raven basket wood bike educate ensure museum gorilla oyster tower ability claim'
 
+const hostToXFees = {
+  networkFee: 5e18,
+  minNodeOperatorFee: 6e18,
+  basisPoints: {
+    hostToHost: 70,
+    hostToNative: 80,
+  },
+}
+
 describe('Algorand asset', () => {
   beforeEach(() => {
     jest.resetAllMocks()
@@ -17,6 +26,7 @@ describe('Algorand asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
+      fees: hostToXFees,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))
@@ -42,6 +52,7 @@ describe('Algorand asset', () => {
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
       decimals: 6,
+      fees: hostToXFees,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))

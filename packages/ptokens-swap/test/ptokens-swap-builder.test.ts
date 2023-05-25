@@ -3,6 +3,15 @@ import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 import { pTokensEvmAsset } from 'ptokens-assets-evm'
 import { ChainId } from 'ptokens-constants'
 
+const nativeToXFees = {
+  networkFee: 1e18,
+  minNodeOperatorFee: 2e18,
+  basisPoints: {
+    nativeToHost: 30,
+    nativeToNative: 40,
+  },
+}
+
 jest.mock('ptokens-node')
 
 describe('pTokensSwapBuilder', () => {
@@ -19,6 +28,7 @@ describe('pTokensSwapBuilder', () => {
         tokenReference: '0XC0FFEE',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     const destinationToken = new pTokensEvmAsset({
@@ -31,6 +41,7 @@ describe('pTokensSwapBuilder', () => {
         tokenReference: 'c0ffee',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     builder.setSourceAsset(originatingToken)
@@ -63,6 +74,7 @@ describe('pTokensSwapBuilder', () => {
         tokenReference: 'token-internal-address-a',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     const destinationToken = new pTokensEvmAsset({
@@ -75,6 +87,7 @@ describe('pTokensSwapBuilder', () => {
         tokenReference: 'token-internal-address-b',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     builder.setSourceAsset(originatingToken)
@@ -105,6 +118,7 @@ describe('pTokensSwapBuilder', () => {
         tokenReference: 'token-internal-address',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     const destinationToken = new pTokensEvmAsset({
@@ -117,6 +131,7 @@ describe('pTokensSwapBuilder', () => {
         tokenReference: 'token-internal-address',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     builder.setSourceAsset(originatingToken)
@@ -141,6 +156,7 @@ describe('pTokensSwapBuilder', () => {
         tokenReference: 'token-internal-address',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     builder.addDestinationAsset(destinationToken, '0x28B2A40b6046850a569843cF740f15CF29792Ac2')
@@ -166,6 +182,7 @@ describe('pTokensSwapBuilder', () => {
         tokenReference: 'token-internal-address',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     const destinationToken = new pTokensEvmAsset({
@@ -178,6 +195,7 @@ describe('pTokensSwapBuilder', () => {
         tokenReference: 'token-internal-address',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     builder.setSourceAsset(originatingToken)
@@ -203,6 +221,7 @@ describe('pTokensSwapBuilder', () => {
         tokenReference: 'token-internal-address',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     builder.setSourceAsset(originatingToken)

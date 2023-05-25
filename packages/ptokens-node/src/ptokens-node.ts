@@ -25,6 +25,33 @@ export type TransactionStatus = {
   outputs: InnerTransactionStatus[]
 }
 
+export type NativeToXBasisPoints = {
+  /** Basis point fees for native-to-host swap */
+  nativeToHost: number
+  /** Basis point fees for native-to-native swap */
+  nativeToNative: number
+}
+
+export type HostToXBasisPoints = {
+  /** Basis point fees for host-to-host swap */
+  hostToHost: number
+  /** Basis point fees for host-to-native swap */
+  hostToNative: number
+}
+
+export type AssetFees = {
+  /** Fees destinated to pay network fees (expressed in token quantity * 1e18) */
+  networkFee: number
+  /** Fees destinated to pay network fees (expressed in USD) */
+  networkFeeUsd?: number
+  /** Minimum fees destinated to node operators (expressed in token quantity * 1e18) */
+  minNodeOperatorFee: number
+  /** Minimum fees destinated to node operators (expressed in USD) */
+  minNodeOperatorFeeUsd?: number
+  /** Basis point to calculate node fees destinated to node operators */
+  basisPoints: NativeToXBasisPoints | HostToXBasisPoints
+}
+
 export type AssetInfo = {
   /** The chain ID of the asset's blockchain. */
   chainId: string
@@ -40,6 +67,8 @@ export type AssetInfo = {
   vaultAddress?: string
   /** pNetwork enclave address. */
   identity?: string
+  /** Token-related fees */
+  fees: AssetFees
 }
 
 export type NativeDepositAddress = {

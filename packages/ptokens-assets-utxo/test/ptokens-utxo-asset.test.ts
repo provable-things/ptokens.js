@@ -8,6 +8,24 @@ import BigNumber from 'bignumber.js'
 
 jest.mock('ptokens-node')
 
+const nativeToXFees = {
+  networkFee: 1e18,
+  minNodeOperatorFee: 2e18,
+  basisPoints: {
+    nativeToHost: 30,
+    nativeToNative: 40,
+  },
+}
+
+const hostToXFees = {
+  networkFee: 5e18,
+  minNodeOperatorFee: 6e18,
+  basisPoints: {
+    hostToHost: 70,
+    hostToNative: 80,
+  },
+}
+
 describe('UTXO asset', () => {
   let depositAddressGenerateSpy
   let monitorUtxoByAddressSpy
@@ -41,10 +59,11 @@ describe('UTXO asset', () => {
       symbol: 'SYM',
       assetInfo: {
         chainId: ChainId.BitcoinMainnet,
-        isNative: false,
+        isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     expect(asset.symbol).toStrictEqual('SYM')
@@ -61,10 +80,11 @@ describe('UTXO asset', () => {
       symbol: 'SYM',
       assetInfo: {
         chainId: ChainId.BitcoinMainnet,
-        isNative: false,
+        isNative: true,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     try {
@@ -88,6 +108,7 @@ describe('UTXO asset', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: hostToXFees,
       },
     })
     try {
@@ -111,6 +132,7 @@ describe('UTXO asset', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     let txHashBroadcasted = ''
@@ -152,6 +174,7 @@ describe('UTXO asset', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: hostToXFees,
       },
     })
     try {
@@ -169,10 +192,11 @@ describe('UTXO asset', () => {
       symbol: 'SYM',
       assetInfo: {
         chainId: ChainId.BitcoinMainnet,
-        isNative: true,
+        isNative: false,
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: hostToXFees,
       },
     })
     try {
@@ -199,6 +223,7 @@ describe('UTXO asset', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     try {
@@ -228,6 +253,7 @@ describe('UTXO asset', () => {
         tokenAddress: 'token-contract-address',
         tokenReference: 'token-internal-address',
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     try {

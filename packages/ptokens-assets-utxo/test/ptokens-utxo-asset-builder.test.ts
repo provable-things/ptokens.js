@@ -2,13 +2,23 @@ import { pTokensUtxoAssetBuilder, pTokensBlockstreamUtxoProvider } from '../src'
 import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 
+const nativeToXFees = {
+  networkFee: 1e18,
+  minNodeOperatorFee: 2e18,
+  basisPoints: {
+    nativeToHost: 30,
+    nativeToNative: 40,
+  },
+}
+
 describe('UTXO asset', () => {
   test('Should create an UTXO asset without provider', async () => {
     const assetInfo = {
       chainId: ChainId.BitcoinMainnet,
-      isNative: false,
+      isNative: true,
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
+      fees: nativeToXFees,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
@@ -27,9 +37,10 @@ describe('UTXO asset', () => {
   test('Should create an UTXO asset with Blockstream provider', async () => {
     const assetInfo = {
       chainId: ChainId.BitcoinMainnet,
-      isNative: false,
+      isNative: true,
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
+      fees: nativeToXFees,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const provider = new pTokensBlockstreamUtxoProvider('blockstream-provider')

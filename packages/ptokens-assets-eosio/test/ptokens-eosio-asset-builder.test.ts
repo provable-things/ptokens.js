@@ -2,6 +2,15 @@ import { pTokensEosioAssetBuilder, pTokensEosioProvider } from '../src'
 import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 
+const hostToXFees = {
+  networkFee: 5e18,
+  minNodeOperatorFee: 6e18,
+  basisPoints: {
+    hostToHost: 70,
+    hostToNative: 80,
+  },
+}
+
 describe('EOSIO asset', () => {
   test('Should create an EOSIO asset without provider', async () => {
     const assetInfo = {
@@ -9,6 +18,7 @@ describe('EOSIO asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
+      fees: hostToXFees,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
@@ -33,6 +43,7 @@ describe('EOSIO asset', () => {
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
       decimals: 8,
+      fees: hostToXFees,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const provider = new pTokensEosioProvider('eos-rpc-endpoint')
