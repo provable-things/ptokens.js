@@ -31,6 +31,7 @@ export class pTokensSwap {
     this._destinationAssets = destinationAssets
     this._amount = amount
     this.controller = new AbortController()
+    if (!this.isAmountSufficient()) throw new Error('Insufficient amount to cover fees')
   }
 
   /**
@@ -59,6 +60,67 @@ export class pTokensSwap {
    */
   get node(): pTokensNode {
     return this._node
+  }
+
+  private getSwapBasisPoints() {
+    // take the first destination asset as, for now, pNetwork supports just one destination
+    if (
+      this._sourceAsset.assetInfo.isNative &&
+      this._destinationAssets[0].asset.assetInfo.isNative &&
+      'nativeToNative' in this._sourceAsset.assetInfo.fees.basisPoints
+    )
+      return this._sourceAsset.assetInfo.fees.basisPoints.nativeToNative
+    else if (
+      this._sourceAsset.assetInfo.isNative &&
+      !this._destinationAssets[0].asset.assetInfo.isNative &&
+      'nativeToHost' in this._sourceAsset.assetInfo.fees.basisPoints
+    )
+      return this._sourceAsset.assetInfo.fees.basisPoints.nativeToHost
+    else if (
+      !this._sourceAsset.assetInfo.isNative &&
+      this._destinationAssets[0].asset.assetInfo.isNative &&
+      'hostToNative' in this._sourceAsset.assetInfo.fees.basisPoints
+    )
+      return this._sourceAsset.assetInfo.fees.basisPoints.hostToNative
+    else if (
+      !this._sourceAsset.assetInfo.isNative &&
+      !this._destinationAssets[0].asset.assetInfo.isNative &&
+      'hostToHost' in this._sourceAsset.assetInfo.fees.basisPoints
+    )
+      return this._sourceAsset.assetInfo.fees.basisPoints.hostToHost
+    else throw new Error('Invalid basis points')
+  }
+
+  /**
+   * Get expected protocol fees for the swap
+   */
+  get protocolFees() {
+    const interimAmount = this._amount.multipliedBy(1e18)
+    const basisPoints = this.getSwapBasisPoints()
+    return BigNumber.maximum(
+      this._sourceAsset.assetInfo.fees.minNodeOperatorFee,
+      interimAmount.multipliedBy(basisPoints).dividedBy(10000)
+    )
+      .dividedBy(1e18)
+      .toFixed()
+  }
+
+  /**
+   * Get expected network fees for the swap
+   */
+  get networkFees() {
+    return BigNumber(this._destinationAssets[0].asset.assetInfo.fees.networkFee).dividedBy(1e18).toFixed()
+  }
+
+  /**
+   * Get expected output amount for the swap
+   */
+  get expectedOutputAmount() {
+    return this._amount.minus(this.protocolFees).minus(this.networkFees).toFixed()
+  }
+
+  private isAmountSufficient() {
+    return BigNumber(this.expectedOutputAmount).isGreaterThanOrEqualTo(0)
   }
 
   private monitorInputTransactions(_txHash: string, _origChainId: string): PromiEvent<InnerTransactionStatus[]> {

@@ -8,6 +8,24 @@ import BigNumber from 'bignumber.js'
 const vaultAbi = require('../src/abi/pERC20VaultContractAbi.json')
 const tokenAbi = require('../src/abi/pTokenOnETHV2ContractAbi.json')
 
+const nativeToXFees = {
+  networkFee: 1e18,
+  minNodeOperatorFee: 2e18,
+  basisPoints: {
+    nativeToHost: 30,
+    nativeToNative: 40,
+  },
+}
+
+const hostToXFees = {
+  networkFee: 5e18,
+  minNodeOperatorFee: 6e18,
+  basisPoints: {
+    hostToHost: 70,
+    hostToNative: 80,
+  },
+}
+
 jest.mock('web3')
 jest.mock('ptokens-node')
 
@@ -24,6 +42,7 @@ describe('EVM asset', () => {
         tokenReference: 'token-internal-address',
         decimals: 18,
         vaultAddress: 'vault-contract-address',
+        fees: hostToXFees,
       },
     })
     expect(asset.symbol).toStrictEqual('SYM')
@@ -45,6 +64,7 @@ describe('EVM asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 18,
           vaultAddress: 'vault-contract-address',
+          fees: hostToXFees,
         },
       })
       try {
@@ -79,6 +99,7 @@ describe('EVM asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 18,
           vaultAddress: 'vault-contract-address',
+          fees: hostToXFees,
         },
       })
       try {
@@ -114,6 +135,7 @@ describe('EVM asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 18,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       let txHashBroadcasted = ''
@@ -164,6 +186,7 @@ describe('EVM asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 18,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       let txHashBroadcasted = ''
@@ -225,6 +248,7 @@ describe('EVM asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 18,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       let txHashBroadcasted = ''
@@ -275,6 +299,7 @@ describe('EVM asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 18,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       let txHashBroadcasted = ''
@@ -330,6 +355,7 @@ describe('EVM asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 18,
           vaultAddress: 'vault-contract-address',
+          fees: hostToXFees,
         },
       })
       try {
@@ -355,6 +381,7 @@ describe('EVM asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 18,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       try {
@@ -389,6 +416,7 @@ describe('EVM asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 18,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       try {
@@ -423,6 +451,7 @@ describe('EVM asset', () => {
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
           decimals: 18,
+          fees: hostToXFees,
         },
       })
       let txHashBroadcasted = ''
@@ -472,6 +501,7 @@ describe('EVM asset', () => {
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
           decimals: 18,
+          fees: hostToXFees,
         },
       })
       let txHashBroadcasted = ''

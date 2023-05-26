@@ -9,6 +9,24 @@ import BigNumber from 'bignumber.js'
 const TEST_MNEMONIC =
   'remind hat sibling sock multiply heart tuition magic bounce option yard rely daring raven basket wood bike educate ensure museum gorilla oyster tower ability claim'
 
+const nativeToXFees = {
+  networkFee: 1e18,
+  minNodeOperatorFee: 2e18,
+  basisPoints: {
+    nativeToHost: 30,
+    nativeToNative: 40,
+  },
+}
+
+const hostToXFees = {
+  networkFee: 5e18,
+  minNodeOperatorFee: 6e18,
+  basisPoints: {
+    hostToHost: 70,
+    hostToNative: 80,
+  },
+}
+
 describe('Algorand asset', () => {
   test('Should create an Algorand asset from constructor', () => {
     const node = new pTokensNode(new pTokensNodeProvider('test-url'))
@@ -23,6 +41,7 @@ describe('Algorand asset', () => {
         decimals: 6,
         vaultAddress: 'vault-contract-address',
         identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+        fees: nativeToXFees,
       },
     })
     expect(asset.symbol).toStrictEqual('SYM')
@@ -44,6 +63,7 @@ describe('Algorand asset', () => {
           isNative: true,
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
+          fees: nativeToXFees,
         },
       })
       fail()
@@ -65,6 +85,7 @@ describe('Algorand asset', () => {
         decimals: 6,
         vaultAddress: 'vault-contract-address',
         identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+        fees: nativeToXFees,
       },
     })
     try {
@@ -88,6 +109,7 @@ describe('Algorand asset', () => {
         decimals: 6,
         vaultAddress: 'vault-contract-address',
         identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+        fees: nativeToXFees,
       },
     })
     try {
@@ -115,6 +137,7 @@ describe('Algorand asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 6,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       try {
@@ -143,6 +166,7 @@ describe('Algorand asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 6,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       try {
@@ -181,6 +205,7 @@ describe('Algorand asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 6,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       try {
@@ -209,6 +234,7 @@ describe('Algorand asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+          fees: hostToXFees,
         },
       })
       try {
@@ -238,6 +264,7 @@ describe('Algorand asset', () => {
           tokenAddress: '123456789',
           tokenReference: 'token-internal-address',
           decimals: 6,
+          fees: hostToXFees,
         },
       })
       try {
@@ -285,6 +312,7 @@ describe('Algorand asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+          fees: hostToXFees,
         },
       })
       let txHashBroadcasted = ''
@@ -348,6 +376,7 @@ describe('Algorand asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+          fees: hostToXFees,
         },
       })
       let txHashBroadcasted = ''
@@ -418,6 +447,7 @@ describe('Algorand asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+          fees: hostToXFees,
         },
       })
       const customTx = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
@@ -485,6 +515,7 @@ describe('Algorand asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 6,
           identity: 'HIBVFSZFK4FEANCOZFIVZNBHLJK3ERRHKDRZVGX4RZU7WQIMSSKL4PQZMA',
+          fees: hostToXFees,
         },
       })
       try {

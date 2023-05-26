@@ -2,6 +2,15 @@ import { pTokensEvmAssetBuilder, pTokensEvmProvider } from '../src'
 import { Blockchain, ChainId, Network } from 'ptokens-constants'
 import { pTokensNode, pTokensNodeProvider } from 'ptokens-node'
 
+const hostToXFees = {
+  networkFee: 5e18,
+  minNodeOperatorFee: 6e18,
+  basisPoints: {
+    hostToHost: 70,
+    hostToNative: 80,
+  },
+}
+
 jest.mock('web3')
 
 describe('EVM asset', () => {
@@ -11,6 +20,7 @@ describe('EVM asset', () => {
       isNative: false,
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
+      fees: hostToXFees,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const node = new pTokensNode(new pTokensNodeProvider('node-provider-url'))
@@ -34,6 +44,7 @@ describe('EVM asset', () => {
       tokenAddress: '123456789',
       tokenReference: 'token-internal-address',
       decimals: 18,
+      fees: hostToXFees,
     }
     const getAssetInfoSpy = jest.spyOn(pTokensNode.prototype, 'getAssetInfoByChainId').mockResolvedValue(assetInfo)
     const provider = new pTokensEvmProvider()

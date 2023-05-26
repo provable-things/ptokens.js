@@ -8,6 +8,24 @@ import BigNumber from 'bignumber.js'
 const tokenAbi = require('../src/abi/pTokenOnEOSContractAbiV2.json')
 const vaultAbi = require('../src/abi/pTokenVaultOnEOSContractAbiV2.json')
 
+const nativeToXFees = {
+  networkFee: 1e18,
+  minNodeOperatorFee: 2e18,
+  basisPoints: {
+    nativeToHost: 30,
+    nativeToNative: 40,
+  },
+}
+
+const hostToXFees = {
+  networkFee: 5e18,
+  minNodeOperatorFee: 6e18,
+  basisPoints: {
+    hostToHost: 70,
+    hostToNative: 80,
+  },
+}
+
 jest.mock('ptokens-node')
 
 describe('EOSIO asset', () => {
@@ -23,6 +41,7 @@ describe('EOSIO asset', () => {
         tokenReference: 'token-internal-address',
         decimals: 8,
         vaultAddress: 'vault-contract-address',
+        fees: hostToXFees,
       },
     })
     expect(asset.symbol).toStrictEqual('SYM')
@@ -45,6 +64,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: undefined,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       fail()
@@ -65,6 +85,7 @@ describe('EOSIO asset', () => {
         tokenReference: 'token-internal-address',
         decimals: 6,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     try {
@@ -87,6 +108,7 @@ describe('EOSIO asset', () => {
         tokenReference: 'token-internal-address',
         decimals: 6,
         vaultAddress: 'vault-contract-address',
+        fees: nativeToXFees,
       },
     })
     try {
@@ -113,6 +135,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 8,
           vaultAddress: 'vault-contract-address',
+          fees: hostToXFees,
         },
       })
       try {
@@ -148,6 +171,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 8,
           vaultAddress: 'vault-contract-address',
+          fees: hostToXFees,
         },
       })
       try {
@@ -175,6 +199,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 8,
           vaultAddress: 'vault-contract-address',
+          fees: hostToXFees,
         },
       })
       try {
@@ -212,6 +237,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 8,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       let txHash = ''
@@ -264,6 +290,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 9,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       let txHash = ''
@@ -316,6 +343,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 8,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       let txHash = ''
@@ -375,6 +403,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 8,
           vaultAddress: 'vault-contract-address',
+          fees: hostToXFees,
         },
       })
       try {
@@ -412,6 +441,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 6,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       const customAction = {
@@ -469,6 +499,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 8,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       try {
@@ -496,6 +527,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 8,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       try {
@@ -531,6 +563,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 8,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       try {
@@ -557,6 +590,7 @@ describe('EOSIO asset', () => {
           tokenReference: 'token-internal-address',
           decimals: 8,
           vaultAddress: 'vault-contract-address',
+          fees: nativeToXFees,
         },
       })
       try {
@@ -592,6 +626,7 @@ describe('EOSIO asset', () => {
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
           decimals: 8,
+          fees: hostToXFees,
         },
       })
       let txHashBroadcasted = ''
@@ -646,6 +681,7 @@ describe('EOSIO asset', () => {
           tokenAddress: 'token-contract-address',
           tokenReference: 'token-internal-address',
           decimals: 8,
+          fees: hostToXFees,
         },
       })
       let txHashBroadcasted = ''
@@ -706,6 +742,7 @@ describe('EOSIO asset', () => {
           tokenAddress: 'token.address',
           tokenReference: 'token-internal-address',
           decimals: 4,
+          fees: hostToXFees,
         },
       })
       const customAction: Action = {
@@ -762,6 +799,7 @@ describe('EOSIO asset', () => {
           tokenAddress: 'token.address',
           tokenReference: 'token-internal-address',
           decimals: 6,
+          fees: hostToXFees,
         },
       })
       try {
