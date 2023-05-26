@@ -26,29 +26,29 @@ export type TransactionStatus = {
 }
 
 export type NativeToXBasisPoints = {
-  /** Basis point fees for native-to-host swap */
+  /** Basis point fees for native-to-host swap. */
   nativeToHost: number
-  /** Basis point fees for native-to-native swap */
+  /** Basis point fees for native-to-native swap. */
   nativeToNative: number
 }
 
 export type HostToXBasisPoints = {
-  /** Basis point fees for host-to-host swap */
+  /** Basis point fees for host-to-host swap. */
   hostToHost: number
-  /** Basis point fees for host-to-native swap */
+  /** Basis point fees for host-to-native swap. */
   hostToNative: number
 }
 
 export type AssetFees = {
-  /** Fees destinated to pay network fees (expressed in token quantity * 1e18) */
+  /** Fees destinated to pay network fees (expressed in token quantity * 1e18). */
   networkFee: number
-  /** Fees destinated to pay network fees (expressed in USD) */
+  /** Fees destinated to pay network fees (expressed in USD). */
   networkFeeUsd?: number
-  /** Minimum fees destinated to node operators (expressed in token quantity * 1e18) */
+  /** Minimum fees destinated to node operators (expressed in token quantity * 1e18). */
   minNodeOperatorFee: number
-  /** Minimum fees destinated to node operators (expressed in USD) */
+  /** Minimum fees destinated to node operators (expressed in USD). */
   minNodeOperatorFeeUsd?: number
-  /** Basis point to calculate node fees destinated to node operators */
+  /** Basis point to calculate node fees destinated to node operators. */
   basisPoints: NativeToXBasisPoints | HostToXBasisPoints
 }
 
@@ -67,7 +67,7 @@ export type AssetInfo = {
   vaultAddress?: string
   /** pNetwork enclave address. */
   identity?: string
-  /** Token-related fees */
+  /** Token-related fees. */
   fees: AssetFees
 }
 
