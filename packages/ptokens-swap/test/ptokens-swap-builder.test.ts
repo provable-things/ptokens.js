@@ -446,6 +446,50 @@ describe('pTokensSwapBuilder', () => {
     }
   })
 
+  test('Should not build a swap for a pegout of PTLOS to BSC', () => {
+    const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
+    const builder = new pTokensSwapBuilder(node)
+    const originatingToken = new pTokensEvmAsset({
+      node,
+      symbol: 'PTLOS',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: false,
+        tokenAddress: '0x7825e833d495f3d1c28872415a4aee339d26ac88',
+        tokenReference: 'token-internal-address',
+        decimals: 18,
+        vaultAddress: 'vault-contract-address',
+        fees: hostToXFees,
+      },
+    })
+    const destinationToken = new pTokensEvmAsset({
+      node,
+      symbol: 'PTLOS',
+      assetInfo: {
+        chainId: ChainId.BscMainnet,
+        isNative: false,
+        tokenAddress: 'ptoken-contract-address',
+        tokenReference: 'token-internal-address',
+        decimals: 18,
+        vaultAddress: 'vault-contract-address',
+        fees: hostToXFees,
+      },
+    })
+    builder.setSourceAsset(originatingToken)
+    try {
+      builder.setAmount('10')
+      builder.addDestinationAsset(
+        destinationToken,
+        '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
+        Buffer.from('user-data')
+      )
+      builder.build()
+      fail()
+    } catch (err) {
+      expect(err.message).toBe('Invalid swap')
+    }
+  })
+
   test('Should not build a swap if source asset is missing', () => {
     const node = new pTokensNode(new pTokensNodeProvider('node-provider'))
     const builder = new pTokensSwapBuilder(node)

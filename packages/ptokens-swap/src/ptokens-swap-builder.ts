@@ -3,6 +3,7 @@ import { pTokensAsset } from 'ptokens-entities'
 import { pTokensNode } from 'ptokens-node'
 import { stringUtils, validators } from 'ptokens-helpers'
 import BigNumber from 'bignumber.js'
+import { ChainId, TokenAddresses } from 'ptokens-constants'
 
 export class pTokensSwapBuilder {
   private _sourceAsset: pTokensAsset
@@ -82,6 +83,11 @@ export class pTokensSwapBuilder {
   }
 
   private isValidSwap() {
+    if (
+      this.sourceAsset.assetInfo.tokenAddress === TokenAddresses.PTLOS_ON_ETH &&
+      this.destinationAssets.some((_dest) => _dest.assetInfo.chainId !== ChainId.TelosMainnet)
+    )
+      return false
     return this.destinationAssets.every(
       (_asset) =>
         stringUtils.addHexPrefix(_asset.assetInfo.tokenReference).toLowerCase() ===
