@@ -60,3 +60,7 @@ export enum Network {
   Mainnet,
   Testnet,
 }
+
+export enum TokenAddresses {
+  PTLOS_ON_ETH = '0x7825e833d495f3d1c28872415a4aee339d26ac88',
+}
