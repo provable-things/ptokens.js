@@ -1,4 +1,4 @@
-import { BlockchainType, ChainId } from 'ptokens-constants'
+import { BlockchainType, ChainId, TokenAddresses } from 'ptokens-constants'
 import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
 import { pTokensEvmProvider } from './ptokens-evm-provider'
 import { onChainFormat } from './lib'
@@ -9,10 +9,12 @@ import { AbiItem } from 'web3-utils'
 
 import pERC20VaultContractAbi from './abi/pERC20VaultContractAbi.json'
 import pTokenOnEVMContractAbi from './abi/pTokenOnETHV2ContractAbi.json'
+import pTokenOnEthERC777Abi from './abi/pTokenOnEthERC777Abi.json'
 
 const SYSTEM_TOKEN_PEG_IN_METHOD = 'pegInEth'
 const ERC20_TOKEN_PEG_IN_METHOD = 'pegIn'
 const ERC20_TOKEN_PEG_OUT_METHOD = 'redeem'
+const ERC777_TOKEN_PEG_OUT_METHOD = 'redeem'
 
 export type pTokenEvmAssetConfig = pTokenAssetConfig & {
   /** An pTokensEvmProvider for interacting with the underlaying blockchain */
@@ -92,6 +94,46 @@ export class pTokensEvmAsset extends pTokensAsset {
     return promi
   }
 
+  private _callRedeem(
+    _amount: BigNumber,
+    _destinationAddress: string,
+    _destinationChainId: string,
+    _userData?: Uint8Array
+  ) {
+    if (
+      this.assetInfo.chainId === ChainId.EthereumMainnet &&
+      this.assetInfo.tokenAddress.toLowerCase() === TokenAddresses.PTLOS_ON_ETH
+    ) {
+      return this.provider.makeContractSend(
+        {
+          method: ERC777_TOKEN_PEG_OUT_METHOD,
+          abi: pTokenOnEthERC777Abi as unknown as AbiItem,
+          contractAddress: this.assetInfo.tokenAddress,
+          value: BigNumber(0),
+        },
+        _userData
+          ? [onChainFormat(_amount, this.assetInfo.decimals).toFixed(), _userData, _destinationAddress]
+          : [onChainFormat(_amount, this.assetInfo.decimals).toFixed(), _destinationAddress]
+      )
+    }
+    return this._provider.makeContractSend(
+      {
+        method: ERC20_TOKEN_PEG_OUT_METHOD,
+        abi: pTokenOnEVMContractAbi as unknown as AbiItem,
+        contractAddress: this.assetInfo.tokenAddress,
+        value: BigNumber(0),
+      },
+      _userData
+        ? [
+            onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
+            _userData,
+            _destinationAddress,
+            _destinationChainId,
+          ]
+        : [onChainFormat(_amount, this.assetInfo.decimals).toFixed(), _destinationAddress, _destinationChainId]
+    )
+  }
+
   protected hostToInterim(
     _amount: BigNumber,
     _destinationAddress: string,
@@ -104,27 +146,7 @@ export class pTokensEvmAsset extends pTokensAsset {
           try {
             if (!this._provider) return reject(new Error('Missing provider'))
             if (this.assetInfo.isNative) return reject(new Error('Invalid call to hostToInterim() for native token'))
-            const txHash: string = await this._provider
-              .makeContractSend(
-                {
-                  method: ERC20_TOKEN_PEG_OUT_METHOD,
-                  abi: pTokenOnEVMContractAbi as unknown as AbiItem,
-                  contractAddress: this.assetInfo.tokenAddress,
-                  value: BigNumber(0),
-                },
-                _userData
-                  ? [
-                      onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
-                      _userData,
-                      _destinationAddress,
-                      _destinationChainId,
-                    ]
-                  : [
-                      onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
-                      _destinationAddress,
-                      _destinationChainId,
-                    ]
-              )
+            const txHash: string = await this._callRedeem(_amount, _destinationAddress, _destinationChainId, _userData)
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash: string) => promi.emit('txConfirmed', _hash))
               .once('error', reject)
