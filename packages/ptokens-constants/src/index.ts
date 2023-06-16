@@ -13,6 +13,7 @@ export enum ChainId {
   FantomMainnet = '0x0022af98',
   AlgorandMainnet = '0x03c38e67',
   LibreMainnet = '0x026776fa',
+  LitecoinMainnet = '0x01840435',
 }
 
 export enum BlockchainType {
@@ -37,6 +38,7 @@ export const chainIdToTypeMap = new Map<string, BlockchainType>([
   [ChainId.FantomMainnet, BlockchainType.EVM],
   [ChainId.AlgorandMainnet, BlockchainType.ALGORAND],
   [ChainId.LibreMainnet, BlockchainType.EOSIO],
+  [ChainId.LitecoinMainnet, BlockchainType.UTXO],
 ])
 
 export enum Blockchain {
@@ -54,6 +56,7 @@ export enum Blockchain {
   Fantom,
   Algorand,
   Libre,
+  Litecoin,
 }
 
 export enum Network {

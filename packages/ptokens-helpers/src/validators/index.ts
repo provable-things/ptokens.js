@@ -27,6 +27,7 @@ export const chainIdToAddressValidatorMap: Map<ChainId, (_address: string) => bo
   [ChainId.TelosMainnet, eosioAddressValidator],
   [ChainId.UltraMainnet, eosioAddressValidator],
   [ChainId.XdaiMainnet, validatorFunction('eth')],
+  [ChainId.LitecoinMainnet, validatorFunction('ltc')],
 ])
 
 export function isValidAddressByChainId(_address: string, _chainId: ChainId) {
