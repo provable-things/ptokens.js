@@ -5,7 +5,7 @@ describe('chainIdToAddressValidatorMap', () => {
   test('Should get an address validator for every chain ID', () => {
     expect(
       Object.values(ChainId).every(
-        (_chainId) => Object.values(validators.chainIdToAddressValidatorMap.get(_chainId)) !== undefined
+        (_chainId) =>validators.chainIdToAddressValidatorMap.get(_chainId) !== undefined
       )
     ).toBeTruthy()
   })
@@ -86,6 +86,16 @@ describe('isValidAddressByChainId', () => {
     [ChainId.TelosMainnet, eosioAddresses],
     [ChainId.UltraMainnet, eosioAddresses],
     [ChainId.XdaiMainnet, evmAddresses],
+    [
+      ChainId.LitecoinMainnet,
+      [
+        { address: 'ltc1q00045kp4d4t884428ua6j6tncx6g405y7epwju', expected: true },
+        { address: 'LZFCnLDitY1cdojxSTPetsSA7DgVC1gKcj', expected: true },
+        { address: 'LZFCnLDitY1cdojxSTPetsSA7DgVC1gKcJ', expected: false },
+        { address: 'MJRSgZ3UUFcTBTBAaN38XAXvZLwRe8WVw7', expected: true },
+        { address: '3CDJNfdWX8m2NwuGUV3nhXHXEeLygMXoAj', expected: true },
+      ],
+    ],
   ])
 
   test('Should correctly check address validity', () => {
