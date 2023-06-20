@@ -7,9 +7,10 @@
     "dev": "lerna run --parallel dev",
     "doc": "typedoc",
     "lint": "lerna run lint",
+    "prepare": "husky install",
+    "publish": "npm run build && lerna publish",
     "test": "lerna run test",
-    "type-check": "lerna run type-check",
-    "prepare": "husky install"
+    "type-check": "lerna run type-check"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
