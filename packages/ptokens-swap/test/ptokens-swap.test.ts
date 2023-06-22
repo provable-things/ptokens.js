@@ -1,7 +1,9 @@
-import { NetworkId } from 'ptokens-constants'
-import { pTokensSwap, pTokensSwapBuilder } from '../src/index'
-import { pTokenAssetFailingMock, pTokenAssetMock, pTokensProviderMock } from './mocks/ptoken-asset'
 import BigNumber from 'bignumber.js'
+import { NetworkId } from 'ptokens-constants'
+
+import { pTokensSwap, pTokensSwapBuilder } from '../src/index'
+
+import { pTokenAssetFailingMock, pTokenAssetMock, pTokensProviderMock } from './mocks/ptoken-asset'
 
 jest.setTimeout(10000)
 

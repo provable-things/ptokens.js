@@ -1,13 +1,14 @@
+import BigNumber from 'bignumber.js'
+import PromiEvent from 'promievent'
+import { TransactionReceipt } from 'web3-core'
+import { AbiItem } from 'web3-utils'
+
 import { pTokensEvmProvider } from '../src'
 import * as utils from '../src/lib'
-import PromiEvent from 'promievent'
-import { AbiItem } from 'web3-utils'
-import { TransactionReceipt } from 'web3-core'
-import BigNumber from 'bignumber.js'
 
 const abi = require('./utils/exampleContractABI.json')
-const receiptWithTrueStatus = require('./utils/receiptWithTrueStatus.json')
 const receiptWithFalseStatus = require('./utils/receiptWithFalseStatus.json')
+const receiptWithTrueStatus = require('./utils/receiptWithTrueStatus.json')
 
 describe('EVM provider', () => {
   beforeEach(() => {

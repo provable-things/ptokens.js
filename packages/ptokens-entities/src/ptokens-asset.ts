@@ -1,8 +1,8 @@
+import BigNumber from 'bignumber.js'
+import PromiEvent from 'promievent'
 import { Blockchain, BlockchainType, NetworkId, networkIdToTypeMap, Network } from 'ptokens-constants'
 import { maps } from 'ptokens-helpers'
 
-import PromiEvent from 'promievent'
-import BigNumber from 'bignumber.js'
 import { pTokensAssetProvider } from './ptokens-asset-provider'
 
 export type pTokenAssetConfig = {

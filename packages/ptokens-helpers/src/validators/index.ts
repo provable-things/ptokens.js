@@ -1,5 +1,5 @@
-import { NetworkId } from 'ptokens-constants'
 import { validate } from 'multicoin-address-validator'
+import { NetworkId } from 'ptokens-constants'
 
 const validatorFunction =
   (_blockchain: string, _network = 'prod') =>

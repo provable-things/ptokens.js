@@ -1,13 +1,12 @@
+import BigNumber from 'bignumber.js'
+import PromiEvent from 'promievent'
 import { BlockchainType } from 'ptokens-constants'
 import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
-import { pTokensEvmProvider } from './ptokens-evm-provider'
-import { onChainFormat } from './lib'
-
-import PromiEvent from 'promievent'
-import BigNumber from 'bignumber.js'
 import { AbiItem } from 'web3-utils'
 
 import pRouterAbi from './abi/PRouterAbi.json'
+import { onChainFormat } from './lib'
+import { pTokensEvmProvider } from './ptokens-evm-provider'
 
 const USER_SEND_METHOD = 'userSend'
 

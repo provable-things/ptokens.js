@@ -1,4 +1,5 @@
 import { NetworkId } from 'ptokens-constants'
+
 import { validators } from '../src/'
 
 describe('chainIdToAddressValidatorMap', () => {

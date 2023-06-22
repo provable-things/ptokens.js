@@ -1,7 +1,7 @@
-import { pTokensAsset } from 'ptokens-entities'
-import PromiEvent from 'promievent'
-import polling from 'light-async-polling'
 import BigNumber from 'bignumber.js'
+import polling from 'light-async-polling'
+import PromiEvent from 'promievent'
+import { pTokensAsset } from 'ptokens-entities'
 
 export type DestinationInfo = {
   asset: pTokensAsset

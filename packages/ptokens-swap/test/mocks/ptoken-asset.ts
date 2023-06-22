@@ -1,6 +1,6 @@
+import PromiEvent from 'promievent'
 import { BlockchainType } from 'ptokens-constants'
 import { pTokensAsset, pTokensAssetProvider, pTokenAssetConfig } from 'ptokens-entities'
-import PromiEvent from 'promievent'
 
 export class pTokensProviderMock implements pTokensAssetProvider {
   waitForTransactionConfirmation(_txHash: string): Promise<string> {

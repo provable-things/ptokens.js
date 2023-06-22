@@ -1,8 +1,8 @@
-import { Blockchain, NetworkId, Network } from 'ptokens-constants'
-import { pTokensEvmAsset, pTokensEvmProvider } from '../src'
-
-import PromiEvent from 'promievent'
 import BigNumber from 'bignumber.js'
+import PromiEvent from 'promievent'
+import { Blockchain, NetworkId, Network } from 'ptokens-constants'
+
+import { pTokensEvmAsset, pTokensEvmProvider } from '../src'
 
 const pRouterAbi = require('../src/abi/PRouterAbi.json')
 

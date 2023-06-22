@@ -1,8 +1,9 @@
-import { pTokensSwap, DestinationInfo } from './ptokens-swap'
-import { pTokensAsset } from 'ptokens-entities'
-import { validators } from 'ptokens-helpers'
 import BigNumber from 'bignumber.js'
 import { NetworkId, RouterAddress } from 'ptokens-constants'
+import { pTokensAsset } from 'ptokens-entities'
+import { validators } from 'ptokens-helpers'
+
+import { pTokensSwap, DestinationInfo } from './ptokens-swap'
 
 export class pTokensSwapBuilder {
   private _routerAddress: string

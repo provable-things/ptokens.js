@@ -1,5 +1,6 @@
-import { http, errors } from '../src/'
 import { createServer, Server } from 'http'
+
+import { http, errors } from '../src/'
 
 describe('Http general tests', () => {
   describe('getRequest/postRequest (timeouts)', () => {

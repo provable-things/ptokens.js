@@ -1,4 +1,5 @@
 import fetch from 'cross-fetch'
+
 import { ERROR_JSON_RESPONSE_EXTRACTION, ERROR_UNEXPECTED_HTTP_STATUS } from '../errors'
 
 export async function postRequest(_url: string, _body, _headers: HeadersInit | undefined = {}, _timeout = 2000) {

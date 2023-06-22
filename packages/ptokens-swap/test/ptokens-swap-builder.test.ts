@@ -1,6 +1,7 @@
-import { pTokensSwapBuilder } from '../src/index'
 import { pTokensEvmAsset } from 'ptokens-assets-evm'
 import { NetworkId } from 'ptokens-constants'
+
+import { pTokensSwapBuilder } from '../src/index'
 
 describe('pTokensSwapBuilder', () => {
   test('Should build a swap', () => {

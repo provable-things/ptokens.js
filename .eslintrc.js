@@ -12,6 +12,8 @@ module.exports = {
       extends: [
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
+        'plugin:import/recommended',
+        'plugin:import/typescript',
       ],
       rules: {
         'prettier/prettier': 'warn',
@@ -28,9 +30,20 @@ module.exports = {
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',
-        "tsdoc/syntax": "warn"
+        "tsdoc/syntax": "warn",
+        "import/newline-after-import": "error",
+        "import/order": [
+          "error",
+          {
+            "newlines-between": "always",
+            "alphabetize": {
+              "order": "asc" /* sort in ascending order. Options: ['ignore', 'asc', 'desc'] */,
+              "caseInsensitive": true /* ignore case. Options: [true, false] */
+            }
+      }
+    ],
       },
-      parserOptions: {
+      "parserOptions": {
         tsconfigRootDir: __dirname,
         project: ['./tsconfig.json'], // Specify it only for TypeScript files
       },
