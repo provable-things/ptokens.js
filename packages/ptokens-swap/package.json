@@ -18,8 +18,7 @@
     "promievent": "^0.1.5",
     "ptokens-constants": "^1.4.0",
     "ptokens-entities": "^1.4.0",
-    "ptokens-helpers": "^1.4.0",
-    "ptokens-node": "^1.4.0"
+    "ptokens-helpers": "^1.4.0"
   },
   "devDependencies": {
     "ptokens-assets-evm": "^1.4.0",

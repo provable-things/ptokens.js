@@ -3,7 +3,7 @@ This package permits to create a `pTokensEvmAsset` object for creating a swap.
 A `pTokensEvmAsset` object can be created as follows:
 ```ts
 const {
-  ChainId,
+  NetworkId,
   pTokensNode,
   pTokensNodeProvider,
   pTokensEvmAssetBuilder,
@@ -18,8 +18,8 @@ const node = new pTokensNode(provider)
 // create builders
 const evmBuilder = new pTokensEvmAssetBuilder(node)
 
-// create an EVM asset for pBTC on Ethereum Mainnet
-evmBuilder.setBlockchain(ChainId.EthereumMainnet)
+// create an EVM asset for pBTC on Sepolia Testnet
+evmBuilder.setBlockchain(NetworkId.EthereumMainnet)
 evmBuilder.setSymbol('pbtc')
 const evmAsset = await evmBuilder.build()
 ```

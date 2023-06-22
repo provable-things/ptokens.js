@@ -1,22 +1,30 @@
 import { pTokensSwap, DestinationInfo } from './ptokens-swap'
 import { pTokensAsset } from 'ptokens-entities'
-import { pTokensNode } from 'ptokens-node'
-import { stringUtils, validators } from 'ptokens-helpers'
+import { validators } from 'ptokens-helpers'
 import BigNumber from 'bignumber.js'
-import { ChainId, TokenAddresses } from 'ptokens-constants'
+import { NetworkId, RouterAddress } from 'ptokens-constants'
 
 export class pTokensSwapBuilder {
+  private _routerAddress: string
   private _sourceAsset: pTokensAsset
   private _destinationAssets: DestinationInfo[] = []
   private _amount: BigNumber
-  private _node: pTokensNode
 
   /**
-   * Create and initialize a pTokensSwapBuilder object.
-   * @param _node - A pNetworkNode necessary for pNetworkSwap.
+   * Return the router address for the swap.
    */
-  constructor(_node: pTokensNode) {
-    this._node = _node
+  get routerAddress(): string {
+    return this._routerAddress || RouterAddress.get(this._sourceAsset.assetInfo.networkId as NetworkId)
+  }
+
+  /**
+   * Set a custom pTokens router address for the swap.
+   * @param _routerAddress - Address of the pTokens router contract
+   * @returns The same builder. This allows methods chaining.
+   */
+  setRouterAddress(_routerAddress: string) {
+    this._routerAddress = _routerAddress
+    return this
   }
 
   /**
@@ -52,7 +60,7 @@ export class pTokensSwapBuilder {
    * @returns The same builder. This allows methods chaining.
    */
   addDestinationAsset(_asset: pTokensAsset, _destinationAddress: string, _userData: Uint8Array = undefined) {
-    const isValidAddressFunction = validators.chainIdToAddressValidatorMap.get(_asset.chainId)
+    const isValidAddressFunction = validators.chainIdToAddressValidatorMap.get(_asset.networkId)
     if (!isValidAddressFunction(_destinationAddress)) throw new Error('Invalid destination address')
     this._destinationAssets.push({ asset: _asset, destinationAddress: _destinationAddress, userData: _userData })
     return this
@@ -75,24 +83,8 @@ export class pTokensSwapBuilder {
     return this
   }
 
-  /**
-   * Return the pTokensNode set when creating the builder.
-   */
-  get node(): pTokensNode {
-    return this._node
-  }
-
   private isValidSwap() {
-    if (
-      this.sourceAsset.assetInfo.tokenAddress === TokenAddresses.PTLOS_ON_ETH &&
-      this.destinationAssets.some((_dest) => _dest.assetInfo.chainId !== ChainId.TelosMainnet)
-    )
-      return false
-    return this.destinationAssets.every(
-      (_asset) =>
-        stringUtils.addHexPrefix(_asset.assetInfo.tokenReference).toLowerCase() ===
-        stringUtils.addHexPrefix(this.sourceAsset.assetInfo.tokenReference).toLowerCase()
-    )
+    return true
   }
 
   /**
@@ -100,11 +92,14 @@ export class pTokensSwapBuilder {
    * @returns - An immutable pTokensSwap object.
    */
   build(): pTokensSwap {
-    if (!this._amount) throw new Error('Missing amount')
     if (!this._sourceAsset) throw new Error('Missing source asset')
+    if (!this.routerAddress) throw new Error('Missing router address')
+    if (!validators.isValidAddressByChainId(this.routerAddress, this._sourceAsset.networkId))
+      throw new Error('Invalid router address')
     if (this._destinationAssets.length === 0) throw new Error('Missing destination assets')
+    if (!this._amount) throw new Error('Missing amount')
     if (!this.isValidSwap()) throw new Error('Invalid swap')
-    const ret = new pTokensSwap(this._node, this.sourceAsset, this._destinationAssets, this._amount)
+    const ret = new pTokensSwap(this.routerAddress, this.sourceAsset, this._destinationAssets, this._amount)
     return ret
   }
 }

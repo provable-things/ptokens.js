@@ -1,25 +1,70 @@
-import { Blockchain, BlockchainType, ChainId, chainIdToTypeMap, Network } from 'ptokens-constants'
+import { Blockchain, BlockchainType, NetworkId, networkIdToTypeMap, Network } from 'ptokens-constants'
 import { maps } from 'ptokens-helpers'
-import { pTokensNode, AssetInfo } from 'ptokens-node'
 
 import PromiEvent from 'promievent'
 import BigNumber from 'bignumber.js'
 import { pTokensAssetProvider } from './ptokens-asset-provider'
 
 export type pTokenAssetConfig = {
-  /** A pTokensNode to interact with the pNetwork. */
-  node: pTokensNode
-  /** The token symbol. */
-  symbol: string
   /** An AssetInfo object containing asset technical details. */
   assetInfo: AssetInfo
   /** The asset weight during the swap. Defaults to 1. Actually it is not supported.  */
   weight?: number
 }
 
+export type NativeToXBasisPoints = {
+  /** Basis point fees for native-to-host swap. */
+  nativeToHost: number
+  /** Basis point fees for native-to-native swap. */
+  nativeToNative: number
+}
+
+export type HostToXBasisPoints = {
+  /** Basis point fees for host-to-host swap. */
+  hostToHost: number
+  /** Basis point fees for host-to-native swap. */
+  hostToNative: number
+}
+
+export type AssetFees = {
+  /** Fees destinated to pay network fees (expressed in token quantity * 1e18). */
+  networkFee: number
+  /** Fees destinated to pay network fees (expressed in USD). */
+  networkFeeUsd?: number
+  /** Minimum fees destinated to node operators (expressed in token quantity * 1e18). */
+  minNodeOperatorFee: number
+  /** Minimum fees destinated to node operators (expressed in USD). */
+  minNodeOperatorFeeUsd?: number
+  /** Basis point to calculate node fees destinated to node operators. */
+  basisPoints: NativeToXBasisPoints | HostToXBasisPoints
+}
+
+export type AssetInfo = {
+  /** The chain ID of the asset's blockchain. */
+  networkId: string
+  /** Asset symbol */
+  symbol: string
+  /** Token smart contract address. */
+  assetTokenAddress: string
+  /** Token's decimals. */
+  decimals?: number
+  /** pNetwork enclave address. */
+  identity?: string
+  // /** Token-related fees. */
+  // fees: AssetFees
+  /** Underlying asset decmials*/
+  underlyingAssetName: string
+  /** Underlying asset symbol*/
+  underlyingAssetSymbol: string
+  /** Underlying asset decimals*/
+  underlyingAssetDecimals: number
+  /** Underlying asset token address*/
+  underlyingAssetTokenAddress: string
+  /** Underlying asset network ID */
+  underlyingAssetNetworkId: string
+}
+
 export abstract class pTokensAsset {
-  private _node: pTokensNode
-  private _symbol: string
   private _assetInfo: AssetInfo
   private _weight: number
   private _type: BlockchainType
@@ -28,49 +73,36 @@ export abstract class pTokensAsset {
    * Create and initialize a pTokensAsset object. pTokensAsset objects shall be created with a pTokensAssetBuilder instance.
    */
   constructor(_config: pTokenAssetConfig, _type: BlockchainType) {
-    if (!_config.node) throw new Error('Missing node')
-    if (!_config.symbol) throw new Error('Missing symbol')
     if (!_config.assetInfo) throw new Error('Missing asset info')
-    if (chainIdToTypeMap.get(_config.assetInfo.chainId) !== _type) throw new Error('Not supported chain ID')
+    if (networkIdToTypeMap.get(_config.assetInfo.networkId) !== _type) throw new Error('Not supported chain ID')
     this._type = _type
-    this._node = _config.node
-    this._symbol = _config.symbol
     this._assetInfo = _config.assetInfo
     this._weight = _config.weight || 1
   }
 
-  get node(): pTokensNode {
-    return this._node
-  }
-
   /** Return the token's symbol. */
   get symbol(): string {
-    return this._symbol
+    return this.assetInfo.symbol
   }
 
   /** Return the chain ID of the token. */
-  get chainId(): ChainId {
-    return this.assetInfo.chainId as ChainId
+  get networkId(): NetworkId {
+    return this.assetInfo.networkId as NetworkId
   }
 
   /** Return the blockchain of the token. */
   get blockchain(): Blockchain {
-    return maps.chainIdToBlockchainMap.get(this._assetInfo.chainId).blockchain
+    return maps.chainIdToBlockchainMap.get(this._assetInfo.networkId).blockchain
   }
 
   /** Return the blockchain's network of the token. */
   get network(): Network {
-    return maps.chainIdToBlockchainMap.get(this._assetInfo.chainId).network
-  }
-
-  /** Return the vault address for the token. */
-  get vaultAddress(): string {
-    return this.assetInfo.vaultAddress ? this.assetInfo.vaultAddress : null
+    return maps.chainIdToBlockchainMap.get(this._assetInfo.networkId).network
   }
 
   /** Return token smart contract address. */
-  get tokenAddress(): string {
-    return this.assetInfo.tokenAddress ? this.assetInfo.tokenAddress : null
+  get assetTokenAddress(): string {
+    return this.assetInfo.assetTokenAddress ? this.assetInfo.assetTokenAddress : null
   }
 
   /** Return the pNetwork enclave address for the token. */
@@ -88,17 +120,19 @@ export abstract class pTokensAsset {
     return this._assetInfo
   }
 
+  /** Return true if asset is native, false otherwise */
+  get isNative(): boolean {
+    return (
+      this._assetInfo.underlyingAssetNetworkId === this._assetInfo.networkId &&
+      this._assetInfo.assetTokenAddress === this._assetInfo.underlyingAssetTokenAddress
+    )
+  }
+
   /** Return the pTokensAssetProvider eventually assigned */
   abstract get provider(): pTokensAssetProvider
 
-  protected abstract nativeToInterim(
-    _amount: BigNumber,
-    _destinationAddress: string,
-    _destinationChainId: string,
-    _userData?: Uint8Array
-  ): PromiEvent<string>
-
-  protected abstract hostToInterim(
+  protected abstract swap(
+    _routerAddress: string,
     _amount: BigNumber,
     _destinationAddress: string,
     _destinationChainId: string,

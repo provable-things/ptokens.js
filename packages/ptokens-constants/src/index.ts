@@ -1,19 +1,6 @@
-export enum ChainId {
-  EthereumMainnet = '0x005fe7f9',
-  BitcoinMainnet = '0x01ec97de',
-  BitcoinTestnet = '0x018afeb2',
-  EosMainnet = '0x02e7261c',
-  TelosMainnet = '0x028c7109',
-  BscMainnet = '0x00e4b170',
-  XdaiMainnet = '0x00f1918e',
-  PolygonMainnet = '0x0075dd4c',
-  UltraMainnet = '0x02f9337d',
-  ArbitrumMainnet = '0x00ce98c4',
-  LuxochainMainnet = '0x00d5beb0',
-  FantomMainnet = '0x0022af98',
-  AlgorandMainnet = '0x03c38e67',
-  LibreMainnet = '0x026776fa',
-  LitecoinMainnet = '0x01840435',
+export enum NetworkId {
+  SepoliaTestnet = '0x00112233',
+  GoerliTestnet = '0x33221100',
 }
 
 export enum BlockchainType {
@@ -23,26 +10,15 @@ export enum BlockchainType {
   ALGORAND,
 }
 
-export const chainIdToTypeMap = new Map<string, BlockchainType>([
-  [ChainId.EthereumMainnet, BlockchainType.EVM],
-  [ChainId.BitcoinMainnet, BlockchainType.UTXO],
-  [ChainId.BitcoinTestnet, BlockchainType.UTXO],
-  [ChainId.EosMainnet, BlockchainType.EOSIO],
-  [ChainId.TelosMainnet, BlockchainType.EOSIO],
-  [ChainId.BscMainnet, BlockchainType.EVM],
-  [ChainId.XdaiMainnet, BlockchainType.EVM],
-  [ChainId.PolygonMainnet, BlockchainType.EVM],
-  [ChainId.UltraMainnet, BlockchainType.EOSIO],
-  [ChainId.ArbitrumMainnet, BlockchainType.EVM],
-  [ChainId.LuxochainMainnet, BlockchainType.EVM],
-  [ChainId.FantomMainnet, BlockchainType.EVM],
-  [ChainId.AlgorandMainnet, BlockchainType.ALGORAND],
-  [ChainId.LibreMainnet, BlockchainType.EOSIO],
-  [ChainId.LitecoinMainnet, BlockchainType.UTXO],
+export const networkIdToTypeMap = new Map<string, BlockchainType>([
+  [NetworkId.SepoliaTestnet, BlockchainType.EVM],
+  [NetworkId.GoerliTestnet, BlockchainType.EVM],
 ])
 
 export enum Blockchain {
   Ethereum,
+  Sepolia,
+  Goerli,
   Bitcoin,
   Eos,
   Telos,
@@ -64,6 +40,7 @@ export enum Network {
   Testnet,
 }
 
-export enum TokenAddresses {
-  PTLOS_ON_ETH = '0x7825e833d495f3d1c28872415a4aee339d26ac88',
-}
+export const RouterAddress = new Map<NetworkId, string>([
+  [NetworkId.SepoliaTestnet, '0x009B71922e2d52CE013df4a380B29A33aF7B3894'],
+  [NetworkId.GoerliTestnet, '0x4968E180f5f26c0109E37B86cAf070627105e041'],
+])

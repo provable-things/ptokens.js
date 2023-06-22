@@ -24,20 +24,10 @@ export class pTokenAssetMock extends pTokensAsset {
     if (_config.provider) this._provider = _config.provider
   }
 
-  nativeToInterim(): PromiEvent<string> {
+  swap(): PromiEvent<string> {
     const promi = new PromiEvent<string>((resolve) =>
       setImmediate(() => {
         promi.emit('depositAddress', 'deposit-address')
-        promi.emit('txBroadcasted', 'originating-tx-hash')
-        promi.emit('txConfirmed', 'originating-tx-hash')
-        resolve('originating-tx-hash')
-      })
-    )
-    return promi
-  }
-  hostToInterim(): PromiEvent<string> {
-    const promi = new PromiEvent<string>((resolve) =>
-      setImmediate(() => {
         promi.emit('txBroadcasted', 'originating-tx-hash')
         promi.emit('txConfirmed', 'originating-tx-hash')
         resolve('originating-tx-hash')
@@ -55,26 +45,16 @@ export class pTokenAssetFailingMock extends pTokensAsset {
   }
 
   constructor(_config: pTokenAssetMockConfig) {
-    super(_config, BlockchainType.ALGORAND)
+    super(_config, BlockchainType.EVM)
     if (_config.provider) this._provider = _config.provider
   }
 
-  nativeToInterim(): PromiEvent<string> {
+  swap(): PromiEvent<string> {
     const promi = new PromiEvent<string>((resolve, reject) =>
       setImmediate(() => {
         promi.emit('depositAddress', 'deposit-address')
         promi.emit('txBroadcasted', 'originating-tx-hash')
-        return reject(new Error('nativeToInterim error'))
-      })
-    )
-    return promi
-  }
-  hostToInterim(): PromiEvent<string> {
-    const promi = new PromiEvent<string>((resolve, reject) =>
-      setImmediate(() => {
-        promi.emit('txBroadcasted', 'originating-tx-hash')
-        promi.emit('txConfirmed', 'originating-tx-hash')
-        return reject(new Error('hostToInterim error'))
+        return reject(new Error('swap error'))
       })
     )
     return promi

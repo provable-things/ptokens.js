@@ -11,14 +11,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "ptokens-assets-algorand": "^1.4.0",
-    "ptokens-assets-eosio": "^1.4.0",
     "ptokens-assets-evm": "^1.4.0",
-    "ptokens-assets-utxo": "^1.4.0",
     "ptokens-constants": "^1.4.0",
     "ptokens-entities": "^1.4.0",
     "ptokens-helpers": "^1.4.0",
-    "ptokens-node": "^1.4.0",
     "ptokens-swap": "^1.4.0"
   }
 }

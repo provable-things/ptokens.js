@@ -1,7 +1,7 @@
-import { ChainId, chainIdToTypeMap } from '../src/'
+import { NetworkId, networkIdToTypeMap } from '../src/'
 
-describe('chainIdToTypeMap', () => {
+describe('networkIdToTypeMap', () => {
   test('Should map all ChainIds', () => {
-    expect(Object.values(ChainId).every((_chainId) => chainIdToTypeMap.get(_chainId) !== undefined)).toBeTruthy()
+    expect(Object.values(NetworkId).every((_networkId) => networkIdToTypeMap.get(_networkId) !== undefined)).toBeTruthy()
   })
 })
