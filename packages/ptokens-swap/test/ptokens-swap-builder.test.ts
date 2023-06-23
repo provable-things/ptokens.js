@@ -36,7 +36,7 @@ describe('pTokensSwapBuilder', () => {
     builder.addDestinationAsset(
       destinationToken,
       '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
-      Buffer.from('user-data')
+      Buffer.from('user-data').toString('hex')
     )
     builder.setAmount(1000)
     const swap = builder.build()
@@ -83,7 +83,7 @@ describe('pTokensSwapBuilder', () => {
     builder.addDestinationAsset(
       destinationToken,
       '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
-      Buffer.from('user-data')
+      Buffer.from('user-data').toString('hex')
     )
     builder.setAmount(1000)
     const swap = builder.build()
@@ -126,7 +126,7 @@ describe('pTokensSwapBuilder', () => {
     })
     builder.setSourceAsset(originatingToken)
     try {
-      builder.addDestinationAsset(destinationToken, 'invalid-eth-address', Buffer.from('user-data'))
+      builder.addDestinationAsset(destinationToken, 'invalid-eth-address', Buffer.from('user-data').toString('hex'))
       fail()
     } catch (err) {
       expect(err.message).toBe('Invalid destination address')

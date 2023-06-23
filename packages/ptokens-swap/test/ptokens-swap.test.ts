@@ -150,7 +150,11 @@ describe('pTokensSwap', () => {
       .setRouterAddress(routerAddress)
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
-      .addDestinationAsset(destinationAsset, '0x28B2A40b6046850a569843cF740f15CF29792Ac2', Buffer.from('user-data'))
+      .addDestinationAsset(
+        destinationAsset,
+        '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
+        Buffer.from('user-data').toString('hex')
+      )
     const swap = builder.build()
     const promi = swap.execute()
     let inputTxBroadcasted = false,
@@ -251,7 +255,11 @@ describe('pTokensSwap', () => {
       .setRouterAddress(routerAddress)
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
-      .addDestinationAsset(destinationAsset, '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF', Buffer.from('user-data'))
+      .addDestinationAsset(
+        destinationAsset,
+        '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF',
+        Buffer.from('user-data').toString('hex')
+      )
     const swap = builder.build()
     const promi = swap.execute()
     let inputTxBroadcasted = false,
@@ -351,7 +359,11 @@ describe('pTokensSwap', () => {
       .setRouterAddress(routerAddress)
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
-      .addDestinationAsset(destinationAsset, '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF', Buffer.from('user-data'))
+      .addDestinationAsset(
+        destinationAsset,
+        '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF',
+        Buffer.from('user-data').toString('hex')
+      )
     const swap = builder.build()
     try {
       await swap.execute()

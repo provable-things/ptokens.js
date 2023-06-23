@@ -1,6 +1,6 @@
 export enum NetworkId {
-  SepoliaTestnet = '0x00112233',
-  GoerliTestnet = '0x33221100',
+  SepoliaTestnet = '0xe15503e4',
+  GoerliTestnet = '0xb9286154',
 }
 
 export enum BlockchainType {

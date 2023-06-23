@@ -74,6 +74,12 @@ export abstract class pTokensAsset {
    */
   constructor(_config: pTokenAssetConfig, _type: BlockchainType) {
     if (!_config.assetInfo) throw new Error('Missing asset info')
+    console.info('_config.assetInfo', _config.assetInfo)
+    console.info('constructor type', _type)
+    console.info(
+      'constructor networkIdToTypeMap.get(_config.assetInfo.networkId)',
+      networkIdToTypeMap.get(_config.assetInfo.networkId)
+    )
     if (networkIdToTypeMap.get(_config.assetInfo.networkId) !== _type) throw new Error('Not supported chain ID')
     this._type = _type
     this._assetInfo = _config.assetInfo
@@ -136,6 +142,6 @@ export abstract class pTokensAsset {
     _amount: BigNumber,
     _destinationAddress: string,
     _destinationChainId: string,
-    _userData?: Uint8Array
+    _userData?: string
   ): PromiEvent<string>
 }

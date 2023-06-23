@@ -35,14 +35,30 @@ export class pTokensEvmAsset extends pTokensAsset {
     _amount: BigNumber,
     _destinationAddress: string,
     _destinationChainId: string,
-    _userData: Uint8Array = new Uint8Array(0),
-    _optionsMask: Uint8Array = new Uint8Array(4)
+    _userData = '0x',
+    _optionsMask = '0x0000000000000000000000000000000000000000000000000000000000000000'
   ): PromiEvent<string> {
     const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {
           try {
+            console.info('evm asset swap')
             if (!this._provider) return reject(new Error('Missing provider'))
+            const args = [
+              _destinationAddress,
+              _destinationChainId,
+              this.assetInfo.underlyingAssetName,
+              this.assetInfo.underlyingAssetSymbol,
+              this.assetInfo.underlyingAssetDecimals,
+              this.assetInfo.underlyingAssetTokenAddress,
+              this.assetInfo.underlyingAssetNetworkId,
+              this.assetInfo.assetTokenAddress,
+              onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
+              _userData.toString(),
+              _optionsMask,
+            ]
+            console.info('_routerAddress', _routerAddress)
+            console.info('args', args)
             const txHash: string = await this._provider
               .makeContractSend(
                 {
@@ -51,19 +67,7 @@ export class pTokensEvmAsset extends pTokensAsset {
                   contractAddress: _routerAddress,
                   value: BigNumber(0),
                 },
-                [
-                  _destinationAddress,
-                  _destinationChainId,
-                  this.assetInfo.underlyingAssetName,
-                  this.assetInfo.underlyingAssetSymbol,
-                  this.assetInfo.underlyingAssetDecimals,
-                  this.assetInfo.underlyingAssetTokenAddress,
-                  this.assetInfo.underlyingAssetNetworkId,
-                  this.assetInfo.assetTokenAddress,
-                  onChainFormat(_amount, this.assetInfo.decimals).toFixed(),
-                  _userData,
-                  _optionsMask,
-                ]
+                args
               )
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
               .once('txConfirmed', (_hash: string) => promi.emit('txConfirmed', _hash))

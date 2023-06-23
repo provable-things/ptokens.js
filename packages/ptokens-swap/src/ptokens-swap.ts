@@ -1,12 +1,11 @@
 import BigNumber from 'bignumber.js'
-import polling from 'light-async-polling'
 import PromiEvent from 'promievent'
 import { pTokensAsset } from 'ptokens-entities'
 
 export type DestinationInfo = {
   asset: pTokensAsset
   destinationAddress: string
-  userData?: Uint8Array
+  userData?: string
 }
 
 export class pTokensSwap {
@@ -35,6 +34,13 @@ export class pTokensSwap {
     this._amount = amount
     this._controller = new AbortController()
     if (!this.isAmountSufficient()) throw new Error('Insufficient amount to cover fees')
+  }
+
+  /**
+   * Return the pTokens router address
+   */
+  get routerAddress(): string {
+    return this._routerAddress
   }
 
   /**
@@ -141,6 +147,7 @@ export class pTokensSwap {
       (resolve, reject) =>
         (async () => {
           try {
+            console.info('swap execute!')
             this._controller.signal.addEventListener('abort', () => reject(new Error('Swap aborted by user')))
             const txHash = await this.sourceAsset['swap'](
               this._routerAddress,
@@ -149,13 +156,12 @@ export class pTokensSwap {
               this._destinationAssets[0].asset.networkId,
               this._destinationAssets[0].userData
             )
-              .on('depositAddress', (depositAddress) => {
-                promi.emit('depositAddress', depositAddress)
-              })
               .on('txBroadcasted', (txHash) => {
-                promi.emit('inputTxBroadcasteds', txHash)
+                console.info('txBroadcasted swap', txHash)
+                promi.emit('inputTxBroadcasted', txHash)
               })
               .on('txConfirmed', (txHash) => {
+                console.info('txConfirmed swap', txHash)
                 promi.emit('inputTxConfirmed', txHash)
               })
             await this.monitorInputTransactions(txHash, this.sourceAsset.networkId).on('inputTxDetected', (inputs) => {
