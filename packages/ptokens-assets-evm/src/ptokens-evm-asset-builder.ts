@@ -29,6 +29,8 @@ export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
       network: this._network,
       assetInfo: this._assetInfo,
       provider: this._provider,
+      routerAddress: this._routerAddress,
+      stateManagerAddress: this._stateManagerAddress,
     }
     return new pTokensEvmAsset(config)
   }

@@ -14,6 +14,7 @@ export class pTokensSwap {
   private _amount: BigNumber
   private _controller: AbortController
   private _routerAddress: string
+  private _stateManagerAddress: string
 
   /**
    * Create and initialize a pTokensSwap object. pTokensSwap object shall be created using a pTokensSwapBuilder object.
@@ -22,13 +23,7 @@ export class pTokensSwap {
    * @param destinationAssets - The pTokensAsset array that will be destination assets for the swap.
    * @param amount - The amount of source asset that will be swapped.
    */
-  constructor(
-    routerAddress: string,
-    sourceAsset: pTokensAsset,
-    destinationAssets: DestinationInfo[],
-    amount: BigNumber
-  ) {
-    this._routerAddress = routerAddress
+  constructor(sourceAsset: pTokensAsset, destinationAssets: DestinationInfo[], amount: BigNumber) {
     this._sourceAsset = sourceAsset
     this._destinationAssets = destinationAssets
     this._amount = amount
@@ -108,12 +103,8 @@ export class pTokensSwap {
     return BigNumber(this.expectedOutputAmount).isGreaterThanOrEqualTo(0)
   }
 
-  private monitorInputTransactions(_txHash: string, _origChainId: string): PromiEvent<string[]> {
-    throw new Error('To implement')
-  }
-
-  private monitorOutputTransactions(_txHash: string, _origChainId: string): PromiEvent<string[]> {
-    throw new Error('To implement')
+  private monitorOutputTransactions(_operationId: string) {
+    return this.destinationAssets[0]['monitorCrossChainOperations'](_operationId)
   }
 
   private async waitOutputsConfirmation(_outputs: string[]) {
@@ -147,38 +138,27 @@ export class pTokensSwap {
       (resolve, reject) =>
         (async () => {
           try {
-            console.info('swap execute!')
             this._controller.signal.addEventListener('abort', () => reject(new Error('Swap aborted by user')))
-            const txHash = await this.sourceAsset['swap'](
-              this._routerAddress,
+            const swapResult = await this.sourceAsset['swap'](
               this._amount,
               this._destinationAssets[0].destinationAddress,
               this._destinationAssets[0].asset.networkId,
               this._destinationAssets[0].userData
             )
               .on('txBroadcasted', (txHash) => {
-                console.info('txBroadcasted swap', txHash)
                 promi.emit('inputTxBroadcasted', txHash)
               })
               .on('txConfirmed', (txHash) => {
-                console.info('txConfirmed swap', txHash)
                 promi.emit('inputTxConfirmed', txHash)
               })
-            await this.monitorInputTransactions(txHash, this.sourceAsset.networkId).on('inputTxDetected', (inputs) => {
-              promi.emit('inputTxDetected', inputs)
-            })
-            const outputs = await this.monitorOutputTransactions(txHash, this.sourceAsset.networkId)
-              .on('outputTxDetected', (outputs) => {
-                promi.emit('outputTxDetected', outputs)
+            const outputTx = await this.monitorOutputTransactions(swapResult.operationId)
+              .on('outputTxQueued', (outputs) => {
+                promi.emit('outputTxQueued', outputs)
               })
-              .on('outputTxBroadcasted', (outputs) => {
-                promi.emit('outputTxBroadcasted', outputs)
+              .on('outputTxExecuted', (outputs) => {
+                promi.emit('outputTxExecuted', outputs)
               })
-            if (this._destinationAssets[0].asset.provider) {
-              await this.waitOutputsConfirmation(outputs)
-              promi.emit('outputTxConfirmed', outputs)
-            }
-            return resolve(outputs)
+            return resolve([outputTx])
           } catch (err) {
             return reject(err)
           }

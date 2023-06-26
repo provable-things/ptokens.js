@@ -8,6 +8,9 @@ import { pTokensAssetProvider } from './ptokens-asset-provider'
 export type pTokenAssetConfig = {
   /** An AssetInfo object containing asset technical details. */
   assetInfo: AssetInfo
+
+  routerAddress: string
+  stateManagerAddress: string
   /** The asset weight during the swap. Defaults to 1. Actually it is not supported.  */
   weight?: number
 }
@@ -64,7 +67,14 @@ export type AssetInfo = {
   underlyingAssetNetworkId: string
 }
 
+export type SwapResult = {
+  txHash: string,
+  operationId: string
+}
+
 export abstract class pTokensAsset {
+  private _routerAddress: string
+  private _stateManagerAddress: string
   private _assetInfo: AssetInfo
   private _weight: number
   private _type: BlockchainType
@@ -74,16 +84,18 @@ export abstract class pTokensAsset {
    */
   constructor(_config: pTokenAssetConfig, _type: BlockchainType) {
     if (!_config.assetInfo) throw new Error('Missing asset info')
-    console.info('_config.assetInfo', _config.assetInfo)
-    console.info('constructor type', _type)
-    console.info(
-      'constructor networkIdToTypeMap.get(_config.assetInfo.networkId)',
-      networkIdToTypeMap.get(_config.assetInfo.networkId)
-    )
     if (networkIdToTypeMap.get(_config.assetInfo.networkId) !== _type) throw new Error('Not supported chain ID')
     this._type = _type
     this._assetInfo = _config.assetInfo
     this._weight = _config.weight || 1
+  }
+
+  get routerAddress(): string {
+    return this._routerAddress
+  }
+
+  get stateManagerAddress(): string {
+    return this._stateManagerAddress
   }
 
   /** Return the token's symbol. */
@@ -138,10 +150,11 @@ export abstract class pTokensAsset {
   abstract get provider(): pTokensAssetProvider
 
   protected abstract swap(
-    _routerAddress: string,
     _amount: BigNumber,
     _destinationAddress: string,
     _destinationChainId: string,
     _userData?: string
-  ): PromiEvent<string>
+  ): PromiEvent<SwapResult>
+
+  protected abstract monitorCrossChainOperations(_operationId: string): PromiEvent<string>
 }

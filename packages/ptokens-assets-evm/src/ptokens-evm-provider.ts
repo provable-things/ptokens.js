@@ -4,10 +4,10 @@ import PromiEvent from 'promievent'
 import { pTokensAssetProvider } from 'ptokens-entities'
 import { stringUtils } from 'ptokens-helpers'
 import Web3 from 'web3'
-import { provider, TransactionReceipt } from 'web3-core'
+import { Log, provider, TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils'
 
-import { getAccount, getContract } from './lib/'
+import { EVENT_NAMES, eventNameToSignatureMap, getAccount, getContract, getOperationIdFromLog } from './lib/'
 
 export type MakeContractSendOptions = {
   /** The method to be called. */
@@ -116,6 +116,10 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
     return this
   }
 
+  async getLatestBlockNumber() {
+    const block = await this._web3.eth.getBlock('latest')
+    return block.number
+  }
   /**
    * Send a transaction to the smart contract and execute its method.
    * Note this can alter the smart contract state.
@@ -129,7 +133,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
    * @returns A PromiEvent that resolves with the hash of the resulting transaction.
    */
   makeContractSend(_options: MakeContractSendOptions, _args: any[] = []) {
-    const promi = new PromiEvent<string>(
+    const promi = new PromiEvent<TransactionReceipt>(
       (resolve, reject) =>
         (async () => {
           try {
@@ -144,9 +148,9 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
                   .maybeSetGasPrice(this.gasPrice)
               )
               .once('transactionHash', (_hash: string) => promi.emit('txBroadcasted', _hash))
-              .once('receipt', (_receipt: TransactionReceipt) => promi.emit('txConfirmed', _receipt.transactionHash))
+              .once('receipt', (_receipt: TransactionReceipt) => promi.emit('txConfirmed', _receipt))
               .once('error', (_error: Error) => promi.emit('txError', _error))
-            return resolve(receipt.transactionHash)
+            return resolve(receipt)
           } catch (_err) {
             return reject(_err)
           }
@@ -184,5 +188,75 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
       }
     }, _pollingTime)
     return receipt.transactionHash
+  }
+
+  protected async _pollForStateManagerOperation(
+    _stateManagerAddress: string,
+    _eventName: EVENT_NAMES,
+    _fromBlock: number,
+    _operationId: string,
+    _pollingTime = 1000
+  ) {
+    let log: Log
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    await polling(async () => {
+      try {
+        const logs = await this._web3.eth.getPastLogs({
+          fromBlock: _fromBlock,
+          address: _stateManagerAddress,
+          topics: [eventNameToSignatureMap.get(_eventName)],
+        })
+        log = logs.find((_log) => getOperationIdFromLog(_log) === _operationId)
+        if (log) return true
+        return false
+      } catch (_err) {
+        return false
+      }
+    }, _pollingTime)
+    return log
+  }
+
+  monitorCrossChainOperations(_stateManagerAddress: string, _operationId: string) {
+    const promi = new PromiEvent<string>(
+      (resolve, reject) =>
+        (async () => {
+          try {
+            const latestBlockNumber = await this.getLatestBlockNumber()
+            await this._pollForStateManagerOperation(
+              _stateManagerAddress,
+              EVENT_NAMES.OPERATION_QUEUED,
+              latestBlockNumber,
+              _operationId
+            ).then((_log) => {
+              promi.emit('operationQueued', _log.transactionHash)
+              return _log
+            })
+            const finalTxLog = await Promise.any([
+              this._pollForStateManagerOperation(
+                _stateManagerAddress,
+                EVENT_NAMES.OPERATION_EXECUTED,
+                latestBlockNumber,
+                _operationId
+              ).then((_log) => {
+                promi.emit('operationExecuted', _log.transactionHash)
+                return _log
+              }),
+              this._pollForStateManagerOperation(
+                _stateManagerAddress,
+                EVENT_NAMES.OPERATION_CANCELLED,
+                latestBlockNumber,
+                _operationId
+              ).then((_log) => {
+                promi.emit('operationCancelled', _log.transactionHash)
+                return _log
+              }),
+            ])
+            return resolve(finalTxLog.transactionHash)
+          } catch (_err) {
+            return reject(_err)
+          }
+        })() as unknown
+    )
+    return promi
   }
 }

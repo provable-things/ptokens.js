@@ -1,32 +1,13 @@
 import BigNumber from 'bignumber.js'
-import { NetworkId, RouterAddress } from 'ptokens-constants'
 import { pTokensAsset } from 'ptokens-entities'
 import { validators } from 'ptokens-helpers'
 
 import { pTokensSwap, DestinationInfo } from './ptokens-swap'
 
 export class pTokensSwapBuilder {
-  private _routerAddress: string
   private _sourceAsset: pTokensAsset
   private _destinationAssets: DestinationInfo[] = []
   private _amount: BigNumber
-
-  /**
-   * Return the router address for the swap.
-   */
-  get routerAddress(): string {
-    return this._routerAddress || RouterAddress.get(this._sourceAsset.assetInfo.networkId as NetworkId)
-  }
-
-  /**
-   * Set a custom pTokens router address for the swap.
-   * @param _routerAddress - Address of the pTokens router contract
-   * @returns The same builder. This allows methods chaining.
-   */
-  setRouterAddress(_routerAddress: string) {
-    this._routerAddress = _routerAddress
-    return this
-  }
 
   /**
    * Return the pTokensAsset set as source asset for the swap.
@@ -94,13 +75,10 @@ export class pTokensSwapBuilder {
    */
   build(): pTokensSwap {
     if (!this._sourceAsset) throw new Error('Missing source asset')
-    if (!this.routerAddress) throw new Error('Missing router address')
-    if (!validators.isValidAddressByChainId(this.routerAddress, this._sourceAsset.networkId))
-      throw new Error('Invalid router address')
     if (this._destinationAssets.length === 0) throw new Error('Missing destination assets')
     if (!this._amount) throw new Error('Missing amount')
     if (!this.isValidSwap()) throw new Error('Invalid swap')
-    const ret = new pTokensSwap(this.routerAddress, this.sourceAsset, this._destinationAssets, this._amount)
+    const ret = new pTokensSwap(this.sourceAsset, this._destinationAssets, this._amount)
     return ret
   }
 }

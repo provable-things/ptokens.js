@@ -1,11 +1,12 @@
 import BigNumber from 'bignumber.js'
 import PromiEvent from 'promievent'
 import { BlockchainType } from 'ptokens-constants'
-import { pTokensAsset, pTokenAssetConfig } from 'ptokens-entities'
+import { pTokensAsset, pTokenAssetConfig, SwapResult } from 'ptokens-entities'
+import { TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils'
 
 import pRouterAbi from './abi/PRouterAbi.json'
-import { onChainFormat } from './lib'
+import { getOperationIdFromTransactionReceipt, onChainFormat } from './lib'
 import { pTokensEvmProvider } from './ptokens-evm-provider'
 
 const USER_SEND_METHOD = 'userSend'
@@ -31,18 +32,16 @@ export class pTokensEvmAsset extends pTokensAsset {
   }
 
   protected swap(
-    _routerAddress: string,
     _amount: BigNumber,
     _destinationAddress: string,
     _destinationChainId: string,
     _userData = '0x',
     _optionsMask = '0x0000000000000000000000000000000000000000000000000000000000000000'
-  ): PromiEvent<string> {
-    const promi = new PromiEvent<string>(
+  ): PromiEvent<SwapResult> {
+    const promi = new PromiEvent<SwapResult>(
       (resolve, reject) =>
         (async () => {
           try {
-            console.info('evm asset swap')
             if (!this._provider) return reject(new Error('Missing provider'))
             const args = [
               _destinationAddress,
@@ -57,27 +56,37 @@ export class pTokensEvmAsset extends pTokensAsset {
               _userData.toString(),
               _optionsMask,
             ]
-            console.info('_routerAddress', _routerAddress)
-            console.info('args', args)
-            const txHash: string = await this._provider
+            const txReceipt: TransactionReceipt = await this._provider
               .makeContractSend(
                 {
                   method: USER_SEND_METHOD,
                   abi: pRouterAbi as unknown as AbiItem,
-                  contractAddress: _routerAddress,
+                  contractAddress: this.routerAddress,
                   value: BigNumber(0),
                 },
                 args
               )
-              .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', _hash))
-              .once('txConfirmed', (_hash: string) => promi.emit('txConfirmed', _hash))
+              .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', { txHash: _hash }))
+              .once('txConfirmed', (_receipt: TransactionReceipt) =>
+                promi.emit('txConfirmed', {
+                  txHash: _receipt.transactionHash,
+                  operationId: getOperationIdFromTransactionReceipt(this.networkId, _receipt),
+                })
+              )
               .once('txError', reject)
-            return resolve(txHash)
+            return resolve({
+              txHash: txReceipt.transactionHash,
+              operationId: getOperationIdFromTransactionReceipt(this.networkId, txReceipt),
+            })
           } catch (err) {
             return reject(err)
           }
         })() as unknown
     )
     return promi
+  }
+
+  protected monitorCrossChainOperations(_operationId: string): PromiEvent<string> {
+    return this.provider.monitorCrossChainOperations(this.stateManagerAddress, _operationId)
   }
 }
