@@ -40,8 +40,14 @@ module.exports = {
               "order": "asc" /* sort in ascending order. Options: ['ignore', 'asc', 'desc'] */,
               "caseInsensitive": true /* ignore case. Options: [true, false] */
             }
-      }
-    ],
+          }
+        ],
+        "no-console": [
+          "error",
+          {
+            "allow": ["warn", "error"]
+          }
+        ],
       },
       "parserOptions": {
         tsconfigRootDir: __dirname,
