@@ -19,7 +19,7 @@
     "ptokens-constants": "^1.4.0",
     "ptokens-entities": "^1.4.0",
     "ptokens-helpers": "^1.4.0",
-    "web3": "^1.8.0"
+    "web3": "^1.10.0"
   },
   "typedoc": {
     "entryPoint": "./src/index.ts",
