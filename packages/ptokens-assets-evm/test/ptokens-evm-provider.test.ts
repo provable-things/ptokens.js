@@ -181,9 +181,9 @@ describe('EVM provider', () => {
       .once('txConfirmed', (_hash) => {
         txConfirmedHash = _hash
       })
-    expect(txHash).toEqual('tx-hash')
+    expect(txHash).toEqual({ transactionHash: 'tx-hash' })
     expect(txBroadcastedHash).toEqual('tx-hash')
-    expect(txConfirmedHash).toEqual('tx-hash')
+    expect(txConfirmedHash).toEqual({ transactionHash: 'tx-hash' })
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
@@ -226,9 +226,9 @@ describe('EVM provider', () => {
       .once('txConfirmed', (_hash) => {
         txConfirmedHash = _hash
       })
-    expect(txHash).toEqual('tx-hash')
+    expect(txHash).toEqual({ transactionHash: 'tx-hash' })
     expect(txBroadcastedHash).toEqual('tx-hash')
-    expect(txConfirmedHash).toEqual('tx-hash')
+    expect(txConfirmedHash).toEqual({ transactionHash: 'tx-hash' })
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(numberMock).toHaveBeenNthCalledWith(1)
@@ -276,9 +276,9 @@ describe('EVM provider', () => {
       .once('txConfirmed', (_hash) => {
         txConfirmedHash = _hash
       })
-    expect(txHash).toEqual('tx-hash')
+    expect(txHash).toEqual({ transactionHash: 'tx-hash' })
     expect(txBroadcastedHash).toEqual('tx-hash')
-    expect(txConfirmedHash).toEqual('tx-hash')
+    expect(txConfirmedHash).toEqual({ transactionHash: 'tx-hash' })
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
@@ -330,9 +330,9 @@ describe('EVM provider', () => {
       .once('txConfirmed', (_hash) => {
         txConfirmedHash = _hash
       })
-    expect(txHash).toEqual('tx-hash')
+    expect(txHash).toEqual({ transactionHash: 'tx-hash' })
     expect(txBroadcastedHash).toEqual('tx-hash')
-    expect(txConfirmedHash).toEqual('tx-hash')
+    expect(txConfirmedHash).toEqual({ transactionHash: 'tx-hash' })
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
@@ -379,9 +379,9 @@ describe('EVM provider', () => {
       .once('txConfirmed', (_hash) => {
         txConfirmedHash = _hash
       })
-    expect(txHash).toEqual('tx-hash')
+    expect(txHash).toEqual({ transactionHash: 'tx-hash' })
     expect(txBroadcastedHash).toEqual('tx-hash')
-    expect(txConfirmedHash).toEqual('tx-hash')
+    expect(txConfirmedHash).toEqual({ transactionHash: 'tx-hash' })
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
     expect(setNumberMock).toHaveBeenNthCalledWith(1, 1, 'arg2', 'arg3')
@@ -422,7 +422,7 @@ describe('EVM provider', () => {
       .once('txError', (_error) => {
         txError = _error
       })
-    expect(txHash).toEqual('tx-hash')
+    expect(txHash).toEqual({ transactionHash: 'tx-hash' })
     expect(txError.message).toStrictEqual('tx-error')
     expect(getAccountSpy).toHaveBeenNthCalledWith(1, provider['_web3'])
     expect(getContractSpy).toHaveBeenNthCalledWith(1, provider['_web3'], abi, 'contract-address', 'evm-account')
@@ -523,5 +523,10 @@ describe('EVM provider', () => {
     )
     expect(waitForConfirmationSpy).toHaveBeenCalledTimes(4)
     expect(ret).toBe('0x5d65fa769234d6eef32baaeeb267dd1b3b8e0ff2e04a0861e2d36af26d631046')
+  })
+
+  test('should monitor', async () => {
+    const provider = new pTokensEvmProvider()
+    const ret = await provider.monitorCrossChainOperations('0xCE22B9ba226B5d851d86c983656a9008FeC25193', '0xc6cc8381b3a70dc38c587d6c5518d72edb05b4040acbd4251fe6b67acff7f986')
   })
 })

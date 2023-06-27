@@ -64,6 +64,15 @@ export abstract class pTokensAssetBuilder {
 
   abstract setProvider(_provider: pTokensAssetProvider): this
 
+  get assetInfo() {
+    return this._assetInfo
+  }
+
+  setAssetInfo(_assetInfo: AssetInfo) {
+    this._assetInfo = _assetInfo
+    return this
+  }
+
   /**
    * Return the router address for the swap.
    */
@@ -104,14 +113,14 @@ export abstract class pTokensAssetBuilder {
   }
 
   private validate() {
+    if (!this._networkId) throw new Error('Missing chain ID')
+    if (!this._assetInfo) throw new Error('Missing asset info')
     if (!this.routerAddress) throw new Error('Missing router address')
     if (!validators.isValidAddressByChainId(this.routerAddress, this._networkId))
       throw new Error('Invalid router address')
     if (!this.routerAddress) throw new Error('Missing router address')
     if (!validators.isValidAddressByChainId(this.stateManagerAddress, this._networkId))
       throw new Error('Invalid router address')
-    if (!this._networkId) throw new Error('Missing chain ID')
-    if (!this._assetInfo) throw new Error('Missing asset info')
     if (this._decimals !== undefined) this._assetInfo.decimals = this._decimals
   }
 

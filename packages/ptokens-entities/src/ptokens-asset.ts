@@ -69,7 +69,7 @@ export type AssetInfo = {
 
 export type SwapResult = {
   txHash: string,
-  operationId: string
+  operationId?: string
 }
 
 export abstract class pTokensAsset {
@@ -88,6 +88,8 @@ export abstract class pTokensAsset {
     this._type = _type
     this._assetInfo = _config.assetInfo
     this._weight = _config.weight || 1
+    this._routerAddress = _config.routerAddress
+    this._stateManagerAddress = _config.stateManagerAddress
   }
 
   get routerAddress(): string {
@@ -105,7 +107,7 @@ export abstract class pTokensAsset {
 
   /** Return the chain ID of the token. */
   get networkId(): NetworkId {
-    return this.assetInfo.networkId as NetworkId
+    return this._assetInfo.networkId as NetworkId
   }
 
   /** Return the blockchain of the token. */

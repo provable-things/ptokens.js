@@ -1,14 +1,18 @@
 import BigNumber from 'bignumber.js'
 import PromiEvent from 'promievent'
 import { Blockchain, NetworkId, Network } from 'ptokens-constants'
+import { TransactionReceipt } from 'web3-core'
 
 import { pTokensEvmAsset, pTokensEvmProvider } from '../src'
 
+import receipt from './utils/receiptUserSend.json'
+
 const pRouterAbi = require('../src/abi/PRouterAbi.json')
 
-jest.mock('web3')
-
 describe('EVM asset', () => {
+  beforeAll(() => {
+    jest.restoreAllMocks()
+  })
   test('Should create an EVM asset from constructor', () => {
     const asset = new pTokensEvmAsset({
       assetInfo: {
@@ -22,6 +26,8 @@ describe('EVM asset', () => {
         underlyingAssetName: 'Symbol',
         underlyingAssetTokenAddress: 'underlying-asset-token-address',
       },
+      routerAddress: 'router-address',
+      stateManagerAddress: 'state-manager-address',
     })
     expect(asset.symbol).toStrictEqual('pSYM')
     expect(asset.blockchain).toStrictEqual(Blockchain.Sepolia)
@@ -32,7 +38,6 @@ describe('EVM asset', () => {
 
   describe('swap', () => {
     test('Should not call swap if provider is missing', async () => {
-      const routerAddress = 'router-address'
       const asset = new pTokensEvmAsset({
         assetInfo: {
           networkId: NetworkId.SepoliaTestnet,
@@ -45,9 +50,11 @@ describe('EVM asset', () => {
           underlyingAssetName: 'Symbol',
           underlyingAssetTokenAddress: 'underlying-asset-token-address',
         },
+        routerAddress: 'router-address',
+        stateManagerAddress: 'state-manager-address',
       })
       try {
-        await asset['swap'](routerAddress, BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        await asset['swap'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         fail()
       } catch (err) {
         expect(err.message).toEqual('Missing provider')
@@ -57,16 +64,15 @@ describe('EVM asset', () => {
     test('Should call makeContractSend with userSend', async () => {
       const provider = new pTokensEvmProvider()
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
-        const promi = new PromiEvent<string>((resolve) =>
+        const promi = new PromiEvent<TransactionReceipt>((resolve) =>
           setImmediate(() => {
             promi.emit('txBroadcasted', 'tx-hash')
-            promi.emit('txConfirmed', 'tx-hash')
-            return resolve('tx-hash')
+            promi.emit('txConfirmed', receipt)
+            return resolve(receipt as TransactionReceipt)
           })
         )
         return promi
       })
-      const routerAddress = 'router-address'
       const asset = new pTokensEvmAsset({
         provider: provider,
         assetInfo: {
@@ -80,24 +86,27 @@ describe('EVM asset', () => {
           underlyingAssetName: 'underlying-asset-name',
           underlyingAssetTokenAddress: 'underlying-asset-token-address',
         },
+        routerAddress: 'router-address',
+        stateManagerAddress: 'state-manager-address',
       })
       let txHashBroadcasted = ''
       let txHashConfirmed = ''
-      const ret = await asset['swap'](
-        routerAddress,
-        BigNumber(123.456789),
-        'destination-address',
-        'destination-chain-id'
-      )
+      const ret = await asset['swap'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
         .on('txBroadcasted', (_txHash) => {
           txHashBroadcasted = _txHash
         })
         .on('txConfirmed', (_txHash) => {
           txHashConfirmed = _txHash
         })
-      expect(txHashBroadcasted).toEqual('tx-hash')
-      expect(txHashConfirmed).toEqual('tx-hash')
-      expect(ret).toEqual('tx-hash')
+      expect(txHashBroadcasted).toEqual({ txHash: 'tx-hash' })
+      expect(txHashConfirmed).toEqual({
+        operationId: '0xc6cc8381b3a70dc38c587d6c5518d72edb05b4040acbd4251fe6b67acff7f986',
+        txHash: '0xcd5f6d7d2aabd3af5269459b6310892f4e56aa0cfd05024ba16bcf901c9bccd2',
+      })
+      expect(ret).toEqual({
+        operationId: '0xc6cc8381b3a70dc38c587d6c5518d72edb05b4040acbd4251fe6b67acff7f986',
+        txHash: '0xcd5f6d7d2aabd3af5269459b6310892f4e56aa0cfd05024ba16bcf901c9bccd2',
+      })
       expect(makeContractSendSpy).toHaveBeenNthCalledWith(
         1,
         {
@@ -116,8 +125,8 @@ describe('EVM asset', () => {
           'underlying-asset-network-id',
           'asset-token-address',
           '123456789000000000000',
-          new Uint8Array(),
-          Uint8Array.from([0, 0, 0, 0]),
+          '0x',
+          '0x0000000000000000000000000000000000000000000000000000000000000000',
         ]
       )
     })

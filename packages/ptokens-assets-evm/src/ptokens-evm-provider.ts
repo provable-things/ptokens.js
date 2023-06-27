@@ -228,7 +228,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
               latestBlockNumber,
               _operationId
             ).then((_log) => {
-              promi.emit('operationQueued', _log.transactionHash)
+              promi.emit('operationQueued', { txHash: _log.transactionHash, operationId: _operationId })
               return _log
             })
             const finalTxLog = await Promise.any([
@@ -238,7 +238,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
                 latestBlockNumber,
                 _operationId
               ).then((_log) => {
-                promi.emit('operationExecuted', _log.transactionHash)
+                promi.emit('operationExecuted', { txHash: _log.transactionHash, operationId: _operationId })
                 return _log
               }),
               this._pollForStateManagerOperation(
@@ -247,7 +247,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
                 latestBlockNumber,
                 _operationId
               ).then((_log) => {
-                promi.emit('operationCancelled', _log.transactionHash)
+                promi.emit('operationCancelled', { txHash: _log.transactionHash, operationId: _operationId })
                 return _log
               }),
             ])

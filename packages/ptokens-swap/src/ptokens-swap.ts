@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import PromiEvent from 'promievent'
-import { pTokensAsset } from 'ptokens-entities'
+import { SwapResult, pTokensAsset } from 'ptokens-entities'
 
 export type DestinationInfo = {
   asset: pTokensAsset
@@ -134,7 +134,7 @@ export class pTokensSwap {
    * If the destination asset has a provider, the PromiEvent resolves when the output transaction is confirmed; otherwise when it is broadcasted.
    */
   execute() {
-    const promi = new PromiEvent<string[]>(
+    const promi = new PromiEvent<string>(
       (resolve, reject) =>
         (async () => {
           try {
@@ -145,20 +145,25 @@ export class pTokensSwap {
               this._destinationAssets[0].asset.networkId,
               this._destinationAssets[0].userData
             )
-              .on('txBroadcasted', (txHash) => {
-                promi.emit('inputTxBroadcasted', txHash)
+              .on('txBroadcasted', (_swapResult: SwapResult) => {
+                promi.emit('inputTxBroadcasted', _swapResult)
               })
-              .on('txConfirmed', (txHash) => {
-                promi.emit('inputTxConfirmed', txHash)
+              .on('txConfirmed', (_swapResult: SwapResult) => {
+                promi.emit('inputTxConfirmed', _swapResult)
               })
             const outputTx = await this.monitorOutputTransactions(swapResult.operationId)
-              .on('outputTxQueued', (outputs) => {
-                promi.emit('outputTxQueued', outputs)
+              .on('operationQueued', (_swapResult: SwapResult) => {
+                promi.emit('operationQueued', _swapResult)
               })
-              .on('outputTxExecuted', (outputs) => {
-                promi.emit('outputTxExecuted', outputs)
+              .on('operationExecuted', (_swapResult: SwapResult) => {
+                promi.emit('operationExecuted', _swapResult)
               })
-            return resolve([outputTx])
+              .on('operationCancelled', (_swapResult: SwapResult) => {
+                promi.emit('operationCancelled', _swapResult)
+              })
+            await this.destinationAssets[0].provider.waitForTransactionConfirmation(outputTx)
+            promi.emit('operationConfirmed', { txHash: outputTx, operationId: swapResult.operationId })
+            return resolve(outputTx)
           } catch (err) {
             return reject(err)
           }

@@ -5,6 +5,8 @@ import { pTokensAsset, pTokenAssetConfig, SwapResult } from 'ptokens-entities'
 import { TransactionReceipt } from 'web3-core'
 import { AbiItem } from 'web3-utils'
 
+// import receipt from '../test/utils/receiptUserSend.json'
+
 import pRouterAbi from './abi/PRouterAbi.json'
 import { getOperationIdFromTransactionReceipt, onChainFormat } from './lib'
 import { pTokensEvmProvider } from './ptokens-evm-provider'
@@ -74,6 +76,14 @@ export class pTokensEvmAsset extends pTokensAsset {
                 })
               )
               .once('txError', reject)
+            // await new Promise((resolve) => setTimeout(resolve, 2000))
+            // const txReceipt = receipt
+            // promi.emit('txBroadcasted', { txHash: txReceipt.transactionHash })
+            // await new Promise((resolve) => setTimeout(resolve, 3000))
+            // promi.emit('txConfirmed', {
+            //   txHash: txReceipt.transactionHash,
+            //   operationId: getOperationIdFromTransactionReceipt(this.networkId, txReceipt),
+            // })
             return resolve({
               txHash: txReceipt.transactionHash,
               operationId: getOperationIdFromTransactionReceipt(this.networkId, txReceipt),

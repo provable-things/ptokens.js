@@ -27,10 +27,10 @@ export class pTokensEvmAssetBuilder extends pTokensAssetBuilder {
       networkId: this._networkId,
       blockchain: this._blockchain,
       network: this._network,
-      assetInfo: this._assetInfo,
+      assetInfo: this.assetInfo,
       provider: this._provider,
-      routerAddress: this._routerAddress,
-      stateManagerAddress: this._stateManagerAddress,
+      routerAddress: this.routerAddress,
+      stateManagerAddress: this.stateManagerAddress,
     }
     return new pTokensEvmAsset(config)
   }

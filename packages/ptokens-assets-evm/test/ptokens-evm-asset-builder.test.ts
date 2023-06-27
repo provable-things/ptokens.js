@@ -2,9 +2,10 @@ import { Blockchain, NetworkId, Network } from 'ptokens-constants'
 
 import { pTokensEvmAssetBuilder, pTokensEvmProvider } from '../src'
 
-jest.mock('web3')
-
 describe('EVM asset', () => {
+  beforeAll(() => {
+    jest.restoreAllMocks()
+  })
   test('Should create an EVM asset without provider', async () => {
     const assetInfo = {
       networkId: NetworkId.SepoliaTestnet,
