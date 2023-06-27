@@ -9,6 +9,8 @@ const validatorFunction =
 export const chainIdToAddressValidatorMap: Map<NetworkId, (_address: string) => boolean> = new Map([
   [NetworkId.SepoliaTestnet, validatorFunction('eth')],
   [NetworkId.GoerliTestnet, validatorFunction('eth')],
+  [NetworkId.ArbitrumMainnet, validatorFunction('eth')],
+  [NetworkId.GnosisMainnet, validatorFunction('eth')],
 ])
 
 export function isValidAddressByChainId(_address: string, _networkId: NetworkId) {
