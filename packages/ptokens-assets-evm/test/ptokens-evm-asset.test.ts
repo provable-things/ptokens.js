@@ -10,33 +10,40 @@ import receipt from './utils/receiptUserSend.json'
 const pRouterAbi = require('../src/abi/PRouterAbi.json')
 
 describe('EVM asset', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     jest.restoreAllMocks()
   })
-  test('Should create an EVM asset from constructor', () => {
-    const asset = new pTokensEvmAsset({
-      assetInfo: {
-        networkId: NetworkId.SepoliaTestnet,
-        symbol: 'pSYM',
-        assetTokenAddress: 'token-contract-address',
-        decimals: 18,
-        underlyingAssetDecimals: 18,
-        underlyingAssetNetworkId: NetworkId.SepoliaTestnet,
-        underlyingAssetSymbol: 'SYM',
-        underlyingAssetName: 'Symbol',
-        underlyingAssetTokenAddress: 'underlying-asset-token-address',
-      },
-      routerAddress: 'router-address',
-      stateManagerAddress: 'state-manager-address',
+
+  describe('constructor', () => {
+    test('Should create an EVM asset from constructor', () => {
+      const asset = new pTokensEvmAsset({
+        assetInfo: {
+          networkId: NetworkId.SepoliaTestnet,
+          symbol: 'pSYM',
+          assetTokenAddress: 'token-contract-address',
+          decimals: 18,
+          underlyingAssetDecimals: 18,
+          underlyingAssetNetworkId: NetworkId.SepoliaTestnet,
+          underlyingAssetSymbol: 'SYM',
+          underlyingAssetName: 'Symbol',
+          underlyingAssetTokenAddress: 'underlying-asset-token-address',
+        },
+        routerAddress: 'router-address',
+        stateManagerAddress: 'state-manager-address',
+      })
+      expect(asset.symbol).toStrictEqual('pSYM')
+      expect(asset.blockchain).toStrictEqual(Blockchain.Sepolia)
+      expect(asset.network).toStrictEqual(Network.Testnet)
+      expect(asset.networkId).toStrictEqual(NetworkId.SepoliaTestnet)
+      expect(asset.weight).toEqual(1)
     })
-    expect(asset.symbol).toStrictEqual('pSYM')
-    expect(asset.blockchain).toStrictEqual(Blockchain.Sepolia)
-    expect(asset.network).toStrictEqual(Network.Testnet)
-    expect(asset.networkId).toStrictEqual(NetworkId.SepoliaTestnet)
-    expect(asset.weight).toEqual(1)
   })
 
   describe('swap', () => {
+    beforeEach(() => {
+      jest.restoreAllMocks()
+    })
+
     test('Should not call swap if provider is missing', async () => {
       const asset = new pTokensEvmAsset({
         assetInfo: {
@@ -129,6 +136,70 @@ describe('EVM asset', () => {
           '0x0000000000000000000000000000000000000000000000000000000000000000',
         ]
       )
+    })
+
+    test('Should reject if makeContractSend rejects', async () => {
+      const provider = new pTokensEvmProvider()
+      jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
+        const promi = new PromiEvent<TransactionReceipt>((resolve, reject) => {
+          return reject(new Error('makeContractSend error'))
+        })
+        return promi
+      })
+      const asset = new pTokensEvmAsset({
+        provider: provider,
+        assetInfo: {
+          networkId: NetworkId.SepoliaTestnet,
+          symbol: 'pSYM',
+          assetTokenAddress: 'asset-token-address',
+          decimals: 18,
+          underlyingAssetDecimals: 18,
+          underlyingAssetNetworkId: 'underlying-asset-network-id',
+          underlyingAssetSymbol: 'underlying-asset-symbol',
+          underlyingAssetName: 'underlying-asset-name',
+          underlyingAssetTokenAddress: 'underlying-asset-token-address',
+        },
+        routerAddress: 'router-address',
+        stateManagerAddress: 'state-manager-address',
+      })
+      try {
+        await asset['swap'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+        fail()
+      } catch (err) {
+        expect(err.message).toStrictEqual('makeContractSend error')
+      }
+    })
+
+    describe('monitorCrossChainOperations', () => {
+      beforeEach(() => {
+        jest.restoreAllMocks()
+      })
+
+      test('Should call makeContractSend with userSend', async () => {
+        const provider = new pTokensEvmProvider()
+        const monitorCrossChainOperationsSpy = jest
+          .spyOn(provider, 'monitorCrossChainOperations')
+          .mockResolvedValue('tx-hash')
+        const asset = new pTokensEvmAsset({
+          provider: provider,
+          assetInfo: {
+            networkId: NetworkId.SepoliaTestnet,
+            symbol: 'pSYM',
+            assetTokenAddress: 'asset-token-address',
+            decimals: 18,
+            underlyingAssetDecimals: 18,
+            underlyingAssetNetworkId: 'underlying-asset-network-id',
+            underlyingAssetSymbol: 'underlying-asset-symbol',
+            underlyingAssetName: 'underlying-asset-name',
+            underlyingAssetTokenAddress: 'underlying-asset-token-address',
+          },
+          routerAddress: 'router-address',
+          stateManagerAddress: 'state-manager-address',
+        })
+        const ret = await asset['monitorCrossChainOperations']('operation-id')
+        expect(ret).toStrictEqual('tx-hash')
+        expect(monitorCrossChainOperationsSpy).toHaveBeenCalledTimes(1)
+      })
     })
   })
 })

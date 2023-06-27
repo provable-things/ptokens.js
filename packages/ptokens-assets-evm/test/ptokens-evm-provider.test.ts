@@ -534,6 +534,8 @@ describe('EVM provider', () => {
     const provider = new pTokensEvmProvider()
     const spy = jest
       .fn()
+      .mockRejectedValueOnce(new Error('getPastLogs error'))
+      .mockResolvedValueOnce([])
       .mockResolvedValueOnce([logs[0], logs[1]])
       .mockResolvedValueOnce([logs[2]])
       .mockResolvedValue([])
@@ -553,7 +555,7 @@ describe('EVM provider', () => {
       .on('operationCancelled', (_obj) => {
         operationCancelledObject = _obj
       })
-    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy).toHaveBeenCalledTimes(5)
     expect(spy).toHaveBeenNthCalledWith(1, {
       address: '0xCE22B9ba226B5d851d86c983656a9008FeC25193',
       fromBlock: 333,
@@ -562,9 +564,19 @@ describe('EVM provider', () => {
     expect(spy).toHaveBeenNthCalledWith(2, {
       address: '0xCE22B9ba226B5d851d86c983656a9008FeC25193',
       fromBlock: 333,
-      topics: ['0xfb83c807750a326c5845536dc89b4d2da9f1f5e0df344e9f69f27c84f4d7d726'],
+      topics: ['0xd1a85d51ecfea5edd75f97fcf615b22c6f56eaf8f0487db9fadfbe661689b9af'],
     })
     expect(spy).toHaveBeenNthCalledWith(3, {
+      address: '0xCE22B9ba226B5d851d86c983656a9008FeC25193',
+      fromBlock: 333,
+      topics: ['0xd1a85d51ecfea5edd75f97fcf615b22c6f56eaf8f0487db9fadfbe661689b9af'],
+    })
+    expect(spy).toHaveBeenNthCalledWith(4, {
+      address: '0xCE22B9ba226B5d851d86c983656a9008FeC25193',
+      fromBlock: 333,
+      topics: ['0xfb83c807750a326c5845536dc89b4d2da9f1f5e0df344e9f69f27c84f4d7d726'],
+    })
+    expect(spy).toHaveBeenNthCalledWith(5, {
       address: '0xCE22B9ba226B5d851d86c983656a9008FeC25193',
       fromBlock: 333,
       topics: ['0xec5d8f38737ebccaa579d2caeaed8fbc5f2c7c598fee1eb335429c8c48ec2598'],
@@ -579,5 +591,19 @@ describe('EVM provider', () => {
       txHash: '0x88174f8b1c6715fee676c48d95d9ad6b126d008244c2ab3b28094a1e8267f547',
     })
     expect(operationCancelledObject).toStrictEqual(null)
+  })
+
+  test('Should reject when an error occurs monitoring a cross chain operation', async () => {
+    const provider = new pTokensEvmProvider()
+    provider['_web3']['eth'].getBlock = jest.fn().mockRejectedValue(new Error('error'))
+    try {
+      await provider.monitorCrossChainOperations(
+        '0xCE22B9ba226B5d851d86c983656a9008FeC25193',
+        '0xc6cc8381b3a70dc38c587d6c5518d72edb05b4040acbd4251fe6b67acff7f986'
+      )
+      fail()
+    } catch (err) {
+      expect(err.message).toStrictEqual('error')
+    }
   })
 })
