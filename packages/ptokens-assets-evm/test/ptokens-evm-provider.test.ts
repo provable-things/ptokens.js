@@ -6,6 +6,8 @@ import { AbiItem } from 'web3-utils'
 import { pTokensEvmProvider } from '../src'
 import * as utils from '../src/lib'
 
+import logs from './utils/logs.json'
+
 const abi = require('./utils/exampleContractABI.json')
 const receiptWithFalseStatus = require('./utils/receiptWithFalseStatus.json')
 const receiptWithTrueStatus = require('./utils/receiptWithTrueStatus.json')
@@ -525,8 +527,57 @@ describe('EVM provider', () => {
     expect(ret).toBe('0x5d65fa769234d6eef32baaeeb267dd1b3b8e0ff2e04a0861e2d36af26d631046')
   })
 
-  test('should monitor', async () => {
+  test('Should monitor a cross chain operation', async () => {
+    let operationQueuedObject = null,
+      operationExecutedObject = null,
+      operationCancelledObject = null
     const provider = new pTokensEvmProvider()
-    const ret = await provider.monitorCrossChainOperations('0xCE22B9ba226B5d851d86c983656a9008FeC25193', '0xc6cc8381b3a70dc38c587d6c5518d72edb05b4040acbd4251fe6b67acff7f986')
+    const spy = jest
+      .fn()
+      .mockResolvedValueOnce([logs[0], logs[1]])
+      .mockResolvedValueOnce([logs[2]])
+      .mockResolvedValue([])
+    provider['_web3']['eth'].getBlock = jest.fn().mockImplementation(() => Promise.resolve({ number: 333 }))
+    provider['_web3']['eth'].getPastLogs = spy
+    const ret = await provider
+      .monitorCrossChainOperations(
+        '0xCE22B9ba226B5d851d86c983656a9008FeC25193',
+        '0xc6cc8381b3a70dc38c587d6c5518d72edb05b4040acbd4251fe6b67acff7f986'
+      )
+      .on('operationQueued', (_obj) => {
+        operationQueuedObject = _obj
+      })
+      .on('operationExecuted', (_obj) => {
+        operationExecutedObject = _obj
+      })
+      .on('operationCancelled', (_obj) => {
+        operationCancelledObject = _obj
+      })
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy).toHaveBeenNthCalledWith(1, {
+      address: '0xCE22B9ba226B5d851d86c983656a9008FeC25193',
+      fromBlock: 333,
+      topics: ['0xd1a85d51ecfea5edd75f97fcf615b22c6f56eaf8f0487db9fadfbe661689b9af'],
+    })
+    expect(spy).toHaveBeenNthCalledWith(2, {
+      address: '0xCE22B9ba226B5d851d86c983656a9008FeC25193',
+      fromBlock: 333,
+      topics: ['0xfb83c807750a326c5845536dc89b4d2da9f1f5e0df344e9f69f27c84f4d7d726'],
+    })
+    expect(spy).toHaveBeenNthCalledWith(3, {
+      address: '0xCE22B9ba226B5d851d86c983656a9008FeC25193',
+      fromBlock: 333,
+      topics: ['0xec5d8f38737ebccaa579d2caeaed8fbc5f2c7c598fee1eb335429c8c48ec2598'],
+    })
+    expect(ret).toStrictEqual('0x88174f8b1c6715fee676c48d95d9ad6b126d008244c2ab3b28094a1e8267f547')
+    expect(operationQueuedObject).toStrictEqual({
+      operationId: '0xc6cc8381b3a70dc38c587d6c5518d72edb05b4040acbd4251fe6b67acff7f986',
+      txHash: '0xe03f1eb68ca2c13c4b2d08abf4d6154c2846cb88a52333fd3c8128587ad0cd34',
+    })
+    expect(operationExecutedObject).toStrictEqual({
+      operationId: '0xc6cc8381b3a70dc38c587d6c5518d72edb05b4040acbd4251fe6b67acff7f986',
+      txHash: '0x88174f8b1c6715fee676c48d95d9ad6b126d008244c2ab3b28094a1e8267f547',
+    })
+    expect(operationCancelledObject).toStrictEqual(null)
   })
 })
