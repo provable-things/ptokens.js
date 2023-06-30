@@ -66,6 +66,8 @@ describe('ethereum utilities', () => {
 
   test('Should return a valid gas limit', async () => {
     const web3 = new Web3(TEST_ETH_PROVIDER)
+    const getBlockSpy = jest.fn().mockResolvedValue({ gasLimit: 1000 })
+    web3.eth.getBlock = getBlockSpy
     const gasLimit = await utils.getGasLimit(web3)
     expect(typeof gasLimit).toBe('number')
   })

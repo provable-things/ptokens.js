@@ -13,7 +13,6 @@ describe('pTokensSwap', () => {
   })
 
   test('Should swap asset without user data', async () => {
-    const routerAddress = '0xF4F5C35D50b788AF5Ae74584628b45F302Cd81e7'
     const sourceAsset = new pTokenAssetMock({
       assetInfo: {
         networkId: NetworkId.SepoliaTestnet,
@@ -25,6 +24,8 @@ describe('pTokensSwap', () => {
         underlyingAssetName: 'Symbol',
         underlyingAssetTokenAddress: 'underlying-asset-token-address',
       },
+      routerAddress: 'router-address',
+      stateManagerAddress: 'state-manager-address',
     })
     const assetProvider = new pTokensProviderMock()
     const destinationAsset = new pTokenAssetMock({
@@ -39,11 +40,12 @@ describe('pTokensSwap', () => {
         underlyingAssetTokenAddress: 'underlying-asset-token-address',
       },
       provider: assetProvider,
+      routerAddress: 'router-address',
+      stateManagerAddress: 'state-manager-address',
     })
     const swapSpy = jest.spyOn(sourceAsset, 'swap')
     const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
     const swap = new pTokensSwap(
-      routerAddress,
       sourceAsset,
       [{ asset: destinationAsset, destinationAddress: 'destination-address' }],
       BigNumber(10)
@@ -51,21 +53,10 @@ describe('pTokensSwap', () => {
     const promi = swap.execute()
     let inputTxBroadcasted = false,
       inputTxConfirmed = false,
-      inputTxDetected = false,
-      outputTxDetected = false,
-      outputTxBroadcasted = false,
-      outputTxConfirmed = false
-    let depositAddress,
-      inputTxBroadcastedObj,
-      inputTxConfirmedObj,
-      inputTxDetectedObj,
-      outputTxDetectedObj,
-      outputTxBroadcastedObj,
-      outputTxConfirmedObj
+      operationQueued = false,
+      operationExecuted = false
+    let inputTxBroadcastedObj, inputTxConfirmedObj, outputTxQueuedObj, outputTxExecutedObj
     const ret = await promi
-      .on('depositAddress', (address) => {
-        depositAddress = address
-      })
       .on('inputTxBroadcasted', (obj) => {
         inputTxBroadcastedObj = obj
         inputTxBroadcasted = true
@@ -74,50 +65,29 @@ describe('pTokensSwap', () => {
         inputTxConfirmedObj = obj
         inputTxConfirmed = true
       })
-      .on('inputTxDetected', (obj) => {
-        inputTxDetectedObj = obj
-        inputTxDetected = true
+      .on('operationQueued', (obj) => {
+        outputTxQueuedObj = obj
+        operationQueued = true
       })
-      .on('outputTxDetected', (obj) => {
-        outputTxDetectedObj = obj
-        outputTxDetected = true
+      .on('operationExecuted', (obj) => {
+        outputTxExecutedObj = obj
+        operationExecuted = true
       })
-      .on('outputTxBroadcasted', (obj) => {
-        outputTxBroadcastedObj = obj
-        outputTxBroadcasted = true
-      })
-      .on('outputTxConfirmed', (obj) => {
-        outputTxConfirmedObj = obj
-        outputTxConfirmed = true
-      })
-    expect(swapSpy).toHaveBeenNthCalledWith(
-      1,
-      routerAddress,
-      BigNumber(10),
-      'destination-address',
-      NetworkId.GoerliTestnet,
-      undefined
-    )
-    expect(waitForTransactionConfirmationSpy).toHaveBeenNthCalledWith(1, 'output-tx-hash')
-    expect(depositAddress).toStrictEqual('deposit-address')
+    expect(swapSpy).toHaveBeenNthCalledWith(1, BigNumber(10), 'destination-address', NetworkId.GoerliTestnet, undefined)
+    expect(waitForTransactionConfirmationSpy).toHaveBeenNthCalledWith(1, 'operation-executed-tx-hash')
     expect(inputTxBroadcasted).toBeTruthy()
-    expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
+    expect(inputTxBroadcastedObj).toStrictEqual({ txHash: 'originating-tx-hash' })
     expect(inputTxConfirmed).toBeTruthy()
-    expect(inputTxConfirmedObj).toBe('originating-tx-hash')
-    expect(inputTxDetected).toBeTruthy()
-    expect(inputTxDetectedObj).toStrictEqual([])
-    expect(outputTxDetected).toBeTruthy()
-    expect(outputTxDetectedObj).toStrictEqual([])
-    expect(outputTxBroadcasted).toBeTruthy()
-    expect(outputTxBroadcastedObj).toStrictEqual([])
-    expect(outputTxConfirmed).toBeTruthy()
-    expect(outputTxConfirmedObj).toStrictEqual([])
-    expect(ret).toStrictEqual([])
+    expect(inputTxConfirmedObj).toStrictEqual({ operationId: 'operation-id', txHash: 'originating-tx-hash' })
+    expect(operationQueued).toBeTruthy()
+    expect(outputTxQueuedObj).toStrictEqual({ operationId: 'operation-id', txHash: 'operation-queued-tx-hash' })
+    expect(operationExecuted).toBeTruthy()
+    expect(outputTxExecutedObj).toStrictEqual({ operationId: 'operation-id', txHash: 'operation-executed-tx-hash' })
+    expect(ret).toStrictEqual({ operationId: 'operation-id', txHash: 'operation-executed-tx-hash' })
   })
 
   test('Should swap asset with user data', async () => {
     const builder = new pTokensSwapBuilder()
-    const routerAddress = '0xF4F5C35D50b788AF5Ae74584628b45F302Cd81e7'
     const sourceAsset = new pTokenAssetMock({
       assetInfo: {
         networkId: NetworkId.SepoliaTestnet,
@@ -129,6 +99,8 @@ describe('pTokensSwap', () => {
         underlyingAssetName: 'Symbol',
         underlyingAssetTokenAddress: 'underlying-asset-token-address',
       },
+      routerAddress: 'router-address',
+      stateManagerAddress: 'state-manager-address',
     })
     const assetProvider = new pTokensProviderMock()
     const destinationAsset = new pTokenAssetMock({
@@ -142,12 +114,13 @@ describe('pTokensSwap', () => {
         underlyingAssetName: 'Symbol',
         underlyingAssetTokenAddress: 'underlying-asset-token-address',
       },
+      routerAddress: 'router-address',
+      stateManagerAddress: 'state-manager-address',
       provider: assetProvider,
     })
     const swapSpy = jest.spyOn(sourceAsset, 'swap')
     const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
     builder
-      .setRouterAddress(routerAddress)
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
       .addDestinationAsset(
@@ -159,21 +132,10 @@ describe('pTokensSwap', () => {
     const promi = swap.execute()
     let inputTxBroadcasted = false,
       inputTxConfirmed = false,
-      inputTxDetected = false,
-      outputTxDetected = false,
-      outputTxBroadcasted = false,
-      outputTxConfirmed = false
-    let depositAddress,
-      inputTxBroadcastedObj,
-      inputTxConfirmedObj,
-      inputTxDetectedObj,
-      outputTxDetectedObj,
-      outputTxBroadcastedObj,
-      outputTxConfirmedObj
+      operationQueued = false,
+      operationExecuted = false
+    let inputTxBroadcastedObj, inputTxConfirmedObj, outputTxQueuedObj, outputTxExecutedObj
     const ret = await promi
-      .on('depositAddress', (address) => {
-        depositAddress = address
-      })
       .on('inputTxBroadcasted', (obj) => {
         inputTxBroadcastedObj = obj
         inputTxBroadcasted = true
@@ -182,151 +144,35 @@ describe('pTokensSwap', () => {
         inputTxConfirmedObj = obj
         inputTxConfirmed = true
       })
-      .on('inputTxDetected', (obj) => {
-        inputTxDetectedObj = obj
-        inputTxDetected = true
+      .on('operationQueued', (obj) => {
+        outputTxQueuedObj = obj
+        operationQueued = true
       })
-      .on('outputTxDetected', (obj) => {
-        outputTxDetectedObj = obj
-        outputTxDetected = true
-      })
-      .on('outputTxBroadcasted', (obj) => {
-        outputTxBroadcastedObj = obj
-        outputTxBroadcasted = true
-      })
-      .on('outputTxConfirmed', (obj) => {
-        outputTxConfirmedObj = obj
-        outputTxConfirmed = true
+      .on('operationExecuted', (obj) => {
+        outputTxExecutedObj = obj
+        operationExecuted = true
       })
     expect(swapSpy).toHaveBeenNthCalledWith(
       1,
-      routerAddress,
       BigNumber(123.456),
       '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
       NetworkId.GoerliTestnet,
-      Buffer.from('user-data')
+      '757365722d64617461'
     )
-    expect(waitForTransactionConfirmationSpy).toHaveBeenNthCalledWith(1, 'output-tx-hash')
-    expect(depositAddress).toStrictEqual('deposit-address')
+    expect(waitForTransactionConfirmationSpy).toHaveBeenNthCalledWith(1, 'operation-executed-tx-hash')
     expect(inputTxBroadcasted).toBeTruthy()
-    expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
+    expect(inputTxBroadcastedObj).toStrictEqual({ txHash: 'originating-tx-hash' })
     expect(inputTxConfirmed).toBeTruthy()
-    expect(inputTxConfirmedObj).toBe('originating-tx-hash')
-    expect(inputTxDetected).toBeTruthy()
-    expect(inputTxDetectedObj).toStrictEqual([])
-    expect(outputTxDetected).toBeTruthy()
-    expect(outputTxDetectedObj).toStrictEqual([])
-    expect(outputTxBroadcasted).toBeTruthy()
-    expect(outputTxBroadcastedObj).toStrictEqual([])
-    expect(outputTxConfirmed).toBeTruthy()
-    expect(outputTxConfirmedObj).toStrictEqual([])
-    expect(ret).toStrictEqual([])
-  })
-
-  test('Should emit all events but outputTxConfirmed if destination asset provider is missing', async () => {
-    const builder = new pTokensSwapBuilder()
-    const routerAddress = '0xF4F5C35D50b788AF5Ae74584628b45F302Cd81e7'
-    const sourceAsset = new pTokenAssetMock({
-      assetInfo: {
-        networkId: NetworkId.SepoliaTestnet,
-        symbol: 'SRC',
-        assetTokenAddress: 'token-contract-address',
-        underlyingAssetDecimals: 18,
-        underlyingAssetNetworkId: NetworkId.SepoliaTestnet,
-        underlyingAssetSymbol: 'SYM',
-        underlyingAssetName: 'Symbol',
-        underlyingAssetTokenAddress: 'underlying-asset-token-address',
-      },
-    })
-    const destinationAsset = new pTokenAssetMock({
-      assetInfo: {
-        networkId: NetworkId.GoerliTestnet,
-        symbol: 'DST',
-        assetTokenAddress: 'token-contract-address',
-        underlyingAssetDecimals: 18,
-        underlyingAssetNetworkId: NetworkId.SepoliaTestnet,
-        underlyingAssetSymbol: 'SYM',
-        underlyingAssetName: 'Symbol',
-        underlyingAssetTokenAddress: 'underlying-asset-token-address',
-      },
-    })
-    const swapSpy = jest.spyOn(sourceAsset, 'swap')
-    builder
-      .setRouterAddress(routerAddress)
-      .setAmount(123.456)
-      .setSourceAsset(sourceAsset)
-      .addDestinationAsset(
-        destinationAsset,
-        '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF',
-        Buffer.from('user-data').toString('hex')
-      )
-    const swap = builder.build()
-    const promi = swap.execute()
-    let inputTxBroadcasted = false,
-      inputTxConfirmed = false,
-      inputTxDetected = false,
-      outputTxDetected = false,
-      outputTxBroadcasted = false,
-      outputTxConfirmed = false
-    let inputTxBroadcastedObj,
-      inputTxConfirmedObj,
-      inputTxDetectedObj,
-      outputTxDetectedObj,
-      outputTxBroadcastedObj,
-      outputTxConfirmedObj
-    const ret = await promi
-      .on('inputTxBroadcasted', (obj) => {
-        inputTxBroadcastedObj = obj
-        inputTxBroadcasted = true
-      })
-      .on('inputTxConfirmed', (obj) => {
-        inputTxConfirmedObj = obj
-        inputTxConfirmed = true
-      })
-      .on('inputTxDetected', (obj) => {
-        inputTxDetectedObj = obj
-        inputTxDetected = true
-      })
-      .on('outputTxDetected', (obj) => {
-        outputTxDetectedObj = obj
-        outputTxDetected = true
-      })
-      .on('outputTxBroadcasted', (obj) => {
-        outputTxBroadcastedObj = obj
-        outputTxBroadcasted = true
-      })
-      .on('outputTxConfirmed', (obj) => {
-        outputTxConfirmedObj = obj
-        outputTxConfirmed = true
-      })
-    expect(swapSpy).toHaveBeenNthCalledWith(
-      1,
-      routerAddress,
-      BigNumber(123.456),
-      '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF',
-      NetworkId.GoerliTestnet,
-      Buffer.from('user-data')
-    )
-    expect(inputTxBroadcasted).toBeTruthy()
-    expect(inputTxBroadcastedObj).toBe('originating-tx-hash')
-    expect(inputTxConfirmed).toBeTruthy()
-    expect(inputTxConfirmedObj).toBe('originating-tx-hash')
-    expect(inputTxDetected).toBeTruthy()
-    expect(inputTxDetectedObj).toStrictEqual([
-      { networkId: 'input-chain-id', status: 0, txHash: 'originating-tx-hash' },
-    ])
-    expect(outputTxDetected).toBeTruthy()
-    expect(outputTxDetectedObj).toStrictEqual([])
-    expect(outputTxBroadcasted).toBeTruthy()
-    expect(outputTxBroadcastedObj).toStrictEqual([])
-    expect(outputTxConfirmed).toBeFalsy()
-    expect(outputTxConfirmedObj).toStrictEqual(undefined)
-    expect(ret).toStrictEqual([])
+    expect(inputTxConfirmedObj).toStrictEqual({ operationId: 'operation-id', txHash: 'originating-tx-hash' })
+    expect(operationQueued).toBeTruthy()
+    expect(outputTxQueuedObj).toStrictEqual({ operationId: 'operation-id', txHash: 'operation-queued-tx-hash' })
+    expect(operationExecuted).toBeTruthy()
+    expect(outputTxExecutedObj).toStrictEqual({ operationId: 'operation-id', txHash: 'operation-executed-tx-hash' })
+    expect(ret).toStrictEqual({ operationId: 'operation-id', txHash: 'operation-executed-tx-hash' })
   })
 
   test('Should reject if swap fails', async () => {
     const builder = new pTokensSwapBuilder()
-    const routerAddress = '0xF4F5C35D50b788AF5Ae74584628b45F302Cd81e7'
     const sourceAsset = new pTokenAssetFailingMock({
       assetInfo: {
         networkId: NetworkId.SepoliaTestnet,
@@ -338,6 +184,8 @@ describe('pTokensSwap', () => {
         underlyingAssetName: 'Symbol',
         underlyingAssetTokenAddress: 'underlying-asset-token-address',
       },
+      routerAddress: 'router-address',
+      stateManagerAddress: 'state-manager-address',
     })
     const assetProvider = new pTokensProviderMock()
     const destinationAsset = new pTokenAssetMock({
@@ -352,11 +200,12 @@ describe('pTokensSwap', () => {
         underlyingAssetTokenAddress: 'underlying-asset-token-address',
       },
       provider: assetProvider,
+      routerAddress: 'router-address',
+      stateManagerAddress: 'state-manager-address',
     })
     const swapSpy = jest.spyOn(sourceAsset, 'swap')
     const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
     builder
-      .setRouterAddress(routerAddress)
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
       .addDestinationAsset(
@@ -371,11 +220,10 @@ describe('pTokensSwap', () => {
       expect(_err.message).toStrictEqual('swap error')
       expect(swapSpy).toHaveBeenNthCalledWith(
         1,
-        '0xF4F5C35D50b788AF5Ae74584628b45F302Cd81e7',
         BigNumber(123.456),
         '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF',
         NetworkId.GoerliTestnet,
-        Buffer.from('user-data')
+        '757365722d64617461'
       )
       expect(waitForTransactionConfirmationSpy).toHaveBeenCalledTimes(0)
     }

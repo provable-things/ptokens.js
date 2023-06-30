@@ -32,8 +32,8 @@ try {
         .on('inputTxConfirmed', (_) => console.info('inputTxConfirmed', _))
         .on('inputTxDetected', (_) => console.info('inputTxDetected', _))
         .on('outputTxDetected', (_) => console.info('outputTxDetected', _))
-        .on('outputTxBroadcasted', (_) => console.info('outputTxBroadcasted', _))
-        .on('outputTxConfirmed', (_) => console.info('outputTxConfirmed', _))
+        .on('operationQueued', (_) => console.info('operationQueued', _))
+        .on('operationExecuted', (_) => console.info('operationExecuted', _))
 } catch (err) {
     console.info('err', err)
 }

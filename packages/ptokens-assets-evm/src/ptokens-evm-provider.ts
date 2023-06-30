@@ -228,7 +228,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
               latestBlockNumber,
               _operationId
             ).then((_log) => {
-              promi.emit('operationQueued', { txHash: _log.transactionHash, operationId: _operationId })
+              promi.emit('operationQueued', _log.transactionHash)
               return _log
             })
             const finalTxLog = await Promise.any([

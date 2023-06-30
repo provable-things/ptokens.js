@@ -68,7 +68,7 @@ export type AssetInfo = {
 }
 
 export type SwapResult = {
-  txHash: string,
+  txHash: string
   operationId?: string
 }
 

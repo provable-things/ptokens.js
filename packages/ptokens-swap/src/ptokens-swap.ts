@@ -134,7 +134,7 @@ export class pTokensSwap {
    * If the destination asset has a provider, the PromiEvent resolves when the output transaction is confirmed; otherwise when it is broadcasted.
    */
   execute() {
-    const promi = new PromiEvent<string>(
+    const promi = new PromiEvent<SwapResult>(
       (resolve, reject) =>
         (async () => {
           try {
@@ -146,24 +146,24 @@ export class pTokensSwap {
               this._destinationAssets[0].userData
             )
               .on('txBroadcasted', (_swapResult: SwapResult) => {
-                promi.emit('inputTxBroadcasted', _swapResult)
+                promi.emit('inputTxBroadcasted', { txHash: _swapResult.txHash })
               })
               .on('txConfirmed', (_swapResult: SwapResult) => {
                 promi.emit('inputTxConfirmed', _swapResult)
               })
             const outputTx = await this.monitorOutputTransactions(swapResult.operationId)
-              .on('operationQueued', (_swapResult: SwapResult) => {
-                promi.emit('operationQueued', _swapResult)
+              .on('operationQueued', (_hash: string) => {
+                promi.emit('operationQueued', { txHash: _hash, operationId: swapResult.operationId })
               })
-              .on('operationExecuted', (_swapResult: SwapResult) => {
-                promi.emit('operationExecuted', _swapResult)
+              .on('operationExecuted', (_hash: string) => {
+                promi.emit('operationExecuted', { txHash: _hash, operationId: swapResult.operationId })
               })
-              .on('operationCancelled', (_swapResult: SwapResult) => {
-                promi.emit('operationCancelled', _swapResult)
+              .on('operationCancelled', (_hash: string) => {
+                promi.emit('operationCancelled', { txHash: _hash, operationId: swapResult.operationId })
               })
             await this.destinationAssets[0].provider.waitForTransactionConfirmation(outputTx)
             promi.emit('operationConfirmed', { txHash: outputTx, operationId: swapResult.operationId })
-            return resolve(outputTx)
+            return resolve({ txHash: outputTx, operationId: swapResult.operationId })
           } catch (err) {
             return reject(err)
           }
