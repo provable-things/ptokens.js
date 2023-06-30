@@ -69,25 +69,14 @@ export class pTokensEvmAsset extends pTokensAsset {
                 args
               )
               .once('txBroadcasted', (_hash) => promi.emit('txBroadcasted', { txHash: _hash }))
-              .once('txConfirmed', (_receipt: TransactionReceipt) =>
-                promi.emit('txConfirmed', {
-                  txHash: _receipt.transactionHash,
-                  operationId: getOperationIdFromTransactionReceipt(this.networkId, _receipt),
-                })
-              )
               .once('txError', reject)
-            // await new Promise((resolve) => setTimeout(resolve, 2000))
-            // const txReceipt = receipt
-            // promi.emit('txBroadcasted', { txHash: txReceipt.transactionHash })
-            // await new Promise((resolve) => setTimeout(resolve, 3000))
-            // promi.emit('txConfirmed', {
-            //   txHash: txReceipt.transactionHash,
-            //   operationId: getOperationIdFromTransactionReceipt(this.networkId, txReceipt),
-            // })
-            return resolve({
+              .then((_receipt) => this.provider.getTransactionReceipt(_receipt.transactionHash))
+            const ret = {
               txHash: txReceipt.transactionHash,
               operationId: getOperationIdFromTransactionReceipt(this.networkId, txReceipt),
-            })
+            }
+            promi.emit('txConfirmed', ret)
+            return resolve(ret)
           } catch (err) {
             return reject(err)
           }

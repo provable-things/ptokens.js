@@ -6,6 +6,7 @@ export type DestinationInfo = {
   asset: pTokensAsset
   destinationAddress: string
   userData?: string
+  toNative?: boolean
 }
 
 export class pTokensSwap {
@@ -143,7 +144,10 @@ export class pTokensSwap {
               this._amount,
               this._destinationAssets[0].destinationAddress,
               this._destinationAssets[0].asset.networkId,
-              this._destinationAssets[0].userData
+              this._destinationAssets[0].userData,
+              this._destinationAssets[0].toNative
+                ? '0x0000000000000000000000000000000000000000000000000000000000000001'
+                : '0x0000000000000000000000000000000000000000000000000000000000000000'
             )
               .on('txBroadcasted', (_swapResult: SwapResult) => {
                 promi.emit('inputTxBroadcasted', { txHash: _swapResult.txHash })
@@ -161,8 +165,6 @@ export class pTokensSwap {
               .on('operationCancelled', (_hash: string) => {
                 promi.emit('operationCancelled', { txHash: _hash, operationId: swapResult.operationId })
               })
-            await this.destinationAssets[0].provider.waitForTransactionConfirmation(outputTx)
-            promi.emit('operationConfirmed', { txHash: outputTx, operationId: swapResult.operationId })
             return resolve({ txHash: outputTx, operationId: swapResult.operationId })
           } catch (err) {
             return reject(err)

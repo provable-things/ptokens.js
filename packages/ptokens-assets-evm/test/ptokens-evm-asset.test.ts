@@ -70,12 +70,14 @@ describe('EVM asset', () => {
 
     test('Should call makeContractSend with userSend', async () => {
       const provider = new pTokensEvmProvider()
+      const getTransactionReceiptSpy = jest.fn().mockResolvedValue(receipt)
+      provider['_web3'].eth.getTransactionReceipt = getTransactionReceiptSpy
       const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
         const promi = new PromiEvent<TransactionReceipt>((resolve) =>
           setImmediate(() => {
             promi.emit('txBroadcasted', 'tx-hash')
             promi.emit('txConfirmed', receipt)
-            return resolve(receipt as TransactionReceipt)
+            return resolve(receipt as unknown as TransactionReceipt)
           })
         )
         return promi
@@ -175,7 +177,7 @@ describe('EVM asset', () => {
         jest.restoreAllMocks()
       })
 
-      test('Should call makeContractSend with userSend', async () => {
+      test('Should call provider monitorCrossChainOperations', async () => {
         const provider = new pTokensEvmProvider()
         const monitorCrossChainOperationsSpy = jest
           .spyOn(provider, 'monitorCrossChainOperations')

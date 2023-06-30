@@ -9,6 +9,8 @@ import { AbiItem } from 'web3-utils'
 
 import { EVENT_NAMES, eventNameToSignatureMap, getAccount, getContract, getOperationIdFromLog } from './lib/'
 
+const BLOCK_OFFSET = 1000
+
 export type MakeContractSendOptions = {
   /** The method to be called. */
   method: string
@@ -120,6 +122,12 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
     const block = await this._web3.eth.getBlock('latest')
     return block.number
   }
+
+  async getTransactionReceipt(_hash: string) {
+    const receipt = await this._web3.eth.getTransactionReceipt(_hash)
+    return receipt
+  }
+
   /**
    * Send a transaction to the smart contract and execute its method.
    * Note this can alter the smart contract state.
@@ -221,11 +229,11 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
       (resolve, reject) =>
         (async () => {
           try {
-            const latestBlockNumber = await this.getLatestBlockNumber()
+            const fromBlock = (await this.getLatestBlockNumber()) - BLOCK_OFFSET
             await this._pollForStateManagerOperation(
               _stateManagerAddress,
               EVENT_NAMES.OPERATION_QUEUED,
-              latestBlockNumber,
+              fromBlock,
               _operationId
             ).then((_log) => {
               promi.emit('operationQueued', _log.transactionHash)
@@ -235,7 +243,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
               this._pollForStateManagerOperation(
                 _stateManagerAddress,
                 EVENT_NAMES.OPERATION_EXECUTED,
-                latestBlockNumber,
+                fromBlock,
                 _operationId
               ).then((_log) => {
                 promi.emit('operationExecuted', { txHash: _log.transactionHash, operationId: _operationId })
@@ -244,7 +252,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
               this._pollForStateManagerOperation(
                 _stateManagerAddress,
                 EVENT_NAMES.OPERATION_CANCELLED,
-                latestBlockNumber,
+                fromBlock,
                 _operationId
               ).then((_log) => {
                 promi.emit('operationCancelled', { txHash: _log.transactionHash, operationId: _operationId })

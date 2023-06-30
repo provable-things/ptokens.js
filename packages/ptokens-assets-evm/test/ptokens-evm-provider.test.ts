@@ -539,7 +539,7 @@ describe('EVM provider', () => {
       .mockResolvedValueOnce([logs[0], logs[1]])
       .mockResolvedValueOnce([logs[2]])
       .mockResolvedValue([])
-    provider['_web3']['eth'].getBlock = jest.fn().mockImplementation(() => Promise.resolve({ number: 333 }))
+    provider['_web3']['eth'].getBlock = jest.fn().mockImplementation(() => Promise.resolve({ number: 1333 }))
     provider['_web3']['eth'].getPastLogs = spy
     const ret = await provider
       .monitorCrossChainOperations(
@@ -582,10 +582,7 @@ describe('EVM provider', () => {
       topics: ['0xec5d8f38737ebccaa579d2caeaed8fbc5f2c7c598fee1eb335429c8c48ec2598'],
     })
     expect(ret).toStrictEqual('0x88174f8b1c6715fee676c48d95d9ad6b126d008244c2ab3b28094a1e8267f547')
-    expect(operationQueuedObject).toStrictEqual({
-      operationId: '0xc6cc8381b3a70dc38c587d6c5518d72edb05b4040acbd4251fe6b67acff7f986',
-      txHash: '0xe03f1eb68ca2c13c4b2d08abf4d6154c2846cb88a52333fd3c8128587ad0cd34',
-    })
+    expect(operationQueuedObject).toStrictEqual('0xe03f1eb68ca2c13c4b2d08abf4d6154c2846cb88a52333fd3c8128587ad0cd34')
     expect(operationExecutedObject).toStrictEqual({
       operationId: '0xc6cc8381b3a70dc38c587d6c5518d72edb05b4040acbd4251fe6b67acff7f986',
       txHash: '0x88174f8b1c6715fee676c48d95d9ad6b126d008244c2ab3b28094a1e8267f547',

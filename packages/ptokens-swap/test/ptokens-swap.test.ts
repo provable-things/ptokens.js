@@ -44,7 +44,6 @@ describe('pTokensSwap', () => {
       stateManagerAddress: 'state-manager-address',
     })
     const swapSpy = jest.spyOn(sourceAsset, 'swap')
-    const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
     const swap = new pTokensSwap(
       sourceAsset,
       [{ asset: destinationAsset, destinationAddress: 'destination-address' }],
@@ -73,8 +72,14 @@ describe('pTokensSwap', () => {
         outputTxExecutedObj = obj
         operationExecuted = true
       })
-    expect(swapSpy).toHaveBeenNthCalledWith(1, BigNumber(10), 'destination-address', NetworkId.GoerliTestnet, undefined)
-    expect(waitForTransactionConfirmationSpy).toHaveBeenNthCalledWith(1, 'operation-executed-tx-hash')
+    expect(swapSpy).toHaveBeenNthCalledWith(
+      1,
+      BigNumber(10),
+      'destination-address',
+      NetworkId.GoerliTestnet,
+      undefined,
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
+    )
     expect(inputTxBroadcasted).toBeTruthy()
     expect(inputTxBroadcastedObj).toStrictEqual({ txHash: 'originating-tx-hash' })
     expect(inputTxConfirmed).toBeTruthy()
@@ -119,7 +124,6 @@ describe('pTokensSwap', () => {
       provider: assetProvider,
     })
     const swapSpy = jest.spyOn(sourceAsset, 'swap')
-    const waitForTransactionConfirmationSpy = jest.spyOn(assetProvider, 'waitForTransactionConfirmation')
     builder
       .setAmount(123.456)
       .setSourceAsset(sourceAsset)
@@ -157,9 +161,9 @@ describe('pTokensSwap', () => {
       BigNumber(123.456),
       '0x28B2A40b6046850a569843cF740f15CF29792Ac2',
       NetworkId.GoerliTestnet,
-      '757365722d64617461'
+      '757365722d64617461',
+      '0x0000000000000000000000000000000000000000000000000000000000000000'
     )
-    expect(waitForTransactionConfirmationSpy).toHaveBeenNthCalledWith(1, 'operation-executed-tx-hash')
     expect(inputTxBroadcasted).toBeTruthy()
     expect(inputTxBroadcastedObj).toStrictEqual({ txHash: 'originating-tx-hash' })
     expect(inputTxConfirmed).toBeTruthy()
@@ -223,7 +227,8 @@ describe('pTokensSwap', () => {
         BigNumber(123.456),
         '0xE37c0D48d68da5c5b14E5c1a9f1CFE802776D9FF',
         NetworkId.GoerliTestnet,
-        '757365722d64617461'
+        '757365722d64617461',
+        '0x0000000000000000000000000000000000000000000000000000000000000000'
       )
       expect(waitForTransactionConfirmationSpy).toHaveBeenCalledTimes(0)
     }

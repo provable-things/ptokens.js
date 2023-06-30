@@ -41,10 +41,15 @@ export class pTokensSwapBuilder {
    * @param _userData - Optional user data.
    * @returns The same builder. This allows methods chaining.
    */
-  addDestinationAsset(_asset: pTokensAsset, _destinationAddress: string, _userData = '0x') {
+  addDestinationAsset(_asset: pTokensAsset, _destinationAddress: string, _userData = '0x', _toNative = false) {
     const isValidAddressFunction = validators.chainIdToAddressValidatorMap.get(_asset.networkId)
     if (!isValidAddressFunction(_destinationAddress)) throw new Error('Invalid destination address')
-    this._destinationAssets.push({ asset: _asset, destinationAddress: _destinationAddress, userData: _userData })
+    this._destinationAssets.push({
+      asset: _asset,
+      destinationAddress: _destinationAddress,
+      userData: _userData,
+      toNative: _toNative,
+    })
     return this
   }
 
