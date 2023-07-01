@@ -8,7 +8,7 @@ import { pTokensAssetProvider } from './ptokens-asset-provider'
 export type pTokenAssetConfig = {
   /** An AssetInfo object containing asset technical details. */
   assetInfo: AssetInfo
-
+  factoryAddress: string
   routerAddress: string
   stateManagerAddress: string
   /** The asset weight during the swap. Defaults to 1. Actually it is not supported.  */
@@ -73,6 +73,7 @@ export type SwapResult = {
 }
 
 export abstract class pTokensAsset {
+  private _factoryAddress: string
   private _routerAddress: string
   private _stateManagerAddress: string
   private _assetInfo: AssetInfo
@@ -88,8 +89,13 @@ export abstract class pTokensAsset {
     this._type = _type
     this._assetInfo = _config.assetInfo
     this._weight = _config.weight || 1
+    this._factoryAddress = _config.factoryAddress
     this._routerAddress = _config.routerAddress
     this._stateManagerAddress = _config.stateManagerAddress
+  }
+
+  get factoryAddress(): string {
+    return this._factoryAddress
   }
 
   get routerAddress(): string {

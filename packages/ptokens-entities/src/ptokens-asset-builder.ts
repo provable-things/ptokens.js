@@ -1,12 +1,4 @@
-import {
-  NetworkId,
-  Blockchain,
-  Network,
-  BlockchainType,
-  networkIdToTypeMap,
-  RouterAddress,
-  StateManagerAddress,
-} from 'ptokens-constants'
+import { NetworkId, Blockchain, Network, BlockchainType, networkIdToTypeMap, FactoryAddress } from 'ptokens-constants'
 import { validators } from 'ptokens-helpers'
 
 import { AssetInfo, pTokensAsset } from './ptokens-asset'
@@ -20,8 +12,7 @@ export abstract class pTokensAssetBuilder {
   protected _networkId: NetworkId
   protected _assetInfo: AssetInfo
   private _type: BlockchainType
-  protected _routerAddress: string
-  protected _stateManagerAddress: string
+  protected _factoryAddress: string
 
   /**
    * Create and initialize a pTokensAssetBuilder object.
@@ -76,34 +67,17 @@ export abstract class pTokensAssetBuilder {
   /**
    * Return the router address for the swap.
    */
-  get routerAddress(): string {
-    return this._routerAddress || RouterAddress.get(this._assetInfo.networkId as NetworkId)
+  get factoryAddress(): string {
+    return this._factoryAddress || FactoryAddress.get(this._assetInfo.networkId as NetworkId)
   }
 
   /**
-   * Set a custom pTokens router address for the swap.
-   * @param _routerAddress - Address of the pTokens router contract
+   * Set a custom pTokens factory address for the swap.
+   * @param _factoryAddress - Address of the pTokens factory contract
    * @returns The same builder. This allows methods chaining.
    */
-  setRouterAddress(_routerAddress: string) {
-    this._routerAddress = _routerAddress
-    return this
-  }
-
-  /**
-   * Return the router address for the swap.
-   */
-  get stateManagerAddress(): string {
-    return this._stateManagerAddress || StateManagerAddress.get(this._assetInfo.networkId as NetworkId)
-  }
-
-  /**
-   * Set a custom pTokens router address for the swap.
-   * @param _routerAddress - Address of the pTokens router contract
-   * @returns The same builder. This allows methods chaining.
-   */
-  setStateManagerAddress(_stateManagerAddress: string) {
-    this._stateManagerAddress = _stateManagerAddress
+  setFactoryAddress(_factoryAddress: string) {
+    this._factoryAddress = _factoryAddress
     return this
   }
 
@@ -115,12 +89,9 @@ export abstract class pTokensAssetBuilder {
   private validate() {
     if (!this._networkId) throw new Error('Missing chain ID')
     if (!this._assetInfo) throw new Error('Missing asset info')
-    if (!this.routerAddress) throw new Error('Missing router address')
-    if (!validators.isValidAddressByChainId(this.routerAddress, this._networkId))
-      throw new Error('Invalid router address')
-    if (!this.routerAddress) throw new Error('Missing router address')
-    if (!validators.isValidAddressByChainId(this.stateManagerAddress, this._networkId))
-      throw new Error('Invalid router address')
+    if (!this.factoryAddress) throw new Error('Missing factory address')
+    if (!validators.isValidAddressByChainId(this.factoryAddress, this._networkId))
+      throw new Error('Invalid factory address')
     if (this._decimals !== undefined) this._assetInfo.decimals = this._decimals
   }
 
