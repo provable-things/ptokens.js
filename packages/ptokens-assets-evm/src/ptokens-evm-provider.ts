@@ -246,7 +246,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
                 fromBlock,
                 _operationId
               ).then((_log) => {
-                promi.emit('operationExecuted', { txHash: _log.transactionHash, operationId: _operationId })
+                promi.emit('operationExecuted', _log.transactionHash)
                 return _log
               }),
               this._pollForStateManagerOperation(
@@ -255,7 +255,7 @@ export class pTokensEvmProvider implements pTokensAssetProvider {
                 fromBlock,
                 _operationId
               ).then((_log) => {
-                promi.emit('operationCancelled', { txHash: _log.transactionHash, operationId: _operationId })
+                promi.emit('operationCancelled', _log.transactionHash)
                 return _log
               }),
             ])
