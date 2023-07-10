@@ -102,7 +102,8 @@ export class pTokensEvmAsset extends pTokensAsset {
   ) {
     if (
       this.assetInfo.chainId === ChainId.EthereumMainnet &&
-      this.assetInfo.tokenAddress.toLowerCase() === TokenAddresses.PTLOS_ON_ETH
+      (this.assetInfo.tokenAddress.toLowerCase() === TokenAddresses.PTLOS_ON_ETH ||
+        this.assetInfo.tokenAddress.toLowerCase() === TokenAddresses.PIQ_ON_ETH)
     ) {
       return this.provider.makeContractSend(
         {
