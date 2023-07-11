@@ -88,11 +88,17 @@ export class pTokensSwapBuilder {
       this.destinationAssets.some((_dest) => _dest.assetInfo.chainId !== ChainId.TelosMainnet)
     )
       return false
-    return this.destinationAssets.every(
-      (_asset) =>
-        stringUtils.addHexPrefix(_asset.assetInfo.tokenReference).toLowerCase() ===
-        stringUtils.addHexPrefix(this.sourceAsset.assetInfo.tokenReference).toLowerCase()
+    else if (
+      this.sourceAsset.assetInfo.tokenAddress === TokenAddresses.PIQ_ON_ETH &&
+      this.destinationAssets.some((_dest) => _dest.assetInfo.chainId !== ChainId.EosMainnet)
     )
+      return false
+    else
+      return this.destinationAssets.every(
+        (_asset) =>
+          stringUtils.addHexPrefix(_asset.assetInfo.tokenReference).toLowerCase() ===
+          stringUtils.addHexPrefix(this.sourceAsset.assetInfo.tokenReference).toLowerCase()
+      )
   }
 
   /**
