@@ -101,9 +101,11 @@ export class pTokensEvmAsset extends pTokensAsset {
     _userData?: Uint8Array
   ) {
     if (
-      this.assetInfo.chainId === ChainId.EthereumMainnet &&
-      (this.assetInfo.tokenAddress.toLowerCase() === TokenAddresses.PTLOS_ON_ETH ||
-        this.assetInfo.tokenAddress.toLowerCase() === TokenAddresses.PIQ_ON_ETH)
+      (this.assetInfo.chainId === ChainId.EthereumMainnet &&
+        (this.assetInfo.tokenAddress.toLowerCase() === TokenAddresses.PTLOS_ON_ETH ||
+          this.assetInfo.tokenAddress.toLowerCase() === TokenAddresses.PIQ_ON_ETH)) ||
+      (this.assetInfo.chainId === ChainId.XdaiMainnet &&
+        this.assetInfo.tokenAddress.toLowerCase() === TokenAddresses.PNT_ON_XDAI)
     ) {
       return this.provider.makeContractSend(
         {
