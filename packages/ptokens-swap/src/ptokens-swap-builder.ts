@@ -93,6 +93,11 @@ export class pTokensSwapBuilder {
       this.destinationAssets.some((_dest) => _dest.assetInfo.chainId !== ChainId.EosMainnet)
     )
       return false
+    else if (
+      this.sourceAsset.assetInfo.tokenAddress === TokenAddresses.PNT_ON_XDAI &&
+      this.destinationAssets.some((_dest) => _dest.assetInfo.chainId !== ChainId.EthereumMainnet)
+    )
+      return false
     else
       return this.destinationAssets.every(
         (_asset) =>

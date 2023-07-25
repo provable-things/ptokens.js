@@ -8,7 +8,7 @@ const abi = require('./utils/exampleContractABI.json')
 
 const TEST_CONTRACT_ADDRESS = '0x15FA11dFB23eae46Fda69fB6A148f41677B4a090'
 const TEST_ETH_PRIVATE_KEY = '422c874bed50b69add046296530dc580f8e2e253879d98d66023b7897ab15742'
-const TEST_ETH_PROVIDER = 'https://goerli.infura.io/v3/4762c881ac0c4938be76386339358ed6'
+const TEST_ETH_PROVIDER = 'http://provider.eth'
 
 describe('ethereum utilities', () => {
   test('Should return the correct Ethereum off-chain format', () => {
@@ -65,6 +65,8 @@ describe('ethereum utilities', () => {
 
   test('Should return a valid gas limit', async () => {
     const web3 = new Web3(TEST_ETH_PROVIDER)
+    const getBlockSpy = jest.fn().mockResolvedValue({ gasLimit: 1000 })
+    web3.eth.getBlock = getBlockSpy
     const gasLimit = await utils.getGasLimit(web3)
     expect(typeof gasLimit).toBe('number')
   })
