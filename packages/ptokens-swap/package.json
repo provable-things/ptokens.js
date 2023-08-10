@@ -1,6 +1,6 @@
 {
   "name": "ptokens-swap",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
     "ptokens-node": "^1.6.0"
   },
   "devDependencies": {
-    "ptokens-assets-evm": "^1.6.0",
+    "ptokens-assets-evm": "^1.7.0",
     "ptokens-assets-utxo": "^1.6.0"
   },
   "typedoc": {
