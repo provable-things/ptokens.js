@@ -38,6 +38,7 @@ export class pTokensEvmAsset extends pTokensAsset {
 
   private isWrappedToken(): boolean {
     if (this.symbol.toLowerCase() === 'ftm' && this.chainId === ChainId.FantomMainnet) return true
+    if (this.symbol.toLowerCase() === 'eth' && this.chainId === ChainId.EthereumMainnet) return true
     return false
   }
 
