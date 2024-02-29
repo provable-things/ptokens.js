@@ -67,5 +67,6 @@ export enum Network {
 export enum TokenAddresses {
   PTLOS_ON_ETH = '0x7825e833d495f3d1c28872415a4aee339d26ac88',
   PIQ_ON_ETH = '0xa23d33d5e0a61ba81919bfd727c671bb03ab0fea',
+  PLTC_ON_ETH = '0x5979f50f1d4c08f9a53863c2f39a7b0492c38d0f',
   PNT_ON_XDAI = '0x0259461eed4d76d4f0f900f9035f6c4dfb39159a',
 }
