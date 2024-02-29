@@ -639,4 +639,109 @@ describe('EVM asset', () => {
       ['123456789000000000000', Buffer.from('user-data'), 'destination-address']
     )
   })
+
+  test('Should call makeContractSend with redeem for pLTC on Ethereum', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const provider = new pTokensEvmProvider()
+    const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
+      const promi = new PromiEvent<string>((resolve) =>
+        setImmediate(() => {
+          promi.emit('txBroadcasted', 'tx-hash')
+          promi.emit('txConfirmed', 'tx-hash')
+          return resolve('tx-hash')
+        })
+      )
+      return promi
+    })
+    const asset = new pTokensEvmAsset({
+      node,
+      symbol: 'LTC',
+      provider: provider,
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: false,
+        tokenAddress: '0x5979f50f1d4c08f9a53863c2f39a7b0492c38d0f',
+        tokenReference: 'token-internal-address',
+        decimals: 18,
+        fees: hostToXFees,
+      },
+    })
+    let txHashBroadcasted = ''
+    let txHashConfirmed = ''
+    const ret = await asset['hostToInterim'](BigNumber(123.456789), 'destination-address', 'destination-chain-id')
+      .on('txBroadcasted', (_txHash) => {
+        txHashBroadcasted = _txHash
+      })
+      .on('txConfirmed', (_txHash) => {
+        txHashConfirmed = _txHash
+      })
+    expect(txHashBroadcasted).toEqual('tx-hash')
+    expect(txHashConfirmed).toEqual('tx-hash')
+    expect(ret).toEqual('tx-hash')
+    expect(makeContractSendSpy).toHaveBeenNthCalledWith(
+      1,
+      {
+        abi: erc777TokenAbi,
+        contractAddress: '0x5979f50f1d4c08f9a53863c2f39a7b0492c38d0f',
+        method: 'redeem',
+        value: BigNumber(0),
+      },
+      ['123456789000000000000', 'destination-address']
+    )
+  })
+
+  test('Should call makeContractSend with redeem for pLTC on Ethereum with user data', async () => {
+    const node = new pTokensNode(new pTokensNodeProvider('test-url'))
+    const provider = new pTokensEvmProvider()
+    const makeContractSendSpy = jest.spyOn(provider, 'makeContractSend').mockImplementation(() => {
+      const promi = new PromiEvent<string>((resolve) =>
+        setImmediate(() => {
+          promi.emit('txBroadcasted', 'tx-hash')
+          promi.emit('txConfirmed', 'tx-hash')
+          return resolve('tx-hash')
+        })
+      )
+      return promi
+    })
+    const asset = new pTokensEvmAsset({
+      node,
+      symbol: 'LTC',
+      provider: provider,
+      assetInfo: {
+        chainId: ChainId.EthereumMainnet,
+        isNative: false,
+        tokenAddress: '0x5979f50f1d4c08f9a53863c2f39a7b0492c38d0f',
+        tokenReference: 'token-internal-address',
+        decimals: 18,
+        fees: hostToXFees,
+      },
+    })
+    let txHashBroadcasted = ''
+    let txHashConfirmed = ''
+    const ret = await asset['hostToInterim'](
+      BigNumber(123.456789),
+      'destination-address',
+      'destination-chain-id',
+      Buffer.from('user-data')
+    )
+      .on('txBroadcasted', (_txHash) => {
+        txHashBroadcasted = _txHash
+      })
+      .on('txConfirmed', (_txHash) => {
+        txHashConfirmed = _txHash
+      })
+    expect(txHashBroadcasted).toEqual('tx-hash')
+    expect(txHashConfirmed).toEqual('tx-hash')
+    expect(ret).toEqual('tx-hash')
+    expect(makeContractSendSpy).toHaveBeenNthCalledWith(
+      1,
+      {
+        abi: erc777TokenAbi,
+        contractAddress: '0x5979f50f1d4c08f9a53863c2f39a7b0492c38d0f',
+        method: 'redeem',
+        value: BigNumber(0),
+      },
+      ['123456789000000000000', Buffer.from('user-data'), 'destination-address']
+    )
+  })
 })
