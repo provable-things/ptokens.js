@@ -1,5 +1,5 @@
 {
-  "name": "ptokens-entities",
+  "name": "@p.network/ptokens-entities",
   "version": "1.6.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",

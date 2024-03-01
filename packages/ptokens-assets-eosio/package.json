@@ -1,5 +1,5 @@
 {
-  "name": "ptokens-assets-eosio",
+  "name": "@p.network/ptokens-assets-eosio",
   "version": "1.6.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",

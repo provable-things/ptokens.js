@@ -1,5 +1,5 @@
 {
-  "name": "ptokens-swap",
+  "name": "@p.network/ptokens-swap",
   "version": "1.7.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",

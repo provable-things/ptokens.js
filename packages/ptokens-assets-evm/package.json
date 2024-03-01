@@ -1,5 +1,5 @@
 {
-  "name": "ptokens-assets-evm",
+  "name": "@p.network/ptokens-assets-evm",
   "version": "1.7.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",

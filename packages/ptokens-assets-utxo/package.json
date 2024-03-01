@@ -1,5 +1,5 @@
 {
-  "name": "ptokens-assets-utxo",
+  "name": "@p.network/ptokens-assets-utxo",
   "version": "1.6.0",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
